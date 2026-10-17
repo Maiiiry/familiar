@@ -89,6 +89,11 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                     if (book.author.isNotBlank()) Text(book.author, style = UType.Sub)
                     Spacer(Modifier.height(6.dp))
                     Text("${genreName(genre)} · ${shelfName(book.shelfOf)}", style = UType.Small.copy(color = genreColor(genre)))
+                    if (book.series.isNotBlank()) Text(
+                        (book.volume?.let { stringResource(R.string.volume_n, it) + " · " } ?: "") + book.series,
+                        style = UType.Small.copy(color = U.c.gold),
+                        modifier = Modifier.padding(top = 4.dp).clickable { go.series(book.series) },
+                    )
                     Spacer(Modifier.height(10.dp))
                     Bar(book.fraction, color = U.c.accent, track = U.c.accentSoft)
                     Spacer(Modifier.height(4.dp))

@@ -76,6 +76,12 @@ fun SagaScreen(data: FamiliarData, go: Go) {
             Text(text, style = UType.Quote)
             Spacer(Modifier.height(18.dp))
             UCard {
+                Text(stringResource(R.string.heat_title), style = UType.Strong)
+                Spacer(Modifier.height(10.dp))
+                Heatmap(app.familiar.domain.daysOf(data.readings, s.zone, y.year), y.year, data.settings.dailyGoal, s.today)
+            }
+            Spacer(Modifier.height(12.dp))
+            UCard {
                 Row {
                     Stat(y.books.size.toString(), stringResource(R.string.stat_books), Modifier.weight(1f))
                     Stat(y.pages.toString(), stringResource(R.string.stat_pages), Modifier.weight(1f))

@@ -117,6 +117,7 @@ class Go(private val nav: NavHostController) {
     fun bestiary() = nav.navigate("bestiary")
     fun saga() = nav.navigate("saga")
     fun furnish() = nav.navigate("furnish")
+    fun series(name: String) = nav.navigate("series/" + android.net.Uri.encode(name))
     fun settings() = nav.navigate("settings")
     fun back() = nav.popBackStack()
 }
@@ -191,6 +192,9 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
         composable("bestiary") { BestiaryScreen(data, go) }
         composable("saga") { SagaScreen(data, go) }
         composable("furnish") { app.familiar.ui.den.FurnishScreen(data, go) }
+        composable("series/{name}", arguments = listOf(navArgument("name") { type = NavType.StringType })) { e ->
+            app.familiar.ui.books.SeriesScreen(e.arguments?.getString("name").orEmpty(), data, go)
+        }
         composable("settings") { SettingsScreen(data, onBack = { go.back() }) }
     }
 

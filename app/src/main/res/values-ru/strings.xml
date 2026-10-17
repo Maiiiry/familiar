@@ -434,4 +434,18 @@
         <item quantity="many">%d минут</item>
         <item quantity="other">%d минуты</item>
     </plurals>
+    <string name="cycles">Циклы</string>
+    <string name="shelf_want_short">Хочу</string>
+    <string name="cycles_empty">Укажи у книги цикл при добавлении («Хроника убийцы короля», том 2), и тома соберутся здесь.</string>
+    <string name="cycle_of">Прочитано томов: %1$d из %2$d</string>
+    <string name="cycle_text">Дочитай все тома цикла на полке (от двух), и получишь награду: %d маны.</string>
+    <string name="cycle_done">Цикл прочитан целиком!</string>
+    <string name="cycle_add">Добавить том</string>
+    <string name="volume_n">Том %d</string>
+    <string name="f_series">Цикл</string>
+    <string name="f_series_hint">Необязательно</string>
+    <string name="f_volume">Том</string>
+    <string name="heat_title">Каждый день года</string>
+    <string name="heat_less">Меньше</string>
+    <string name="heat_more">Больше</string>
 </resources>

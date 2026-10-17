@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a612ca04a6e78c7002e68346a841ad1b",
+    "identityHash": "0329681cb585a3a23b511e5fe7f4b2ba",
     "entities": [
       {
         "tableName": "books",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL, `audio` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL, `audio` INTEGER NOT NULL, `series` TEXT NOT NULL, `volume` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -82,6 +82,17 @@
             "columnName": "audio",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "series",
+            "columnName": "series",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volume",
+            "columnName": "volume",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -232,7 +243,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a612ca04a6e78c7002e68346a841ad1b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0329681cb585a3a23b511e5fe7f4b2ba')"
     ]
   }
 }

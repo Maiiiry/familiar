@@ -419,4 +419,18 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
+    <string name="cycles">Cycles</string>
+    <string name="shelf_want_short">Want</string>
+    <string name="cycles_empty">Give books a cycle name when you add them (“The Kingkiller Chronicle”, volume 2) and they gather here.</string>
+    <string name="cycle_of">%1$d of %2$d volumes read</string>
+    <string name="cycle_text">Read every volume on the shelf (two or more) for a reward of %d mana.</string>
+    <string name="cycle_done">The whole cycle is read!</string>
+    <string name="cycle_add">Add a volume</string>
+    <string name="volume_n">Volume %d</string>
+    <string name="f_series">Cycle</string>
+    <string name="f_series_hint">Optional</string>
+    <string name="f_volume">Volume</string>
+    <string name="heat_title">Every day of the year</string>
+    <string name="heat_less">Less</string>
+    <string name="heat_more">More</string>
 </resources>

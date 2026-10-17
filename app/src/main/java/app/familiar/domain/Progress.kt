@@ -229,3 +229,26 @@ class Year(private val s: Stats, val year: Int) {
     val longest: Book? = books.maxByOrNull { it.pages }
     val bestStreak: Int = longestRun(s.readings.filter { inYear(it.end) && it.pages > 0 }.map { Instant.ofEpochMilli(it.end).atZone(s.zone).toLocalDate() }.toSet())
 }
+
+/** A cycle of books, gathered by the name typed on each volume. */
+class Series(val name: String, val books: List<Book>) {
+    val done: Int = books.count { it.shelfOf == Shelf.DONE }
+    /** Every volume on the shelf is read, and there are at least two. */
+    val complete: Boolean = books.size >= 2 && done == books.size
+    val key: String get() = "series:" + name.lowercase()
+
+    companion object {
+        const val REWARD = 200
+
+        fun all(books: List<Book>): List<Series> = books.filter { it.series.isNotBlank() }
+            .groupBy { it.series.trim().lowercase() }
+            .map { (_, list) -> Series(list.first().series.trim(), list.sortedWith(compareBy({ it.volume ?: Int.MAX_VALUE }, { it.added }))) }
+            .sortedByDescending { s -> s.books.maxOf { it.finished ?: it.added } }
+    }
+}
+
+/** Pages (and audiobook minutes) read on each day of [year]. */
+fun daysOf(readings: List<Reading>, zone: ZoneId, year: Int): Map<LocalDate, Int> =
+    readings.filter { Instant.ofEpochMilli(it.end).atZone(zone).year == year }
+        .groupBy { Instant.ofEpochMilli(it.end).atZone(zone).toLocalDate() }
+        .mapValues { (_, l) -> l.sumOf { it.pages } }

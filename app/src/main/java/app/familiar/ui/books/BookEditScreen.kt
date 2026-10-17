@@ -61,6 +61,8 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
     var shelf by remember { mutableStateOf(old?.shelfOf ?: Shelf.READING) }
     var cover by remember { mutableStateOf(old?.cover ?: "") }
     var audio by remember { mutableStateOf(old?.audio ?: false) }
+    var series by remember { mutableStateOf(old?.series ?: "") }
+    var volume by remember { mutableStateOf(old?.volume?.toString() ?: "") }
     val total = pages.toIntOrNull()?.takeIf { it in 1..20000 }
     val ok = title.isNotBlank() && total != null
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
@@ -100,6 +102,20 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
                     UTextField(page, { page = it.filter(Char::isDigit).take(5) }, number = true, placeholder = "0")
                 }
             }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(Modifier.weight(2f)) {
+                    SectionTitle(stringResource(R.string.f_series))
+                    UTextField(series, { series = it.take(80) }, placeholder = stringResource(R.string.f_series_hint))
+                }
+                Column(Modifier.weight(1f)) {
+                    SectionTitle(stringResource(R.string.f_volume))
+                    UTextField(volume, { volume = it.filter(Char::isDigit).take(3) }, number = true, placeholder = "1")
+                }
+            }
+            val known = remember(data.books) { app.familiar.domain.Series.all(data.books).map { it.name } }
+            if (known.isNotEmpty() && series.isBlank()) FlowRow(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                known.take(6).forEach { n -> Chip(n.take(28), false, { series = n }) }
+            }
             SectionTitle(stringResource(R.string.f_genre))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Genre.entries.forEach { g -> Chip(genreName(g), genre == g, { genre = g }, genreColor(g)) }
@@ -119,7 +135,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
                 val now = System.currentTimeMillis()
                 val p = (page.toIntOrNull() ?: 0).coerceIn(0, total!!)
                 val b = (old ?: Book(title = "", pages = total, genre = genre.name, added = now)).copy(
-                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover, audio = audio,
+                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover, audio = audio, series = series.trim(), volume = volume.toIntOrNull()?.takeIf { series.isNotBlank() },
                     shelf = if (old == null) shelf.name else old.shelf,
                     started = old?.started ?: if (shelf == Shelf.READING) now else null,
                 )

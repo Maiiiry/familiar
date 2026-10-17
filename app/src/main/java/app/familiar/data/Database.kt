@@ -37,6 +37,9 @@ data class Book(
     val cover: String = "",
     /** An audiobook: [pages] and [page] are minutes. */
     val audio: Boolean = false,
+    /** The cycle this book belongs to, and its number in it; empty for a standalone book. */
+    val series: String = "",
+    val volume: Int? = null,
 ) {
     val shelfOf: Shelf get() = runCatching { Shelf.valueOf(shelf) }.getOrDefault(Shelf.READING)
     val fraction: Float get() = if (pages <= 0) 0f else (page.toFloat() / pages).coerceIn(0f, 1f)
