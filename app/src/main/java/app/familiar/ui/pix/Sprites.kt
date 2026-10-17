@@ -29,9 +29,13 @@ data class Look(
     val chew: Boolean = false,
     /** Egg: 0 just laid .. 1 about to hatch. */
     val hatch: Float = 0f,
+    /** The rare colouring. */
+    val shiny: Boolean = false,
+    /** Being stroked: eyes squeezed shut with pleasure. */
+    val happy: Boolean = false,
 )
 
-enum class EyeState { OPEN, BLINK, CLOSED, SCARED, SQUINT }
+enum class EyeState { OPEN, BLINK, CLOSED, SCARED, SQUINT, HAPPY }
 
 /** Where the face is, in sprite pixels, for mood marks drawn on top. */
 class Face(val eyes: List<Pair<Int, Int>>, val eyeW: Int, val headX: Int, val headY: Int, val headR: Int)
@@ -56,6 +60,7 @@ object Sprites {
         val stone = look.stone
         val eyes = when {
             look.sleeping || stone > 0.85f -> EyeState.CLOSED
+            look.happy -> EyeState.HAPPY
             f == FRAMES - 2 -> EyeState.BLINK
             look.mood == Mood.SCARED -> EyeState.SCARED
             look.mood == Mood.SUSPICIOUS -> EyeState.SQUINT
@@ -81,12 +86,21 @@ object Sprites {
         // One dark line around the whole sprite so it reads on any background.
         val solid = BooleanArray(SIZE * SIZE) { body.c[it].al() >= 160 }
         body.ring(solid, OUT)
+        if (look.shiny) shine(body, look.species)
         if (stone > 0f) petrify(body, stone, look.species == Species.PHOENIX, f)
         val out = Px(SIZE, SIZE)
         shadow(out, look)
         if (look.stage == Stage.ANCIENT && stone < 0.5f) aura(out, ph)
         out.blit(body, 0, 0)
-        if (face != null && stone < 0.6f && !look.sleeping) marks(out, face, look, f)
+        if (face != null && stone < 0.6f && !look.sleeping && !look.happy) marks(out, face, look, f)
+        if (face != null && look.happy) stamp(out, HEART, face.headX + face.headR, face.headY - face.headR - (f % 6), R.pink[2], WHITE)
+        if (face != null && look.sleeping && stone < 0.85f) snore(out, face, f)
+        if (look.shiny && stone < 0.5f) for (i in 0 until 3) {
+            if ((f + i * 4) % FRAMES >= 4) continue
+            val x = (SIZE * (0.2f + 0.6f * (noise(i, f / 4, 44) + 0.5f))).toInt()
+            val y = (SIZE * (0.15f + 0.6f * (noise(i, f / 4, 45) + 0.5f))).toInt()
+            stamp(out, SPARK, x, y, rgb(230, 240, 255), WHITE, 220)
+        }
         return out
     }
 
@@ -169,6 +183,11 @@ object Sprites {
         when (state) {
             EyeState.CLOSED -> {
                 for (i in 0 until w) px.set(x0 + i, ey + if (i == 0 || i == w - 1) 0 else 1, EYE)
+                return ex to ey
+            }
+            EyeState.HAPPY -> {
+                // Squeezed shut: ^ ^
+                for (i in 0 until w) px.set(x0 + i, ey - if (i == 0 || i == w - 1) 0 else 1, EYE)
                 return ex to ey
             }
             EyeState.BLINK -> {
@@ -270,6 +289,42 @@ object Sprites {
             Mood.SUSPICIOUS, Mood.NONE -> {}
         }
         if (look.species == Species.OWLBEAR && look.stage >= Stage.ADULT && look.mood != Mood.GLASSES) glasses(px, f)
+    }
+
+    private val ZED = arrayOf("xxx", "..x", ".x.", "xxx")
+
+    private fun snore(px: Px, f: Face, frame: Int) {
+        for (i in 0 until 2) {
+            val p = ((frame + i * 6) % FRAMES) / FRAMES.toFloat()
+            val x = f.headX + f.headR / 2 + (p * 8).toInt() + i * 3
+            val y = f.headY - f.headR - (p * 14).toInt()
+            stamp(px, ZED, x, y, R.sky[5], R.sky[5], (255 * sin(p * PI).toFloat()).toInt().coerceAtLeast(120))
+        }
+    }
+
+    /** The rare colouring: each species gets its own turn of hue (a moonlit kitsune, an ice phoenix…). */
+    private fun shine(px: Px, sp: Species) {
+        val (shift, sat) = when (sp) {
+            Species.MIMIC -> 18f to 1.6f
+            Species.KITSUNE -> 190f to 0.6f
+            Species.SLIME -> 150f to 1f
+            Species.DRAGON -> 170f to 1f
+            Species.PHOENIX -> 190f to 0.9f
+            Species.GRIFFIN -> 0f to 0.05f
+            Species.OWLBEAR -> 0f to 0.08f
+            Species.MOTH -> 110f to 1f
+        }
+        val hsv = FloatArray(3)
+        for (i in px.c.indices) {
+            val c = px.c[i]
+            if (c.al() == 0 || c and 0xFFFFFF == OUT and 0xFFFFFF || c and 0xFFFFFF == EYE and 0xFFFFFF) continue
+            android.graphics.Color.RGBToHSV(c.r(), c.g(), c.b(), hsv)
+            if (hsv[1] < 0.12f) continue
+            hsv[0] = (hsv[0] + shift) % 360f
+            hsv[1] = (hsv[1] * sat).coerceIn(0f, 1f)
+            if (sat < 0.2f) hsv[2] = (hsv[2] * 1.12f + 0.08f).coerceAtMost(1f)
+            px.c[i] = (c.al() shl 24) or (android.graphics.Color.HSVToColor(hsv) and 0xFFFFFF)
+        }
     }
 
     private fun glasses(px: Px, f: Face) {

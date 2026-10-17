@@ -71,7 +71,7 @@ fun FeastScreen(data: FamiliarData, go: Go) {
                 r.feast.parts.forEachIndexed { i, (part, n) ->
                     if (i > 0) HorizontalDivider(Modifier.padding(vertical = 8.dp), color = U.c.line)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(partName(part, data.species), style = UType.Body, modifier = Modifier.weight(1f))
+                        Text(partName(part, data.species, data.book(r.reading.bookId)?.audio == true), style = UType.Body, modifier = Modifier.weight(1f))
                         Text(if (n >= 0) "+$n" else "$n", style = UType.Strong.copy(color = if (part == Part.SNIFF) U.c.danger else U.c.mana))
                     }
                 }

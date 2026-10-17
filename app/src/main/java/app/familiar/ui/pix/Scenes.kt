@@ -40,6 +40,40 @@ object Scenes {
         return px
     }
 
+    /** A gramophone for audiobooks: the record turns and notes float up while [playing]. */
+    fun gramophone(f: Int, playing: Boolean = true): Px {
+        val px = Px(72, 72)
+        // Wooden cabinet.
+        px.shade(rect(14f, 44f, 36f, 20f), { x, _ -> V3((x - 32f) / 24f, 0f, 1f) }, R.wood, lo = 0, hi = 5, texture = { x, _ -> if (x % 9 == 0) -0.25f else 0f })
+        px.shade(rect(12f, 40f, 40f, 5f), facing(0f, -0.6f, 1f), R.wood, lo = 1, hi = 5)
+        for (lx in listOf(15, 46)) px.rect(lx, 64, 3, 5, R.wood[1])
+        px.shade(ellipse(32f, 54f, 5f, 4f), dome(31f, 53f, 5f, 4f), R.gold, spec = true)
+        // The record, its shine turning.
+        px.shade(ellipse(27f, 39f, 13f, 3.2f), facing(0f, -1f, 0.3f), R.iron, lo = 0, hi = 1)
+        val a = (if (playing) f else 0) * PI.toFloat() / 2f
+        for (k in 0 until 2) {
+            val sx = (27 + kotlin.math.cos(a + k * PI.toFloat()) * 8).toInt()
+            val sy = (39 + sin(a + k * PI.toFloat()) * 2).toInt()
+            px.set(sx, sy, R.iron[4]); px.set(sx + 1, sy, R.iron[3])
+        }
+        px.set(27, 39, R.red[3]); px.set(28, 39, R.red[3])
+        // Tone arm and the brass horn.
+        px.line(44, 36, 30, 38, R.iron[3])
+        px.line(44, 36, 48, 22, R.gold[2])
+        val horn = poly(46f, 26f, 50f, 22f, 66f, 4f, 70f, 10f, 70f, 22f, 64f, 24f)
+        px.shade(horn, { x, y -> V3((x - 62f) / 12f, (y - 14f) / 14f, 1f) }, R.gold, spec = true)
+        px.shade(ellipse(67f, 13f, 3.5f, 8f), facing(-0.7f, 0f, 0.6f), R.gold, lo = 0, hi = 1)
+        if (playing) for (i in 0 until 2) {
+            val p = ((f + i * 2) % 4) / 4f
+            val nx = (58 - p * 18 + i * 6).toInt()
+            val ny = (8 - p * 6 + i * 4).toInt()
+            px.vline(nx + 2, ny - 4, ny, R.lilac[5]); px.rect(nx, ny, 3, 2, R.lilac[5]); px.set(nx + 3, ny - 4, R.lilac[5])
+        }
+        val solid = BooleanArray(px.w * px.h) { px.c[it].al() >= 160 }
+        px.ring(solid, OUT)
+        return px
+    }
+
     class Fruit(val index: Int, val x: Int, val y: Int)
 
     /**

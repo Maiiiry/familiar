@@ -46,6 +46,17 @@ data class Settings(
     val seenStages: Set<String> = emptySet(),
     /** "yyyy-mm:questId" whose reward was taken. */
     val claimed: Set<String> = emptySet(),
+    /** Sparks spent on the den; sparks earned equal all mana ever eaten. */
+    val spent: Int = 0,
+    /** Den furniture bought, and the pieces standing in the room. */
+    val owned: Set<String> = emptySet(),
+    val placed: Set<String> = emptySet(),
+    /** Epoch day of the last game with the familiar. */
+    val played: Long = 0,
+    /** Books to finish this year; 0 when there's no goal. */
+    val yearGoal: Int = 0,
+    /** In a ritual, count pages at the end instead of turning them on screen. */
+    val pagesAtEnd: Boolean = false,
 )
 
 class SettingsStore(context: Context) {
@@ -70,6 +81,12 @@ class SettingsStore(context: Context) {
         seenUnlocks = this[SEEN_UNLOCKS] ?: emptySet(),
         seenStages = this[SEEN_STAGES] ?: emptySet(),
         claimed = this[CLAIMED] ?: emptySet(),
+        spent = this[SPENT] ?: 0,
+        owned = this[OWNED] ?: emptySet(),
+        placed = this[PLACED] ?: emptySet(),
+        played = this[PLAYED] ?: 0L,
+        yearGoal = this[YEAR_GOAL] ?: 0,
+        pagesAtEnd = this[PAGES_AT_END] ?: false,
     )
 
     suspend fun now(): Settings = settings.first()
@@ -96,6 +113,12 @@ class SettingsStore(context: Context) {
             it[SEEN_UNLOCKS] = s.seenUnlocks
             it[SEEN_STAGES] = s.seenStages
             it[CLAIMED] = s.claimed
+            it[SPENT] = s.spent
+            it[OWNED] = s.owned
+            it[PLACED] = s.placed
+            it[PLAYED] = s.played
+            it[YEAR_GOAL] = s.yearGoal
+            it[PAGES_AT_END] = s.pagesAtEnd
         }
     }
 
@@ -118,5 +141,11 @@ class SettingsStore(context: Context) {
         val SEEN_UNLOCKS = stringSetPreferencesKey("seen_unlocks")
         val SEEN_STAGES = stringSetPreferencesKey("seen_stages")
         val CLAIMED = stringSetPreferencesKey("claimed")
+        val SPENT = intPreferencesKey("spent")
+        val OWNED = stringSetPreferencesKey("owned")
+        val PLACED = stringSetPreferencesKey("placed")
+        val PLAYED = longPreferencesKey("played")
+        val YEAR_GOAL = intPreferencesKey("year_goal")
+        val PAGES_AT_END = booleanPreferencesKey("pages_at_end")
     }
 }

@@ -13,7 +13,7 @@ object Backup {
         .put("books", JSONArray(s.books.map {
             JSONObject().put("id", it.id).put("title", it.title).put("author", it.author).put("pages", it.pages).put("genre", it.genre)
                 .put("shelf", it.shelf).put("page", it.page).put("added", it.added).put("started", it.started ?: JSONObject.NULL)
-                .put("finished", it.finished ?: JSONObject.NULL).put("rating", it.rating ?: JSONObject.NULL).put("cover", it.cover)
+                .put("finished", it.finished ?: JSONObject.NULL).put("rating", it.rating ?: JSONObject.NULL).put("cover", it.cover).put("audio", it.audio)
         }))
         .put("readings", JSONArray(s.readings.map {
             JSONObject().put("id", it.id).put("bookId", it.bookId).put("petId", it.petId).put("start", it.start).put("end", it.end)
@@ -21,7 +21,7 @@ object Backup {
                 .put("stillSec", it.stillSec).put("item", it.item).put("finishedBook", it.finishedBook)
         }))
         .put("pets", JSONArray(s.pets.map {
-            JSONObject().put("id", it.id).put("species", it.species).put("name", it.name).put("joined", it.joined).put("mana", it.mana).put("active", it.active)
+            JSONObject().put("id", it.id).put("species", it.species).put("name", it.name).put("joined", it.joined).put("mana", it.mana).put("active", it.active).put("shiny", it.shiny)
         }))
         .toString(2)
 
@@ -34,7 +34,7 @@ object Backup {
                 Book(
                     id = getLong("id"), title = getString("title"), author = optString("author"), pages = getInt("pages"), genre = getString("genre"),
                     shelf = optString("shelf", Shelf.READING.name), page = optInt("page"), added = getLong("added"),
-                    started = optL("started"), finished = optL("finished"), rating = optI("rating"), cover = optString("cover"),
+                    started = optL("started"), finished = optL("finished"), rating = optI("rating"), cover = optString("cover"), audio = optBoolean("audio"),
                 )
             },
             readings = root.list("readings") {
@@ -44,7 +44,7 @@ object Backup {
                     stillSec = optInt("stillSec"), item = optString("item"), finishedBook = optBoolean("finishedBook"),
                 )
             },
-            pets = root.list("pets") { Pet(getLong("id"), getString("species"), getString("name"), getLong("joined"), getInt("mana"), optBoolean("active")) },
+            pets = root.list("pets") { Pet(getLong("id"), getString("species"), getString("name"), getLong("joined"), getInt("mana"), optBoolean("active"), optBoolean("shiny")) },
         )
     }
 

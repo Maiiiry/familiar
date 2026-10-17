@@ -85,9 +85,11 @@ object DemoSeed {
         // Ratings on the finished ones.
         dao.books().filter { it.shelfOf == Shelf.DONE }.forEachIndexed { i, b -> dao.updateBook(b.copy(rating = listOf(5, 4, 5, 5, 4, 5, 4)[i % 7])) }
         val pets = dao.pets()
+        val den = listOf(app.familiar.domain.Item.WINDOW_MOON, app.familiar.domain.Item.BOOKSHELF, app.familiar.domain.Item.RUG_RED, app.familiar.domain.Item.CAULDRON, app.familiar.domain.Item.LANTERN, app.familiar.domain.Item.CANDLES, app.familiar.domain.Item.MANDRAKE)
         settings.update {
             it.copy(
                 onboarded = true, name = if (ru) "Мира" else "Mira", remindAt = 21 * 60, theme = ThemeMode.DARK,
+                owned = den.map { d -> d.name }.toSet(), placed = den.map { d -> d.name }.toSet(), spent = den.sumOf { d -> d.price }, yearGoal = 24,
                 seenUnlocks = Species.entries.map { s -> s.name }.toSet(),
                 seenStages = pets.flatMap { p -> app.familiar.domain.Stage.entries.map { st -> "${p.id}:${st.name}" } }.toSet(),
             )

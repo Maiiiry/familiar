@@ -104,7 +104,7 @@ class FamiliarData(
     val species: Species? = stats.activeSpecies
     val reading: List<Book> = books.filter { it.shelfOf == app.familiar.data.Shelf.READING }.sortedByDescending { b -> readings.filter { it.bookId == b.id }.maxOfOrNull { it.end } ?: b.added }
     fun book(id: Long) = books.firstOrNull { it.id == id }
-    fun look(chew: Boolean = false, sleeping: Boolean = false) = species?.let { lookOf(it, pet?.mana ?: 0, stats, true, sleeping, chew) }
+    fun look(chew: Boolean = false, sleeping: Boolean = false) = species?.let { lookOf(it, pet?.mana ?: 0, stats, true, sleeping, chew, pet?.shiny == true) }
 }
 
 /** Everything a tab can open. */
@@ -116,6 +116,7 @@ class Go(private val nav: NavHostController) {
     fun editBook(id: Long = 0) = nav.navigate("edit/$id")
     fun bestiary() = nav.navigate("bestiary")
     fun saga() = nav.navigate("saga")
+    fun furnish() = nav.navigate("furnish")
     fun settings() = nav.navigate("settings")
     fun back() = nav.popBackStack()
 }
@@ -189,6 +190,7 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
         }
         composable("bestiary") { BestiaryScreen(data, go) }
         composable("saga") { SagaScreen(data, go) }
+        composable("furnish") { app.familiar.ui.den.FurnishScreen(data, go) }
         composable("settings") { SettingsScreen(data, onBack = { go.back() }) }
     }
 
@@ -209,9 +211,10 @@ private fun Celebrations(data: FamiliarData) {
             val hatched = data.stats.stage == Stage.BABY
             CelebrateDialog(
                 color = U.c.accent,
-                eyebrow = stringResource(if (hatched) R.string.cel_hatched else R.string.cel_grew),
+                eyebrow = if (hatched && pet.shiny) stringResource(R.string.cel_shiny) else stringResource(if (hatched) R.string.cel_hatched else R.string.cel_grew),
                 title = if (hatched) stringResource(R.string.cel_hatched_title, pet.name) else stageName(data.stats.stage),
-                text = stringResource(if (hatched) R.string.cel_hatched_text else R.string.cel_grew_text, pet.name),
+                text = stringResource(if (hatched) R.string.cel_hatched_text else R.string.cel_grew_text, pet.name) +
+                    if (hatched && pet.shiny) "\n\n" + stringResource(R.string.cel_shiny_text, Library.SHINY_ODDS) else "",
                 onDismiss = { container.scope.launch { container.settings.update { it.copy(seenStages = it.seenStages + stageKey!!) } } },
             ) { FamiliarArt(data.look()!!, Modifier.fillMaxSize()) }
         }

@@ -100,8 +100,9 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
     if (ritual == null) return
 
     val down = rememberFaceDown()
-    DisposableEffect(s.ambience) {
-        Sound.ambience(s.ambience)
+    // No fireplace over an audiobook: the voice matters more.
+    DisposableEffect(s.ambience, book.audio) {
+        Sound.ambience(if (book.audio) Ambience.OFF else s.ambience)
         onDispose { Sound.stop() }
     }
     LaunchedEffect(down, s.stillDim) { dim(down && s.stillDim) }
@@ -123,6 +124,8 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
     val now = rememberNow(1000)
     val elapsed = (now - ritual.start).coerceAtLeast(0)
     val left = 1f - elapsed / (s.candleMin * 60_000f)
+    // An audiobook counts itself: every minute listened is a minute further.
+    val heard = (ritual.fromPage + (elapsed / 60_000).toInt()).coerceAtMost(book.pages)
 
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
         TopBar(book.title, null) {
@@ -132,7 +135,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
                 Text(stringResource(R.string.ritual_done_title), style = UType.Title)
                 Text(stringResource(R.string.ritual_done_minutes, (elapsed / 60_000).toInt()), style = UType.Sub)
-                SittingForm(book, ritual.fromPage, ritual.page, data.species == Species.SLIME, stringResource(R.string.feed)) { input ->
+                SittingForm(book, ritual.fromPage, if (book.audio) heard else ritual.page, data.species == Species.SLIME, stringResource(R.string.feed)) { input ->
                     if (closing) return@SittingForm
                     closing = true
                     container.scope.launch {
@@ -158,7 +161,8 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(Modifier.fillMaxWidth().height(300.dp)) {
-                Candle(left, Modifier.align(Alignment.Center).width(150.dp).fillMaxHeight())
+                if (book.audio) Gramophone(Modifier.align(Alignment.Center).width(260.dp).fillMaxHeight())
+                else Candle(left, Modifier.align(Alignment.Center).width(150.dp).fillMaxHeight())
                 data.look(sleeping = down)?.let { look ->
                     FamiliarArt(look, Modifier.align(Alignment.BottomEnd).size(120.dp), fps = if (down) 2f else 5f)
                 }
@@ -166,24 +170,44 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             val min = elapsed / 60_000
             val sec = (elapsed / 1000) % 60
             Text("%d:%02d".format(min, sec), style = UType.Timer)
-            Text(
-                if (left > 0f) stringResource(R.string.candle_left, ((s.candleMin * 60_000 - elapsed) / 60_000 + 1).toInt()) else stringResource(R.string.candle_out),
-                style = UType.Muted,
-            )
-            Spacer(Modifier.height(14.dp))
-            Text(stringResource(R.string.page_n, ritual.page), style = UType.Title)
-            Text("+${ritual.page - ritual.fromPage}", style = UType.Strong.copy(color = U.c.mana))
-            Spacer(Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                SoftButton("", { update { r -> r.copy(page = (r.page - 1).coerceAtLeast(r.fromPage)) } }, Modifier.width(56.dp), color = U.c.muted, soft = U.c.surface2, icon = Icons.Rounded.Remove)
-                PrimaryButton(stringResource(R.string.turn_page), {
-                    update { r -> r.copy(page = (r.page + 1).coerceAtMost(book.pages)) }
-                    if (s.pageSound) Sound.page()
-                    if (s.haptics) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                }, Modifier.weight(1f), icon = Icons.AutoMirrored.Rounded.ArrowForward)
+            when {
+                book.audio -> {
+                    Text(stringResource(R.string.audio_playing), style = UType.Muted)
+                    Spacer(Modifier.height(14.dp))
+                    Text(stringResource(R.string.minute_at, app.familiar.ui.hm(heard)), style = UType.Title)
+                    Text("+" + app.familiar.ui.amount(heard - ritual.fromPage, true), style = UType.Strong.copy(color = U.c.mana))
+                }
+                else -> {
+                    Text(
+                        if (left > 0f) stringResource(R.string.candle_left, ((s.candleMin * 60_000 - elapsed) / 60_000 + 1).toInt()) else stringResource(R.string.candle_out),
+                        style = UType.Muted,
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    // Turn pages here, or just read and say where you stopped at the end.
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Chip(stringResource(R.string.count_here), !s.pagesAtEnd, { container.scope.launch { container.settings.update { it.copy(pagesAtEnd = false) } } })
+                        Chip(stringResource(R.string.count_end), s.pagesAtEnd, { container.scope.launch { container.settings.update { it.copy(pagesAtEnd = true) } } })
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    if (s.pagesAtEnd) {
+                        Text(stringResource(R.string.count_end_text), style = UType.Sub.copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
+                    } else {
+                        Text(stringResource(R.string.page_n, ritual.page), style = UType.Title)
+                        Text("+${ritual.page - ritual.fromPage}", style = UType.Strong.copy(color = U.c.mana))
+                        Spacer(Modifier.height(12.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            SoftButton("", { update { r -> r.copy(page = (r.page - 1).coerceAtLeast(r.fromPage)) } }, Modifier.width(56.dp), color = U.c.muted, soft = U.c.surface2, icon = Icons.Rounded.Remove)
+                            PrimaryButton(stringResource(R.string.turn_page), {
+                                update { r -> r.copy(page = (r.page + 1).coerceAtMost(book.pages)) }
+                                if (s.pageSound) Sound.page()
+                                if (s.haptics) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            }, Modifier.weight(1f), icon = Icons.AutoMirrored.Rounded.ArrowForward)
+                        }
+                    }
+                }
             }
             Spacer(Modifier.height(16.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (!book.audio) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Ambience.entries.forEach { a ->
                     Chip(
                         stringResource(when (a) { Ambience.OFF -> R.string.amb_off; Ambience.FIRE -> R.string.amb_fire; Ambience.RAIN -> R.string.amb_rain }),
@@ -202,7 +226,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             Spacer(Modifier.height(16.dp))
         }
         PrimaryButton(
-            stringResource(R.string.ritual_finish), { finishing = true },
+            stringResource(if (book.audio) R.string.audio_finish else R.string.ritual_finish), { finishing = true },
             Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp).navigationBarsPadding(), color = U.c.ember,
         )
     }
@@ -221,6 +245,13 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
         },
         onDismiss = { discarding = false },
     )
+}
+
+@Composable
+private fun Gramophone(modifier: Modifier) {
+    val frames = remember { List(4) { Scenes.gramophone(it).bitmap() } }
+    val t = rememberTime()
+    Canvas(modifier) { pixels(frames[(t * 4).toInt() % frames.size], bottom = true) }
 }
 
 @Composable

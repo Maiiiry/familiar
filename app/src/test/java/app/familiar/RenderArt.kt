@@ -72,6 +72,30 @@ class RenderArt {
     @Test
     fun anim() = sheet("anim", listOf(Species.KITSUNE, Species.MIMIC, Species.MOTH).map { sp -> List(Sprites.FRAMES) { Sprites.frame(look(sp, Stage.ADULT), it) } }, scale = 2)
 
+    @Test
+    fun room() {
+        val all = app.familiar.domain.Item.entries
+        val a = setOf(app.familiar.domain.Item.WINDOW_MOON, app.familiar.domain.Item.BOOKSHELF, app.familiar.domain.Item.BANNER, app.familiar.domain.Item.LANTERN,
+            app.familiar.domain.Item.RUG_RED, app.familiar.domain.Item.CAULDRON, app.familiar.domain.Item.MANDRAKE, app.familiar.domain.Item.CANDLES)
+        val b = all.toSet() - a
+        fun withFox(room: Px, shiny: Boolean): Px {
+            val fox = Sprites.frame(look(Species.KITSUNE, Stage.ADULT).copy(shiny = shiny), 0)
+            room.blit(fox, (app.familiar.ui.pix.Room.W - fox.w) / 2, app.familiar.ui.pix.Room.FLOOR_Y - fox.h + 3)
+            return room
+        }
+        val rows = listOf(
+            listOf(withFox(app.familiar.ui.pix.Room.scene(a, tails, true, 0), false), withFox(app.familiar.ui.pix.Room.scene(b, tails, false, 1), true), app.familiar.ui.pix.Room.scene(emptySet(), tails, true, 0)),
+        )
+        val cw = app.familiar.ui.pix.Room.W * 4
+        val bmp = Bitmap.createBitmap(cw * 3, app.familiar.ui.pix.Room.H * 4, Bitmap.Config.ARGB_8888)
+        rows[0].forEachIndexed { c, px -> for (y in 0 until px.h) for (x in 0 until px.w) { val p = px.c[y * px.w + x]; if ((p ushr 24) == 0) continue; for (j in 0 until 4) for (i in 0 until 4) bmp.setPixel(c * cw + x * 4 + i, y * 4 + j, blend(0xFF000000.toInt(), p, ((p ushr 24) and 0xFF) / 255f)) } }
+        File(out, "room.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    @Test
+    fun shiny() = sheet("shiny", Species.entries.chunked(4).map { row -> row.map { Sprites.frame(look(it, Stage.ADULT).copy(shiny = true), 0) } } +
+        listOf(listOf(Sprites.frame(look(Species.KITSUNE, Stage.ADULT).copy(happy = true), 0), Sprites.frame(look(Species.KITSUNE, Stage.ADULT).copy(sleeping = true), 3), app.familiar.ui.pix.Scenes.gramophone(1), Sprites.frame(look(Species.MIMIC, Stage.ADULT).copy(sleeping = true), 5))), scale = 4)
+
     /** The launcher icon: a kitsune with three tails, pixel for pixel, on the night-violet ground. */
     @Test
     fun icon() {

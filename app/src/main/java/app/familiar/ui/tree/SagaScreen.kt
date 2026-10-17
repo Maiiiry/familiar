@@ -57,6 +57,10 @@ fun SagaScreen(data: FamiliarData, go: Go) {
         y.longest?.let { add(stringResource(R.string.saga_longest, it.title, pluralStringResource(R.plurals.pages, it.pages, it.pages))) }
         if (y.nights > 0) add(pluralStringResource(R.plurals.saga_nights, y.nights, y.nights))
         if (y.bestStreak > 1) add(pluralStringResource(R.plurals.saga_streak, y.bestStreak, y.bestStreak))
+        if (data.settings.yearGoal > 0) add(
+            if (y.books.size >= data.settings.yearGoal) stringResource(R.string.saga_goal_done, data.settings.yearGoal)
+            else stringResource(R.string.saga_goal, y.books.size, data.settings.yearGoal)
+        )
         add(stringResource(R.string.saga_end))
     }
     val text = parts.joinToString(" ")

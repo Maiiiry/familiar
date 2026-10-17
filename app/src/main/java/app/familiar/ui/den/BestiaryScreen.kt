@@ -84,7 +84,7 @@ fun BestiaryScreen(data: FamiliarData, go: Go) {
                 UCard(Modifier.padding(bottom = 10.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(96.dp).clip(U.RMd).background(U.c.surface2), contentAlignment = Alignment.Center) {
-                            if (open) FamiliarArt(lookOf(sp, pet?.mana ?: 0, s, pet?.active == true), Modifier.fillMaxSize().padding(4.dp), fps = 4f)
+                            if (open) FamiliarArt(lookOf(sp, pet?.mana ?: 0, s, pet?.active == true, shiny = pet?.shiny == true), Modifier.fillMaxSize().padding(4.dp), fps = 4f)
                             else {
                                 // A shadow of what's to come.
                                 FamiliarArt(lookOf(sp, Stage.ADULT.from, s, false), Modifier.fillMaxSize().padding(4.dp), fps = 0f, tint = ColorFilter.tint(U.c.line))
@@ -96,7 +96,7 @@ fun BestiaryScreen(data: FamiliarData, go: Go) {
                             Text(if (pet != null) pet.name else speciesName(sp), style = UType.Strong)
                             Text(
                                 when {
-                                    pet != null -> "${speciesName(sp)} · ${stageName(Stage.of(pet.mana))}" + if (pet.active) " · " + stringResource(R.string.with_you) else ""
+                                    pet != null -> (if (pet.shiny) "✦ " + stringResource(R.string.shiny) + " · " else "") + "${speciesName(sp)} · ${stageName(Stage.of(pet.mana))}" + if (pet.active) " · " + stringResource(R.string.with_you) else ""
                                     open -> stringResource(R.string.egg_waiting)
                                     else -> stringResource(R.string.not_found)
                                 },

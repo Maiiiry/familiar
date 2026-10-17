@@ -10,6 +10,8 @@ import java.time.ZoneId
 
 /** The writes that feed the familiar: a sitting with a book, a guild reward. */
 object Library {
+    const val SHINY_ODDS = 16
+
     class Result(val reading: Reading, val feast: Feast, val petId: Long, val manaBefore: Int)
 
     /** Records reading [book] up to [toPage] and feeds the active familiar. */
@@ -74,7 +76,8 @@ object Library {
     /** Brings a familiar into the den (as an egg) and makes it the one you read with. */
     suspend fun adopt(dao: FamiliarDao, sp: Species, name: String, now: Long = System.currentTimeMillis()): Long {
         val existing = dao.pets().firstOrNull { it.species == sp.name }
-        val id = existing?.id ?: dao.insertPet(Pet(species = sp.name, name = name, joined = now))
+        // One egg in sixteen hatches in a rare colouring.
+        val id = existing?.id ?: dao.insertPet(Pet(species = sp.name, name = name, joined = now, shiny = kotlin.random.Random.nextInt(SHINY_ODDS) == 0))
         dao.activate(id)
         return id
     }

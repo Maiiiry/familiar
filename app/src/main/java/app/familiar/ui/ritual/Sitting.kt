@@ -39,13 +39,13 @@ fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, butto
     Column {
         SectionTitle(stringResource(R.string.stopped_at))
         UCard {
-            Stepper(stringResource(R.string.page_n, page), "+${page - fromPage}", { page = (page - 1).coerceAtLeast(fromPage) }, { page = (page + 1).coerceAtMost(book.pages) }, color = U.c.accent)
+            Stepper(if (book.audio) stringResource(R.string.minute_at, app.familiar.ui.hm(page)) else stringResource(R.string.page_n, page), "+${page - fromPage}", { page = (page - 1).coerceAtLeast(fromPage) }, { page = (page + 1).coerceAtMost(book.pages) }, color = U.c.accent)
             UTextField(typed, {
                 typed = it.filter(Char::isDigit).take(5)
                 typed.toIntOrNull()?.let { v -> page = v.coerceIn(fromPage, book.pages) }
-            }, number = true, placeholder = stringResource(R.string.page_type, book.pages))
+            }, number = true, placeholder = stringResource(if (book.audio) R.string.minute_type else R.string.page_type, book.pages))
             Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.read_now, pages(page - fromPage)), style = UType.Small.copy(color = U.c.muted))
+            Text(stringResource(if (book.audio) R.string.listened_now else R.string.read_now, app.familiar.ui.amount(page - fromPage, book.audio)), style = UType.Small.copy(color = U.c.muted))
             SwitchRow(stringResource(R.string.finished_book), null, finish || page >= book.pages, { finish = it; if (it) page = book.pages })
         }
         if (slime) {

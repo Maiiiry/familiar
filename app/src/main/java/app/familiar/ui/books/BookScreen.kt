@@ -92,7 +92,7 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                     Spacer(Modifier.height(10.dp))
                     Bar(book.fraction, color = U.c.accent, track = U.c.accentSoft)
                     Spacer(Modifier.height(4.dp))
-                    Text(stringResource(R.string.page_of, book.page, book.pages), style = UType.Small)
+                    Text(app.familiar.ui.progressLabel(book), style = UType.Small)
                 }
             }
             Spacer(Modifier.height(18.dp))
@@ -139,7 +139,8 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                         Column(Modifier.weight(1f)) {
                             Text(dateShort(r.end), style = UType.Strong.copy(fontSize = 14.sp))
                             Text(
-                                pages(r.pages) + (if (r.timed) " · " + stringResource(R.string.minutes_n, r.minutes) else "") + " · " + stringResource(R.string.page_range, r.fromPage, r.toPage),
+                                if (book.audio) app.familiar.ui.amount(r.pages, true) + " · " + app.familiar.ui.hm(r.fromPage) + "–" + app.familiar.ui.hm(r.toPage)
+                                else pages(r.pages) + (if (r.timed) " · " + stringResource(R.string.minutes_n, r.minutes) else "") + " · " + stringResource(R.string.page_range, r.fromPage, r.toPage),
                                 style = UType.Small,
                             )
                         }

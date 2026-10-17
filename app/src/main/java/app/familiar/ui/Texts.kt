@@ -98,6 +98,28 @@ fun speciesHow(sp: Species): String = when (sp) {
 }
 
 @Composable
+fun itemName(i: app.familiar.domain.Item): String = stringResource(
+    when (i) {
+        app.familiar.domain.Item.WINDOW_MOON -> R.string.it_window_moon
+        app.familiar.domain.Item.WINDOW_STAINED -> R.string.it_window_stained
+        app.familiar.domain.Item.BOOKSHELF -> R.string.it_bookshelf
+        app.familiar.domain.Item.PORTRAIT -> R.string.it_portrait
+        app.familiar.domain.Item.BANNER -> R.string.it_banner
+        app.familiar.domain.Item.GARLAND -> R.string.it_garland
+        app.familiar.domain.Item.ARMCHAIR -> R.string.it_armchair
+        app.familiar.domain.Item.CAULDRON -> R.string.it_cauldron
+        app.familiar.domain.Item.TELESCOPE -> R.string.it_telescope
+        app.familiar.domain.Item.MANDRAKE -> R.string.it_mandrake
+        app.familiar.domain.Item.TREASURE -> R.string.it_treasure
+        app.familiar.domain.Item.GLOBE -> R.string.it_globe
+        app.familiar.domain.Item.RUG_RED -> R.string.it_rug_red
+        app.familiar.domain.Item.RUG_STARS -> R.string.it_rug_stars
+        app.familiar.domain.Item.CANDLES -> R.string.it_candles
+        app.familiar.domain.Item.LANTERN -> R.string.it_lantern
+    }
+)
+
+@Composable
 fun stageName(s: Stage): String = stringResource(
     when (s) {
         Stage.EGG -> R.string.st_egg
@@ -119,8 +141,8 @@ fun shelfName(s: Shelf): String = stringResource(
 )
 
 @Composable
-fun partName(p: Part, sp: Species?): String = when (p) {
-    Part.PAGES -> stringResource(R.string.part_pages)
+fun partName(p: Part, sp: Species?, audio: Boolean = false): String = when (p) {
+    Part.PAGES -> stringResource(if (audio) R.string.part_minutes else R.string.part_pages)
     Part.RITUAL -> stringResource(R.string.part_ritual)
     Part.STILL -> stringResource(R.string.part_still)
     Part.FAVOURITE -> stringResource(R.string.part_favourite, sp?.let { speciesLoves(it) } ?: "")
@@ -158,6 +180,18 @@ fun questText(q: Quest): String = when (q) {
 @Composable
 fun pages(n: Int): String = pluralStringResource(R.plurals.pages, n, n)
 
+/** Minutes as hours and minutes, 1:05. */
+fun hm(min: Int): String = "%d:%02d".format(min / 60, min % 60)
+
+/** "Page 12 of 300", or for an audiobook "1:05 of 9:30". */
+@Composable
+fun progressLabel(b: app.familiar.data.Book): String =
+    if (b.audio) stringResource(R.string.audio_of, hm(b.page), hm(b.pages)) else stringResource(R.string.page_of, b.page, b.pages)
+
+/** Pages read, or minutes listened. */
+@Composable
+fun amount(n: Int, audio: Boolean): String = if (audio) pluralStringResource(R.plurals.minutes, n, n) else pages(n)
+
 @Composable
 fun days(n: Int): String = pluralStringResource(R.plurals.days, n, n)
 
@@ -174,7 +208,7 @@ fun dateShort(t: Long): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.M
 fun timeShort(t: Long): String = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale()).format(Instant.ofEpochMilli(t).atZone(ZoneId.systemDefault()))
 
 /** The look of a familiar from what's been read so far. */
-fun lookOf(sp: Species, mana: Int, s: Stats, activeOne: Boolean, sleeping: Boolean = false, chew: Boolean = false): Look {
+fun lookOf(sp: Species, mana: Int, s: Stats, activeOne: Boolean, sleeping: Boolean = false, chew: Boolean = false, shiny: Boolean = false): Look {
     val stage = Stage.of(mana)
     return Look(
         species = sp,
@@ -188,5 +222,6 @@ fun lookOf(sp: Species, mana: Int, s: Stats, activeOne: Boolean, sleeping: Boole
         sleeping = sleeping,
         chew = chew,
         hatch = if (stage == Stage.EGG) (mana / Stage.BABY.from.toFloat()).coerceIn(0f, 1f) else 0f,
+        shiny = shiny && stage != Stage.EGG,
     ).let { if ((it.stone * 10).toInt() != 0) it.copy(stone = (it.stone * 10).toInt() / 10f) else it.copy(stone = 0f) }
 }

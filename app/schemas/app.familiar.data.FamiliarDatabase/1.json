@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9f13d34080d7e8167846c418a9a5c1bd",
+    "identityHash": "a612ca04a6e78c7002e68346a841ad1b",
     "entities": [
       {
         "tableName": "books",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL, `audio` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -75,6 +75,12 @@
             "fieldPath": "cover",
             "columnName": "cover",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "audio",
+            "columnName": "audio",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -171,7 +177,7 @@
       },
       {
         "tableName": "pets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `species` TEXT NOT NULL, `name` TEXT NOT NULL, `joined` INTEGER NOT NULL, `mana` INTEGER NOT NULL, `active` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `species` TEXT NOT NULL, `name` TEXT NOT NULL, `joined` INTEGER NOT NULL, `mana` INTEGER NOT NULL, `active` INTEGER NOT NULL, `shiny` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -208,6 +214,12 @@
             "columnName": "active",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "shiny",
+            "columnName": "shiny",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -220,7 +232,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9f13d34080d7e8167846c418a9a5c1bd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a612ca04a6e78c7002e68346a841ad1b')"
     ]
   }
 }

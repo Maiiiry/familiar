@@ -35,6 +35,8 @@ data class Book(
     val rating: Int? = null,
     /** Cover picture address from a book catalogue, or empty for a drawn cover. */
     val cover: String = "",
+    /** An audiobook: [pages] and [page] are minutes. */
+    val audio: Boolean = false,
 ) {
     val shelfOf: Shelf get() = runCatching { Shelf.valueOf(shelf) }.getOrDefault(Shelf.READING)
     val fraction: Float get() = if (pages <= 0) 0f else (page.toFloat() / pages).coerceIn(0f, 1f)
@@ -75,6 +77,8 @@ data class Pet(
     val joined: Long,
     val mana: Int = 0,
     val active: Boolean = false,
+    /** Hatched in a rare colouring. */
+    val shiny: Boolean = false,
 )
 
 class Snapshot(val books: List<Book>, val readings: List<Reading>, val pets: List<Pet>)

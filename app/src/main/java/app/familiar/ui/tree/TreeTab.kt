@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -94,6 +95,8 @@ fun TreeTab(data: FamiliarData, go: Go) {
         ) { bitmaps?.let { pixels(it[(t * 4).toInt() % it.size]) } }
         Text(stringResource(R.string.tree_hint), style = UType.Small.copy(color = U.c.muted), modifier = Modifier.padding(top = 6.dp))
 
+        YearGoal(data)
+
         val month = java.time.YearMonth.from(s.today)
         SectionTitle(stringResource(R.string.guild, month.month.getDisplayName(TextStyle.FULL_STANDALONE, locale())))
         UCard {
@@ -134,6 +137,61 @@ fun TreeTab(data: FamiliarData, go: Go) {
                     Text(stringResource(R.string.saga_sub), style = UType.Muted)
                 }
             }
+        }
+    }
+}
+
+/** Books to finish this year: progress, and whether you're ahead or behind the pace. */
+@androidx.compose.foundation.layout.ExperimentalLayoutApi
+@Composable
+private fun YearGoalPicker(current: Int, onPick: (Int) -> Unit) {
+    androidx.compose.foundation.layout.FlowRow(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+        listOf(0, 6, 12, 24, 36, 52).forEach { n ->
+            app.familiar.ui.components.Chip(if (n == 0) stringResource(R.string.off) else n.toString(), current == n, { onPick(n) })
+        }
+    }
+}
+
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun YearGoal(data: FamiliarData) {
+    val container = LocalContext.current.container
+    val s = data.stats
+    val goal = data.settings.yearGoal
+    var editing by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    val year = s.today.year
+    val done = app.familiar.domain.Year(s, year).books.size
+    SectionTitle(stringResource(R.string.goal_title, year))
+    UCard(onClick = { editing = !editing }) {
+        if (goal <= 0) {
+            Text(stringResource(R.string.goal_none), style = UType.Strong)
+            Text(stringResource(R.string.goal_none_text), style = UType.Muted)
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.goal_of, done, goal), style = UType.Title, modifier = Modifier.weight(1f))
+                if (done >= goal) Icon(Icons.Rounded.CheckCircle, null, tint = U.c.leaf)
+            }
+            Spacer(Modifier.height(8.dp))
+            Bar(done / goal.toFloat(), color = U.c.leaf, track = U.c.leafSoft)
+            Spacer(Modifier.height(6.dp))
+            // Where you should be by today if the books were spread evenly over the year.
+            val due = goal * s.today.dayOfYear / s.today.lengthOfYear().toFloat()
+            val diff = done - due
+            Text(
+                when {
+                    done >= goal -> stringResource(R.string.goal_reached)
+                    diff >= 0.5f -> stringResource(R.string.goal_ahead, books(kotlin.math.floor(diff).toInt().coerceAtLeast(1)))
+                    diff > -1f -> stringResource(R.string.goal_on_pace)
+                    else -> stringResource(R.string.goal_behind, books(kotlin.math.ceil(-diff).toInt()))
+                },
+                style = UType.Small.copy(color = U.c.muted),
+            )
+        }
+        if (editing) {
+            Spacer(Modifier.height(10.dp))
+            Text(stringResource(R.string.goal_pick), style = UType.Muted)
+            Spacer(Modifier.height(6.dp))
+            YearGoalPicker(goal) { n -> container.scope.launch { container.settings.update { it.copy(yearGoal = n) } }; editing = false }
         }
     }
 }

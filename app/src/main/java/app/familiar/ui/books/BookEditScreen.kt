@@ -60,6 +60,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
     var genre by remember { mutableStateOf(old?.let { Genre.of(it.genre) } ?: Genre.FANTASY) }
     var shelf by remember { mutableStateOf(old?.shelfOf ?: Shelf.READING) }
     var cover by remember { mutableStateOf(old?.cover ?: "") }
+    var audio by remember { mutableStateOf(old?.audio ?: false) }
     val total = pages.toIntOrNull()?.takeIf { it in 1..20000 }
     val ok = title.isNotBlank() && total != null
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
@@ -87,13 +88,15 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
             UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
             SectionTitle(stringResource(R.string.f_author))
             UTextField(author, { author = it.take(80) }, placeholder = stringResource(R.string.f_author_hint))
+            Spacer(Modifier.height(8.dp))
+            app.familiar.ui.components.SwitchRow(stringResource(R.string.f_audio), stringResource(R.string.f_audio_sub), audio, { audio = it })
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Column(Modifier.weight(1f)) {
-                    SectionTitle(stringResource(R.string.f_pages))
+                    SectionTitle(stringResource(if (audio) R.string.f_minutes else R.string.f_pages))
                     UTextField(pages, { pages = it.filter(Char::isDigit).take(5) }, number = true, placeholder = "320")
                 }
                 Column(Modifier.weight(1f)) {
-                    SectionTitle(stringResource(R.string.f_page_now))
+                    SectionTitle(stringResource(if (audio) R.string.f_minute_now else R.string.f_page_now))
                     UTextField(page, { page = it.filter(Char::isDigit).take(5) }, number = true, placeholder = "0")
                 }
             }
@@ -116,7 +119,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
                 val now = System.currentTimeMillis()
                 val p = (page.toIntOrNull() ?: 0).coerceIn(0, total!!)
                 val b = (old ?: Book(title = "", pages = total, genre = genre.name, added = now)).copy(
-                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover,
+                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover, audio = audio,
                     shelf = if (old == null) shelf.name else old.shelf,
                     started = old?.started ?: if (shelf == Shelf.READING) now else null,
                 )
