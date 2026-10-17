@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Familiar</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="nice">Wonderful</string>
+    <string name="next">Next</string>
+    <string name="done">Done</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="share">Share</string>
+    <string name="off">Off</string>
+    <string name="settings">Settings</string>
+
+    <string name="tab_den">Den</string>
+    <string name="tab_shelf">Shelf</string>
+    <string name="tab_grimoire">Grimoire</string>
+    <string name="tab_tree">Tree</string>
+
+    <!-- Genres -->
+    <string name="g_fantasy">Fantasy</string>
+    <string name="g_scifi">Sci-fi</string>
+    <string name="g_mystery">Mystery</string>
+    <string name="g_horror">Horror</string>
+    <string name="g_romance">Romance</string>
+    <string name="g_adventure">Adventure</string>
+    <string name="g_classic">Classic</string>
+    <string name="g_history">History</string>
+    <string name="g_nonfiction">Non-fiction</string>
+    <string name="g_poetry">Poetry</string>
+    <string name="g_other">Other</string>
+
+    <!-- Familiars -->
+    <string name="sp_mimic">Mimic</string>
+    <string name="sp_kitsune">Kitsune</string>
+    <string name="sp_slime">Slime</string>
+    <string name="sp_dragon">Dragon</string>
+    <string name="sp_phoenix">Phoenix</string>
+    <string name="sp_griffin">Griffin</string>
+    <string name="sp_owlbear">Owlbear</string>
+    <string name="sp_moth">Moon moth</string>
+    <string name="lore_mimic">A book chest with teeth. Eats whole books, grows from a little casket into a living bookcase.</string>
+    <string name="lore_kitsune">A fox spirit. Every genre you finish grows her a new tail of its colour, nine at most.</string>
+    <string name="lore_slime">A friendly jelly. After a chapter, name one thing from the book and it swallows it for good: you\'ll see it inside.</string>
+    <string name="lore_dragon">Hoards finished books the way other dragons hoard gold, and sleeps on the pile.</string>
+    <string name="lore_phoenix">Never turns to stone. Leave it and it burns to ash; come back and it rises brighter.</string>
+    <string name="lore_griffin">Proud and quick. Loves a reading streak and spreads its wings wider with every stage.</string>
+    <string name="lore_owlbear">A bear with an owl\'s face, never without a book. Turns scholarly with age: spectacles, then a mantle.</string>
+    <string name="lore_moth">Comes out at night. Every night of reading adds a star to its wings.</string>
+    <string name="loves_mimic" formatted="false">finishing a book (+100 mana)</string>
+    <string name="loves_kitsune" formatted="false">a new genre after the last one (+50%)</string>
+    <string name="loves_slime" formatted="false">things from books (+15 a thing)</string>
+    <string name="loves_dragon" formatted="false">long books, 400 pages and up (+50%)</string>
+    <string name="loves_phoenix" formatted="false">coming back after a pause (+100%)</string>
+    <string name="loves_griffin" formatted="false">a streak of three days or more (+50%)</string>
+    <string name="loves_owlbear" formatted="false">non-fiction, history and quotes (+50%)</string>
+    <string name="loves_moth" formatted="false">reading after ten at night (+50%)</string>
+    <string name="loves">Loves: %s</string>
+    <string name="how_dragon">Finish a book of %d pages or more.</string>
+    <string name="how_phoenix">Come back to reading after five quiet days or more.</string>
+    <plurals name="how_moth">
+        <item quantity="one">Read late at night %d time.</item>
+        <item quantity="other">Read late at night %d times.</item>
+    </plurals>
+    <plurals name="how_griffin">
+        <item quantity="one">Read %d day in a row.</item>
+        <item quantity="other">Read %d days in a row.</item>
+    </plurals>
+    <plurals name="how_owlbear">
+        <item quantity="one">Save %d quote in the grimoire.</item>
+        <item quantity="other">Save %d quotes in the grimoire.</item>
+    </plurals>
+    <plurals name="how_starter">
+        <item quantity="one">Finish %d book.</item>
+        <item quantity="other">Finish %d books.</item>
+    </plurals>
+
+    <string name="st_egg">Egg</string>
+    <string name="st_baby">Hatchling</string>
+    <string name="st_young">Young</string>
+    <string name="st_adult">Grown</string>
+    <string name="st_ancient">Ancient</string>
+
+    <string name="shelf_reading">Reading</string>
+    <string name="shelf_want">Want to read</string>
+    <string name="shelf_done">Read</string>
+    <string name="shelf_paused">Paused</string>
+
+    <!-- Den -->
+    <string name="hello_morning">Good morning</string>
+    <string name="hello_day">Good afternoon</string>
+    <string name="hello_evening">Good evening</string>
+    <string name="hello_night">Good night</string>
+    <string name="mana_title">Mana</string>
+    <string name="mana_n">%d mana</string>
+    <string name="mana_of">%1$d / %2$d</string>
+    <string name="mana_plus">+%d mana</string>
+    <string name="mana_max">Ancient. There is nowhere further to grow, only deeper.</string>
+    <string name="mana_to_hatch">%d more to hatch: a page is one mana.</string>
+    <string name="mana_to_next">%2$d more to become %1$s.</string>
+    <string name="fed_title">Fed today</string>
+    <string name="fed_of">%1$d / %2$d pages</string>
+    <string name="streak_line">Reading %s in a row</string>
+    <string name="stone_title">The spell of forgetting</string>
+    <string name="stone_text">Two quiet days and %s starts turning to stone, from the paws up. A few pages will crack it.</string>
+    <string name="ash_title">Burned down to ash</string>
+    <string name="ash_text">%s has burned low without stories. Read a page and it will rise again, brighter.</string>
+    <string name="now_reading">Now reading</string>
+    <string name="page_of">Page %1$d of %2$d</string>
+    <string name="page_n">Page %d</string>
+    <string name="page_range">pp. %1$d–%2$d</string>
+    <string name="ritual_start">Light the candle</string>
+    <string name="log_pages">Log pages read</string>
+    <string name="no_book_title">Nothing on the reading desk</string>
+    <string name="no_book_text">Add the book you\'re reading: its pages are what your familiar eats.</string>
+    <string name="book_add">Add a book</string>
+    <string name="book_edit">Edit book</string>
+    <string name="from_shelf">Pick from the shelf</string>
+    <string name="bestiary">Bestiary</string>
+    <string name="bestiary_count">%1$d of %2$d familiars found</string>
+    <string name="bestiary_eggs">Eggs waiting for you: %d</string>
+    <string name="bestiary_text">Eight familiars live in these pages. Read and they come to you one by one, as eggs. You read with one at a time; the others rest in the den with all they\'ve eaten.</string>
+    <string name="bestiary_note">Mana goes to the familiar you read with. Switch any time.</string>
+    <string name="with_you">with you</string>
+    <string name="egg_waiting">An egg is waiting</string>
+    <string name="not_found">Not found yet</string>
+    <string name="make_active">Read with this one</string>
+    <string name="take_egg">Take the egg</string>
+    <string name="rename">Rename</string>
+
+    <!-- Shelf and books -->
+    <string name="empty_reading">No book in progress. Tap + to add the one on your nightstand.</string>
+    <string name="empty_want">Books you want to read will wait here.</string>
+    <string name="empty_done">Finished books land here and grow fruit on the tree.</string>
+    <string name="f_title">Title</string>
+    <string name="f_title_hint">The Hobbit</string>
+    <string name="f_author">Author</string>
+    <string name="f_author_hint">J. R. R. Tolkien</string>
+    <string name="f_pages">Pages</string>
+    <string name="f_page_now">Now on page</string>
+    <string name="f_genre">Genre</string>
+    <string name="f_genre_note">The genre sets the familiar\'s mood after reading and the colour of the kitsune\'s new tail.</string>
+    <string name="f_shelf">Shelf</string>
+    <string name="start_reading">Start reading</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="mark_done">Finished it</string>
+    <string name="move_to">Move to</string>
+    <string name="finished_on">Finished on %s</string>
+    <string name="your_rating">Your rating</string>
+    <string name="grimoire_of_book">Spells from this book</string>
+    <string name="no_quotes_book">No quotes yet.</string>
+    <string name="chronicle">Chronicle</string>
+    <string name="no_sittings">No sittings yet.</string>
+    <string name="minutes_n">%d min</string>
+    <string name="item_swallowed">Swallowed: %s</string>
+    <string name="delete_book_title">Delete this book?</string>
+    <string name="delete_book_text">Its sittings go too; quotes stay in the grimoire. The mana already eaten stays with the familiar.</string>
+    <string name="log_text">Read away from the app? Tell your familiar where you stopped, and it eats those pages too.</string>
+
+    <!-- Sitting -->
+    <string name="stopped_at">Stopped at</string>
+    <string name="page_type">Or type a page, up to %d</string>
+    <string name="read_now">That\'s %s read</string>
+    <string name="finished_book">I finished the book</string>
+    <string name="what_happened">What happened in the chapter?</string>
+    <string name="what_happened_hint">One line is enough</string>
+    <string name="what_happened_note">It goes into the book\'s chronicle, so you can recall the story later.</string>
+    <string name="slime_item">What should the slime swallow?</string>
+    <string name="slime_item_hint">A sword, a letter, a key…</string>
+    <string name="slime_item_note">One thing from what you read. It stays inside the slime for good.</string>
+    <string name="feed">Feed the familiar</string>
+
+    <!-- Ritual -->
+    <string name="turn_page">Turn the page</string>
+    <string name="candle_left">The candle burns for about %d more min</string>
+    <string name="candle_out">The candle has burned out. Read on, or finish.</string>
+    <string name="amb_off">Silence</string>
+    <string name="amb_fire">Fireplace</string>
+    <string name="amb_rain">Rain</string>
+    <string name="still_title">Reading on paper?</string>
+    <string name="still_on">Shh… dozing on your lap</string>
+    <string name="still_text">Put the phone face down: the screen dims and %s dozes beside you. Quiet time feeds a bonus.</string>
+    <string name="still_minutes">%d min of stillness</string>
+    <string name="ritual_finish">Blow out the candle</string>
+    <string name="ritual_continue">Read a little more</string>
+    <string name="ritual_done_title">The candle is out</string>
+    <string name="ritual_done_minutes">%d minutes by candlelight.</string>
+    <string name="ritual_discard">Leave without saving</string>
+    <string name="ritual_discard_title">Leave the ritual?</string>
+    <string name="ritual_discard_text">The time and pages of this sitting won\'t be kept.</string>
+
+    <!-- Feast -->
+    <string name="feast_title">%s eats</string>
+    <string name="part_pages">Pages</string>
+    <string name="part_ritual">By candlelight</string>
+    <string name="part_still">Stillness</string>
+    <string name="part_favourite">Favourite: %s</string>
+    <string name="part_book">A book finished</string>
+    <string name="part_item">A thing to swallow</string>
+    <string name="part_sniff">Sniffed suspiciously</string>
+    <string name="sniff_text">That many pages in that little time? %s sniffs at the page with doubt and eats only half of the extra. It\'s fine to fix the page later.</string>
+    <string name="book_done_title">The book is finished!</string>
+    <string name="book_done_text">A new fruit is ripening on the tree of stories.</string>
+
+    <!-- Grimoire -->
+    <string name="grimoire_text">Quotes become spells, and every chapter gets a line in the chronicle.</string>
+    <string name="spells">Spells</string>
+    <string name="no_quotes">No spells yet. Tap + to write one down, or share a passage from any reader app to Familiar.</string>
+    <string name="no_notes">After each sitting the familiar asks what happened. Your answers gather here.</string>
+    <string name="quote_add">Add a quote</string>
+    <string name="quote_edit">Quote</string>
+    <string name="quote_hint">A line worth keeping</string>
+    <string name="quote_share_hint">Tip: select text in your e-reader or browser and share it to Familiar.</string>
+    <string name="quote_book">From the book</string>
+    <string name="quote_page">Page</string>
+    <string name="quote_tasted">The familiar tasted the spell: +%d mana</string>
+    <string name="quote_delete_title">Delete this quote?</string>
+    <string name="quote_delete_text">It disappears from the grimoire.</string>
+
+    <!-- Tree -->
+    <string name="tree_empty">Every finished book grows a glowing fruit here.</string>
+    <string name="tree_count">%s grew on the tree</string>
+    <string name="tree_hint">Tap a fruit to open its book.</string>
+    <string name="guild">The guild in %s</string>
+    <string name="guild_text">Three errands for the month, the same for every reader. None is a must. Each one done is worth %d mana.</string>
+    <string name="claim">Take the reward: +%d mana</string>
+    <string name="q_streak">Steady lamp</string>
+    <string name="q_pages">Bookworm</string>
+    <string name="q_two_books">Two tales</string>
+    <string name="q_long_book">The long road</string>
+    <string name="q_new_genre">Unknown lands</string>
+    <string name="q_nights">Night watch</string>
+    <string name="q_hour">The long candle</string>
+    <string name="q_quotes">Spellbinder</string>
+    <string name="q_notes">Chronicler</string>
+    <string name="q_still">Quiet hours</string>
+    <string name="qt_long_book">Finish a book of 300 pages or more.</string>
+    <string name="qt_new_genre">Finish a book in a genre you haven\'t finished before.</string>
+    <string name="qt_hour">Read for an hour in one sitting.</string>
+    <plurals name="qt_streak">
+        <item quantity="one">Read %d day in a row.</item>
+        <item quantity="other">Read %d days in a row.</item>
+    </plurals>
+    <plurals name="qt_pages">
+        <item quantity="one">Read %d page this month.</item>
+        <item quantity="other">Read %d pages this month.</item>
+    </plurals>
+    <plurals name="qt_books">
+        <item quantity="one">Finish %d book.</item>
+        <item quantity="other">Finish %d books.</item>
+    </plurals>
+    <plurals name="qt_nights">
+        <item quantity="one">Light the candle after ten at night %d time.</item>
+        <item quantity="other">Light the candle after ten at night %d times.</item>
+    </plurals>
+    <plurals name="qt_quotes">
+        <item quantity="one">Save %d quote.</item>
+        <item quantity="other">Save %d quotes.</item>
+    </plurals>
+    <plurals name="qt_notes">
+        <item quantity="one">Write what happened in a chapter %d time.</item>
+        <item quantity="other">Write what happened in a chapter %d times.</item>
+    </plurals>
+    <plurals name="qt_still">
+        <item quantity="one">Read %d time with the phone face down for 10 minutes.</item>
+        <item quantity="other">Read %d times with the phone face down for 10 minutes.</item>
+    </plurals>
+
+    <!-- Saga -->
+    <string name="saga">Saga</string>
+    <string name="saga_title">The saga of %d</string>
+    <string name="saga_sub">Your year of reading, told as a legend</string>
+    <string name="saga_heading">The year %d</string>
+    <string name="saga_reader">The reader</string>
+    <string name="saga_who">%1$s and the %2$s %3$s</string>
+    <string name="saga_open">In the year %1$d, %2$s read %3$s together.</string>
+    <string name="saga_open_books">In the year %1$d, %2$s journeyed through %3$s: %4$s.</string>
+    <string name="saga_genre">Their favourite land was %s.</string>
+    <string name="saga_longest">The longest road was “%1$s”, %2$s.</string>
+    <string name="saga_end">And the story goes on.</string>
+    <plurals name="saga_nights">
+        <item quantity="one">One night they read by candlelight while the world slept.</item>
+        <item quantity="other">On %d nights they read by candlelight while the world slept.</item>
+    </plurals>
+    <plurals name="saga_streak">
+        <item quantity="one">Their longest streak lasted %d day.</item>
+        <item quantity="other">Their longest streak lasted %d days.</item>
+    </plurals>
+    <plurals name="saga_quotes">
+        <item quantity="one">%d spell went into the grimoire.</item>
+        <item quantity="other">%d spells went into the grimoire.</item>
+    </plurals>
+    <string name="stat_books">books</string>
+    <string name="stat_pages">pages</string>
+    <string name="stat_nights">nights</string>
+    <string name="stat_quotes">spells</string>
+
+    <plurals name="pages">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="books">
+        <item quantity="one">%d book</item>
+        <item quantity="other">%d books</item>
+    </plurals>
+    <string name="pages_short">%d p.</string>
+    <string name="min_short">%d min</string>
+
+    <!-- Celebrations -->
+    <string name="cel_hatched">Hatched!</string>
+    <string name="cel_hatched_title">Hello, %s!</string>
+    <string name="cel_hatched_text">Your first pages warmed the egg, and out comes %s. Keep reading together: it grows on every page.</string>
+    <string name="cel_grew">A new stage</string>
+    <string name="cel_grew_text">%s has grown on your stories. Take a look at the den.</string>
+    <string name="cel_found">A familiar found</string>
+    <string name="cel_found_text">A new egg is waiting in the bestiary. Take it into the den whenever you like.</string>
+
+    <!-- Onboarding -->
+    <string name="ob_tagline">A familiar that feeds on stories</string>
+    <string name="ob_intro">You are a reading mage, and every mage needs a familiar. Yours lives on mana, and mana comes from pages: each page you read is a spark it eats.</string>
+    <string name="ob_intro2">Read and it hatches, grows and learns. Forget about books and it slowly turns to stone, until a few pages break the spell.</string>
+    <string name="ob_choose">Choose an egg</string>
+    <string name="ob_choose_text">Each familiar loves its own kind of reading. Five more are found along the way.</string>
+    <string name="ob_others">The dragon, the phoenix, the griffin, the owlbear and the moon moth come to those who read.</string>
+    <string name="ob_names">What will you call it?</string>
+    <string name="ob_pet_name">Familiar\'s name</string>
+    <string name="ob_your_name">Your name</string>
+    <string name="ob_name_hint">Optional</string>
+    <string name="ob_book">What are you reading?</string>
+    <string name="ob_book_text">Add the book on your nightstand. Paper, e-book or audiobook: you count the pages.</string>
+    <string name="ob_remind">Evening reminder at 21:00</string>
+    <string name="ob_remind_sub">The familiar asks for a story; quiet on days you\'ve read</string>
+    <string name="ob_start">Begin</string>
+    <string name="ob_skip_book">Begin without a book</string>
+
+    <!-- Settings -->
+    <string name="set_name">Your name</string>
+    <string name="set_goal">Pages a day for a full familiar</string>
+    <string name="set_goal_note">Only the "fed" bar uses this; every page feeds mana either way.</string>
+    <string name="set_ritual">The ritual</string>
+    <string name="set_candle">How long the candle burns</string>
+    <string name="set_page_sound">Page rustle</string>
+    <string name="set_haptics">Vibration on a page turn</string>
+    <string name="set_dim">Dim the screen face down</string>
+    <string name="set_dim_sub">When the phone lies face down during a ritual</string>
+    <string name="set_remind">Reminder</string>
+    <string name="set_remind_daily">Every day at</string>
+    <string name="set_remind_off">Turn off</string>
+    <string name="set_remind_note">Quiet on days you\'ve already read.</string>
+    <string name="autostart_title">On Xiaomi, Huawei or Samsung?</string>
+    <string name="autostart_text">Allow autostart and lift battery limits for Familiar so the reminder arrives.</string>
+    <string name="perm_title">Notifications are off</string>
+    <string name="perm_text">Tap to allow them, so your familiar can call you in the evening.</string>
+    <string name="set_appearance">Appearance</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Parchment</string>
+    <string name="theme_dark">Candlelight</string>
+    <string name="language">Language</string>
+    <string name="lang_system">System</string>
+    <string name="backup">Backup</string>
+    <string name="backup_text">Everything stays on this phone. Save a JSON file to move it or keep it safe.</string>
+    <string name="backup_export">Save</string>
+    <string name="backup_import">Restore</string>
+    <string name="backup_import_title">Restore from a file?</string>
+    <string name="backup_import_text">Books, sittings, quotes and familiars on this phone will be replaced by the file\'s.</string>
+    <string name="backup_done">Backup saved</string>
+    <string name="backup_restored">Restored</string>
+    <string name="backup_failed">Couldn\'t read or write the file</string>
+    <string name="about">About</string>
+    <string name="about_text">Familiar is free, has no ads and no account, and doesn\'t use the internet. Part of Stillcraft.</string>
+    <string name="about_version">Version %s</string>
+
+    <!-- Notifications and widget -->
+    <string name="channel_remind">Evening reminder</string>
+    <string name="channel_remind_desc">Once a day, when you haven\'t read yet</string>
+    <string name="notif_title">%s is waiting for a story</string>
+    <string name="widget_name">Familiar</string>
+    <string name="widget_desc">Your familiar and today\'s pages</string>
+    <string name="w_egg">Warming in the egg</string>
+    <string name="w_stone">Turning to stone</string>
+    <string name="w_ash">Burned to ash</string>
+    <string name="w_fed">Full and happy</string>
+    <string name="w_eating">Nibbling pages</string>
+    <string name="w_hungry">Waiting for a story</string>
+</resources>

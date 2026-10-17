@@ -1,0 +1,122 @@
+package app.familiar.data
+
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+
+private val Context.dataStore by preferencesDataStore("settings")
+
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
+/** Background sound during a ritual, synthesised on the phone. */
+enum class Ambience { OFF, FIRE, RAIN }
+
+/** A ritual in progress; kept in settings so it survives the app being closed. */
+data class Ritual(val bookId: Long, val start: Long, val fromPage: Int, val page: Int, val stillMs: Long)
+
+data class Settings(
+    val theme: ThemeMode = ThemeMode.SYSTEM,
+    val onboarded: Boolean = false,
+    val name: String = "",
+    /** Pages a day that make the familiar full. */
+    val dailyGoal: Int = 20,
+    /** How long the ritual candle burns, minutes. */
+    val candleMin: Int = 30,
+    val ambience: Ambience = Ambience.FIRE,
+    /** A rustle when a page is turned. */
+    val pageSound: Boolean = true,
+    val haptics: Boolean = true,
+    /** Dim the screen while the phone lies face down. */
+    val stillDim: Boolean = true,
+    /** Daily reminder, minutes after midnight; -1 when off. */
+    val remindAt: Int = -1,
+    val ritual: Ritual? = null,
+    /** Species already celebrated as found. */
+    val seenUnlocks: Set<String> = emptySet(),
+    /** "petId:stage" already celebrated. */
+    val seenStages: Set<String> = emptySet(),
+    /** "yyyy-mm:questId" whose reward was taken. */
+    val claimed: Set<String> = emptySet(),
+)
+
+class SettingsStore(context: Context) {
+    private val store = context.applicationContext.dataStore
+
+    val settings: Flow<Settings> = store.data.map { it.read() }
+
+    private fun Preferences.read() = Settings(
+        theme = this[THEME]?.let { t -> runCatching { ThemeMode.valueOf(t) }.getOrNull() } ?: ThemeMode.SYSTEM,
+        onboarded = this[ONBOARDED] ?: false,
+        name = this[NAME] ?: "",
+        dailyGoal = this[DAILY_GOAL] ?: 20,
+        candleMin = this[CANDLE_MIN] ?: 30,
+        ambience = this[AMBIENCE]?.let { a -> runCatching { Ambience.valueOf(a) }.getOrNull() } ?: Ambience.FIRE,
+        pageSound = this[PAGE_SOUND] ?: true,
+        haptics = this[HAPTICS] ?: true,
+        stillDim = this[STILL_DIM] ?: true,
+        remindAt = this[REMIND_AT] ?: -1,
+        ritual = (this[R_BOOK] ?: 0L).takeIf { it > 0 }?.let {
+            Ritual(it, this[R_START] ?: 0L, this[R_FROM] ?: 0, this[R_PAGE] ?: 0, this[R_STILL] ?: 0L)
+        },
+        seenUnlocks = this[SEEN_UNLOCKS] ?: emptySet(),
+        seenStages = this[SEEN_STAGES] ?: emptySet(),
+        claimed = this[CLAIMED] ?: emptySet(),
+    )
+
+    suspend fun now(): Settings = settings.first()
+
+    suspend fun update(change: (Settings) -> Settings) {
+        store.edit {
+            val s = change(it.read())
+            it[THEME] = s.theme.name
+            it[ONBOARDED] = s.onboarded
+            it[NAME] = s.name
+            it[DAILY_GOAL] = s.dailyGoal
+            it[CANDLE_MIN] = s.candleMin
+            it[AMBIENCE] = s.ambience.name
+            it[PAGE_SOUND] = s.pageSound
+            it[HAPTICS] = s.haptics
+            it[STILL_DIM] = s.stillDim
+            it[REMIND_AT] = s.remindAt
+            val r = s.ritual
+            it[R_BOOK] = r?.bookId ?: 0L
+            it[R_START] = r?.start ?: 0L
+            it[R_FROM] = r?.fromPage ?: 0
+            it[R_PAGE] = r?.page ?: 0
+            it[R_STILL] = r?.stillMs ?: 0L
+            it[SEEN_UNLOCKS] = s.seenUnlocks
+            it[SEEN_STAGES] = s.seenStages
+            it[CLAIMED] = s.claimed
+        }
+    }
+
+    private companion object {
+        val THEME = stringPreferencesKey("theme")
+        val ONBOARDED = booleanPreferencesKey("onboarded")
+        val NAME = stringPreferencesKey("name")
+        val DAILY_GOAL = intPreferencesKey("daily_goal")
+        val CANDLE_MIN = intPreferencesKey("candle_min")
+        val AMBIENCE = stringPreferencesKey("ambience")
+        val PAGE_SOUND = booleanPreferencesKey("page_sound")
+        val HAPTICS = booleanPreferencesKey("haptics")
+        val STILL_DIM = booleanPreferencesKey("still_dim")
+        val REMIND_AT = intPreferencesKey("remind_at")
+        val R_BOOK = longPreferencesKey("ritual_book")
+        val R_START = longPreferencesKey("ritual_start")
+        val R_FROM = intPreferencesKey("ritual_from")
+        val R_PAGE = intPreferencesKey("ritual_page")
+        val R_STILL = longPreferencesKey("ritual_still")
+        val SEEN_UNLOCKS = stringSetPreferencesKey("seen_unlocks")
+        val SEEN_STAGES = stringSetPreferencesKey("seen_stages")
+        val CLAIMED = stringSetPreferencesKey("claimed")
+    }
+}
