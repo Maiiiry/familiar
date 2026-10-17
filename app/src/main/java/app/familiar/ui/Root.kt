@@ -113,7 +113,7 @@ class Go(private val nav: NavHostController) {
     fun log(bookId: Long) = nav.navigate("log/$bookId")
     fun feast() = nav.navigate("feast") { popUpTo("main") }
     fun book(id: Long) = nav.navigate("book/$id")
-    fun editBook(id: Long = 0) = nav.navigate("edit/$id")
+    fun editBook(id: Long = 0, series: String = "") = nav.navigate("edit/$id?series=" + android.net.Uri.encode(series))
     fun bestiary() = nav.navigate("bestiary")
     fun saga() = nav.navigate("saga")
     fun furnish() = nav.navigate("furnish")
@@ -186,8 +186,8 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
         composable("book/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
             BookScreen(e.arguments?.getLong("id") ?: 0L, data, go)
         }
-        composable("edit/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
-            BookEditScreen(e.arguments?.getLong("id") ?: 0L, data, go)
+        composable("edit/{id}?series={series}", arguments = listOf(navArgument("id") { type = NavType.LongType }, navArgument("series") { type = NavType.StringType; defaultValue = "" })) { e ->
+            BookEditScreen(e.arguments?.getLong("id") ?: 0L, data, go, e.arguments?.getString("series").orEmpty())
         }
         composable("bestiary") { BestiaryScreen(data, go) }
         composable("saga") { SagaScreen(data, go) }

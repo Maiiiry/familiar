@@ -99,7 +99,7 @@ fun SeriesScreen(name: String, data: FamiliarData, go: Go) {
                     }
                 }
             }
-            SoftButton(stringResource(R.string.cycle_add), { go.editBook() }, Modifier.fillMaxWidth(), color = U.c.muted, soft = U.c.surface2)
+            SoftButton(stringResource(R.string.cycle_add), { go.editBook(series = c.name) }, Modifier.fillMaxWidth(), color = U.c.muted, soft = U.c.surface2)
         }
     }
 }

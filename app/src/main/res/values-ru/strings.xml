@@ -398,8 +398,8 @@
     <string name="item_remove">Убрать</string>
     <string name="item_owned">Твоё</string>
     <string name="item_standing">В логове</string>
-    <string name="play">Поиграть с клубком</string>
-    <string name="play_done">Сегодня уже играли</string>
+    <string name="play">Поиграть</string>
+    <string name="play_done">Уже играли</string>
     <string name="shiny">сияющий</string>
     <string name="cel_shiny">Сияющий!</string>
     <string name="cel_shiny_text">Редкий окрас: так вылупляется примерно одно яйцо из %d.</string>

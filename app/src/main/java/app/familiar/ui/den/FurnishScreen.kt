@@ -79,7 +79,7 @@ fun FurnishScreen(data: FamiliarData, go: Go) {
                 UCard(padding = PaddingValues(10.dp)) {
                     Preview(item, books, night, Modifier.fillMaxWidth().aspectRatio(1.2f).clip(U.RMd).background(Color(0xFF2A2030)))
                     Spacer(Modifier.height(8.dp))
-                    Text(itemName(item), style = UType.Strong, maxLines = 1)
+                    Text(itemName(item), style = UType.Strong, maxLines = 2, minLines = 2)
                     Text(
                         when {
                             standing -> stringResource(R.string.item_standing)

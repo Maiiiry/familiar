@@ -105,12 +105,12 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                 Shelf.READING, Shelf.PAUSED -> {
                     PrimaryButton(stringResource(R.string.ritual_start), { go.ritual(id) }, Modifier.fillMaxWidth(), icon = Icons.Rounded.LocalFireDepartment)
                     Spacer(Modifier.height(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        SoftButton(stringResource(R.string.log_pages), { go.log(id) }, Modifier.weight(1f), icon = Icons.Rounded.Edit)
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        SoftButton(stringResource(R.string.log_pages), { go.log(id) }, Modifier.fillMaxWidth(), icon = Icons.Rounded.Edit)
                         SoftButton(
                             stringResource(if (book.shelfOf == Shelf.PAUSED) R.string.resume else R.string.pause),
                             { container.write { dao().updateBook(book.copy(shelf = if (book.shelfOf == Shelf.PAUSED) Shelf.READING.name else Shelf.PAUSED.name)) } },
-                            Modifier.weight(1f), color = U.c.muted, soft = U.c.surface2,
+                            Modifier.fillMaxWidth(), color = U.c.muted, soft = U.c.surface2,
                         )
                     }
                 }

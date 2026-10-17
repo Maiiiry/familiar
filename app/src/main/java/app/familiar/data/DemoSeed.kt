@@ -95,7 +95,7 @@ object DemoSeed {
         settings.update {
             it.copy(
                 onboarded = true, name = if (ru) "Мира" else "Mira", remindAt = 21 * 60, theme = ThemeMode.DARK,
-                owned = den.map { d -> d.name }.toSet(), placed = den.map { d -> d.name }.toSet(), spent = den.sumOf { d -> d.price }, yearGoal = 24,
+                owned = den.map { d -> d.name }.toSet(), placed = den.map { d -> d.name }.toSet(), spent = den.sumOf { d -> d.price }, yearGoal = 12, dailyGoal = 30,
                 seenUnlocks = Species.entries.map { s -> s.name }.toSet(),
                 seenStages = pets.flatMap { p -> app.familiar.domain.Stage.entries.map { st -> "${p.id}:${st.name}" } }.toSet(),
             )

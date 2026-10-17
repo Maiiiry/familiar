@@ -103,8 +103,8 @@ fun DenScene(
             }
     ) {
         val frames = room ?: return@Canvas
-        val k = maxOf(1, minOf(size.width / Room.W, size.height / Room.H).toInt())
-        // Fill the box: the room is centred and its edge colours run out to the sides.
+        // Fill the box in whole-pixel steps, cropping a little off the edges rather than leaving a frame.
+        val k = maxOf(1, kotlin.math.ceil(maxOf(size.width / Room.W, size.height / Room.H)).toInt())
         val ox = ((size.width - Room.W * k) / 2).toInt()
         val oy = ((size.height - Room.H * k) / 2).toInt()
         val f = frames[(t * 3).toInt() % frames.size]

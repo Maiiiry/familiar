@@ -50,7 +50,7 @@ import app.familiar.ui.theme.UType
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
+fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "") {
     val container = LocalContext.current.container
     val old = data.book(id)
     var title by remember { mutableStateOf(old?.title ?: "") }
@@ -61,8 +61,11 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
     var shelf by remember { mutableStateOf(old?.shelfOf ?: Shelf.READING) }
     var cover by remember { mutableStateOf(old?.cover ?: "") }
     var audio by remember { mutableStateOf(old?.audio ?: false) }
-    var series by remember { mutableStateOf(old?.series ?: "") }
-    var volume by remember { mutableStateOf(old?.volume?.toString() ?: "") }
+    var series by remember { mutableStateOf(old?.series ?: newSeries) }
+    // A new volume of a cycle gets the next number.
+    var volume by remember {
+        mutableStateOf(old?.volume?.toString() ?: if (newSeries.isBlank()) "" else ((data.books.filter { it.series.equals(newSeries, true) }.mapNotNull { it.volume }.maxOrNull() ?: 0) + 1).toString())
+    }
     val total = pages.toIntOrNull()?.takeIf { it in 1..20000 }
     val ok = title.isNotBlank() && total != null
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
