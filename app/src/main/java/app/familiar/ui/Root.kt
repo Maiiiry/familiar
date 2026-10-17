@@ -136,11 +136,13 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
 
     val dao = container.db.dao()
     val books by dao.observeBooks().collectAsStateWithLifecycle(initialValue = null)
-    val readings by dao.observeReadings().collectAsStateWithLifecycle(initialValue = emptyList())
-    val pets by dao.observePets().collectAsStateWithLifecycle(initialValue = emptyList())
+    val readings by dao.observeReadings().collectAsStateWithLifecycle(initialValue = null)
+    val pets by dao.observePets().collectAsStateWithLifecycle(initialValue = null)
+    // Nothing is drawn from the database until all of it has arrived, so an empty den never flashes by.
+    val loaded = books != null && readings != null && pets != null
     val minute = rememberNow(60_000)
     val data = remember(books, readings, pets, settings, minute) {
-        FamiliarData(books.orEmpty(), readings, pets, settings, System.currentTimeMillis())
+        FamiliarData(books.orEmpty(), readings.orEmpty(), pets.orEmpty(), settings, System.currentTimeMillis())
     }
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
@@ -175,7 +177,7 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
         composable("welcome") {
             OnboardingScreen { nav.navigate("main") { popUpTo("welcome") { inclusive = true } } }
         }
-        composable("main") { MainTabs(tab, { tab = it }, go, data) }
+        composable("main") { if (loaded) MainTabs(tab, { tab = it }, go, data) else Box(Modifier.fillMaxSize().background(U.c.bg)) }
         composable("ritual/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
             RitualScreen(e.arguments?.getLong("id") ?: 0L, data, go, dim)
         }
@@ -198,7 +200,7 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
         composable("settings") { SettingsScreen(data, onBack = { go.back() }) }
     }
 
-    if (settings.onboarded && books != null && route == "main") Celebrations(data)
+    if (settings.onboarded && loaded && route == "main") Celebrations(data)
 }
 
 /** A hatching, a new stage, a newly found familiar: each celebrated once. */
