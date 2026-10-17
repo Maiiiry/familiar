@@ -47,7 +47,7 @@ fun LogScreen(id: Long, data: FamiliarData, go: Go) {
             SittingForm(book, book.page, book.page, data.species == Species.SLIME, stringResource(R.string.feed)) { input ->
                 container.scope.launch {
                     val now = System.currentTimeMillis()
-                    val r = Library.sit(container.db.dao(), book, book.page, input.toPage, now, now, timed = false, note = input.note, item = input.item, finish = input.finish)
+                    val r = Library.sit(container.db.dao(), book, book.page, input.toPage, now, now, timed = false, item = input.item, finish = input.finish)
                     container.changed()
                     withContext(Dispatchers.Main) {
                         lastFeast.value = r

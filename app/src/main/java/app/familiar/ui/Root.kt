@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
-import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.Forest
 import androidx.compose.material.icons.rounded.Pets
 import androidx.compose.material3.HorizontalDivider
@@ -62,7 +61,6 @@ import app.familiar.container
 import app.familiar.data.Book
 import app.familiar.data.Library
 import app.familiar.data.Pet
-import app.familiar.data.Quote
 import app.familiar.data.Reading
 import app.familiar.data.Settings
 import app.familiar.domain.Species
@@ -78,8 +76,6 @@ import app.familiar.ui.components.FamiliarArt
 import app.familiar.ui.components.rememberNow
 import app.familiar.ui.den.BestiaryScreen
 import app.familiar.ui.den.DenTab
-import app.familiar.ui.grimoire.GrimoireTab
-import app.familiar.ui.grimoire.QuoteScreen
 import app.familiar.ui.me.SettingsScreen
 import app.familiar.ui.onboarding.OnboardingScreen
 import app.familiar.ui.ritual.FeastScreen
@@ -92,19 +88,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 
-enum class Tab { DEN, SHELF, GRIMOIRE, TREE }
+enum class Tab { DEN, SHELF, TREE }
 
 /** Everything stored, plus what is derived from it, recomputed once per minute or change. */
 @Immutable
 class FamiliarData(
     val books: List<Book>,
     val readings: List<Reading>,
-    val quotes: List<Quote>,
     val pets: List<Pet>,
     val settings: Settings,
     val now: Long,
 ) {
-    val stats = Stats(books, readings, quotes, pets, now, ZoneId.systemDefault(), settings.dailyGoal)
+    val stats = Stats(books, readings, pets, now, ZoneId.systemDefault(), settings.dailyGoal)
     val pet: Pet? = stats.active
     val species: Species? = stats.activeSpecies
     val reading: List<Book> = books.filter { it.shelfOf == app.familiar.data.Shelf.READING }.sortedByDescending { b -> readings.filter { it.bookId == b.id }.maxOfOrNull { it.end } ?: b.added }
@@ -119,7 +114,6 @@ class Go(private val nav: NavHostController) {
     fun feast() = nav.navigate("feast") { popUpTo("main") }
     fun book(id: Long) = nav.navigate("book/$id")
     fun editBook(id: Long = 0) = nav.navigate("edit/$id")
-    fun quote(id: Long = 0, bookId: Long = 0) = nav.navigate("quote/$id/$bookId")
     fun bestiary() = nav.navigate("bestiary")
     fun saga() = nav.navigate("saga")
     fun settings() = nav.navigate("settings")
@@ -130,7 +124,7 @@ class Go(private val nav: NavHostController) {
 val lastFeast = MutableStateFlow<Library.Result?>(null)
 
 @Composable
-fun FamiliarRoot(shared: MutableStateFlow<String?>, settings: Settings, dim: (Boolean) -> Unit) {
+fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
     val context = LocalContext.current
     val container = context.container
     val nav = rememberNavController()
@@ -141,27 +135,21 @@ fun FamiliarRoot(shared: MutableStateFlow<String?>, settings: Settings, dim: (Bo
     val dao = container.db.dao()
     val books by dao.observeBooks().collectAsStateWithLifecycle(initialValue = null)
     val readings by dao.observeReadings().collectAsStateWithLifecycle(initialValue = emptyList())
-    val quotes by dao.observeQuotes().collectAsStateWithLifecycle(initialValue = emptyList())
     val pets by dao.observePets().collectAsStateWithLifecycle(initialValue = emptyList())
     val minute = rememberNow(60_000)
-    val data = remember(books, readings, quotes, pets, settings, minute) {
-        FamiliarData(books.orEmpty(), readings, quotes, pets, settings, System.currentTimeMillis())
+    val data = remember(books, readings, pets, settings, minute) {
+        FamiliarData(books.orEmpty(), readings, pets, settings, System.currentTimeMillis())
     }
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
 
-    // A ritual in progress comes back to the front when the app is reopened.
-    LaunchedEffect(settings.ritual != null, route) {
-        val r = settings.ritual ?: return@LaunchedEffect
-        if (route == "main") go.ritual(r.bookId)
+    // A ritual left burning comes back to the front once, when the app opens.
+    LaunchedEffect(Unit) {
+        settings.ritual?.let { if (settings.onboarded) go.ritual(it.bookId) }
     }
     // Onboarded elsewhere (a restored backup, the demo seed): leave the welcome screens.
     LaunchedEffect(settings.onboarded, route) {
         if (settings.onboarded && route == "welcome") nav.navigate("main") { popUpTo("welcome") { inclusive = true } }
-    }
-    val sharedText by shared.collectAsStateWithLifecycle()
-    LaunchedEffect(sharedText, settings.onboarded, route) {
-        if (sharedText != null && settings.onboarded && route != null && route != "welcome" && !route.startsWith("quote")) go.quote()
     }
 
     val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -198,9 +186,6 @@ fun FamiliarRoot(shared: MutableStateFlow<String?>, settings: Settings, dim: (Bo
         }
         composable("edit/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
             BookEditScreen(e.arguments?.getLong("id") ?: 0L, data, go)
-        }
-        composable("quote/{id}/{book}", arguments = listOf(navArgument("id") { type = NavType.LongType }, navArgument("book") { type = NavType.LongType })) { e ->
-            QuoteScreen(e.arguments?.getLong("id") ?: 0L, e.arguments?.getLong("book") ?: 0L, data, shared, go)
         }
         composable("bestiary") { BestiaryScreen(data, go) }
         composable("saga") { SagaScreen(data, go) }
@@ -250,7 +235,6 @@ private fun MainTabs(tab: Tab, onTab: (Tab) -> Unit, go: Go, data: FamiliarData)
             when (tab) {
                 Tab.DEN -> DenTab(data, go, onTab)
                 Tab.SHELF -> ShelfTab(data, go)
-                Tab.GRIMOIRE -> GrimoireTab(data, go)
                 Tab.TREE -> TreeTab(data, go)
             }
         }
@@ -262,7 +246,6 @@ private fun MainTabs(tab: Tab, onTab: (Tab) -> Unit, go: Go, data: FamiliarData)
         ) {
             NavItem(Icons.Rounded.Pets, stringResource(R.string.tab_den), tab == Tab.DEN) { onTab(Tab.DEN) }
             NavItem(Icons.AutoMirrored.Rounded.MenuBook, stringResource(R.string.tab_shelf), tab == Tab.SHELF) { onTab(Tab.SHELF) }
-            NavItem(Icons.Rounded.AutoStories, stringResource(R.string.tab_grimoire), tab == Tab.GRIMOIRE) { onTab(Tab.GRIMOIRE) }
             NavItem(Icons.Rounded.Forest, stringResource(R.string.tab_tree), tab == Tab.TREE) { onTab(Tab.TREE) }
         }
     }

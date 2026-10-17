@@ -70,6 +70,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
     var title by remember { mutableStateOf("") }
     var pages by remember { mutableStateOf("") }
     var genre by remember { mutableStateOf(Genre.FANTASY) }
+    var cover by remember { mutableStateOf("") }
     var remind by remember { mutableStateOf(true) }
     BackHandler(step > 0) { step-- }
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
@@ -125,6 +126,16 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 else -> {
                     Text(stringResource(R.string.ob_book), style = UType.Title)
                     Text(stringResource(R.string.ob_book_text), style = UType.Sub)
+                    SectionTitle(stringResource(R.string.search_title))
+                    app.familiar.ui.books.BookSearch { f ->
+                        title = f.title
+                        f.pages?.let { pages = it.toString() }
+                        cover = f.cover
+                    }
+                    if (cover.isNotBlank()) {
+                        Spacer(Modifier.height(12.dp))
+                        app.familiar.ui.components.BookCover(title, genre, Modifier.width(70.dp).height(102.dp), small = true, cover = cover)
+                    }
                     SectionTitle(stringResource(R.string.f_title))
                     UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
                     SectionTitle(stringResource(R.string.f_pages))
@@ -156,7 +167,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         val dao = container.db.dao()
                         val now = System.currentTimeMillis()
                         Library.adopt(dao, species, pet, now)
-                        if (bookOk) dao.insertBook(Book(title = title.trim(), pages = pages.toInt(), genre = genre.name, added = now, started = now))
+                        if (bookOk) dao.insertBook(Book(title = title.trim(), pages = pages.toInt(), genre = genre.name, added = now, started = now, cover = cover))
                         container.settings.update {
                             it.copy(onboarded = true, name = name.trim(), remindAt = if (remind) 21 * 60 else -1, seenUnlocks = it.seenUnlocks + species.name)
                         }

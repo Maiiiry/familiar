@@ -1,6 +1,5 @@
 package app.familiar
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.SystemBarStyle
@@ -17,15 +16,11 @@ import app.familiar.data.Settings
 import app.familiar.ui.FamiliarRoot
 import app.familiar.ui.theme.FamiliarTheme
 import app.familiar.ui.theme.isDark
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    /** Text shared from another app (a reader, a browser): it becomes a quote. */
-    private val shared = MutableStateFlow<String?>(null)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // A ritual in progress keeps the screen awake while the app is in front.
@@ -37,7 +32,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        if (savedInstanceState == null) handle(intent)
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle(initialValue = null)
             val dark = isDark((settings ?: Settings()).theme)
@@ -48,19 +42,8 @@ class MainActivity : AppCompatActivity() {
             }
             FamiliarTheme(dark) {
                 // Wait for settings so the theme doesn't flash light-then-dark.
-                if (settings != null) FamiliarRoot(shared = shared, settings = settings!!, dim = ::dim)
+                if (settings != null) FamiliarRoot(settings = settings!!, dim = ::dim)
             }
-        }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        handle(intent)
-    }
-
-    private fun handle(intent: Intent?) {
-        if (intent?.action == Intent.ACTION_SEND && intent.type?.startsWith("text/") == true) {
-            intent.getStringExtra(Intent.EXTRA_TEXT)?.trim()?.takeIf { it.isNotEmpty() }?.let { shared.value = it.take(1500) }
         }
     }
 

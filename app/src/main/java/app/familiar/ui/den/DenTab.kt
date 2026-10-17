@@ -138,7 +138,7 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
         if (book != null) {
             UCard(onClick = { go.book(book.id) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    BookCover(book.title, Genre.of(book.genre), Modifier.width(54.dp).height(78.dp), small = true)
+                    BookCover(book.title, Genre.of(book.genre), Modifier.width(54.dp).height(78.dp), small = true, cover = book.cover)
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text(stringResource(R.string.now_reading).uppercase(), style = UType.Eyebrow)
@@ -207,9 +207,8 @@ private fun speech(data: FamiliarData, sp: Species, name: String, seed: Int): St
         else -> Lines.State.HUNGRY
     }
     if (state == Lines.State.FED || state == Lines.State.HUNGRY) {
-        // Now and then it recalls a quote, or reacts to the last book.
-        if (seed % 3 == 0 && data.quotes.isNotEmpty()) return Lines.quote(l, name, data.quotes[Math.floorMod(seed, data.quotes.size)].text.take(120))
-        if (seed % 3 == 1) Lines.mood(l, s.mood, name)?.let { return it }
+        // Now and then it reacts to the last book.
+        if (seed % 2 == 0) Lines.mood(l, s.mood, name)?.let { return it }
     }
     return Lines.line(l, sp, state, name, seed)
 }

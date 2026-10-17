@@ -15,7 +15,6 @@
 
     <string name="tab_den">Den</string>
     <string name="tab_shelf">Shelf</string>
-    <string name="tab_grimoire">Grimoire</string>
     <string name="tab_tree">Tree</string>
 
     <!-- Genres -->
@@ -54,10 +53,11 @@
     <string name="loves_dragon" formatted="false">long books, 400 pages and up (+50%)</string>
     <string name="loves_phoenix" formatted="false">coming back after a pause (+100%)</string>
     <string name="loves_griffin" formatted="false">a streak of three days or more (+50%)</string>
-    <string name="loves_owlbear" formatted="false">non-fiction, history and quotes (+50%)</string>
+    <string name="loves_owlbear" formatted="false">non-fiction and history (+50%)</string>
     <string name="loves_moth" formatted="false">reading after ten at night (+50%)</string>
     <string name="loves">Loves: %s</string>
     <string name="how_dragon">Finish a book of %d pages or more.</string>
+    <string name="how_owlbear">Finish a non-fiction or history book.</string>
     <string name="how_phoenix">Come back to reading after five quiet days or more.</string>
     <plurals name="how_moth">
         <item quantity="one">Read late at night %d time.</item>
@@ -66,10 +66,6 @@
     <plurals name="how_griffin">
         <item quantity="one">Read %d day in a row.</item>
         <item quantity="other">Read %d days in a row.</item>
-    </plurals>
-    <plurals name="how_owlbear">
-        <item quantity="one">Save %d quote in the grimoire.</item>
-        <item quantity="other">Save %d quotes in the grimoire.</item>
     </plurals>
     <plurals name="how_starter">
         <item quantity="one">Finish %d book.</item>
@@ -133,6 +129,15 @@
     <string name="empty_reading">No book in progress. Tap + to add the one on your nightstand.</string>
     <string name="empty_want">Books you want to read will wait here.</string>
     <string name="empty_done">Finished books land here and grow fruit on the tree.</string>
+    <string name="search_title">Find the book</string>
+    <string name="search_hint">Title or author</string>
+    <string name="search">Search</string>
+    <string name="search_note">From Open Library: the title, the author, the pages and the cover. Or fill in by hand below.</string>
+    <string name="search_failed">Couldn\'t reach the book catalogue. Check the internet, or fill in by hand.</string>
+    <string name="search_nothing">Nothing found. Try another spelling, or fill in by hand.</string>
+    <string name="cover_found">The cover is kept on the phone.</string>
+    <string name="cover_drawn">No cover picture: a cover in the genre\'s colour will be drawn.</string>
+    <string name="cover_remove">Use a drawn cover</string>
     <string name="f_title">Title</string>
     <string name="f_title_hint">The Hobbit</string>
     <string name="f_author">Author</string>
@@ -149,14 +154,12 @@
     <string name="move_to">Move to</string>
     <string name="finished_on">Finished on %s</string>
     <string name="your_rating">Your rating</string>
-    <string name="grimoire_of_book">Spells from this book</string>
-    <string name="no_quotes_book">No quotes yet.</string>
-    <string name="chronicle">Chronicle</string>
+    <string name="chronicle">Sittings</string>
     <string name="no_sittings">No sittings yet.</string>
     <string name="minutes_n">%d min</string>
     <string name="item_swallowed">Swallowed: %s</string>
     <string name="delete_book_title">Delete this book?</string>
-    <string name="delete_book_text">Its sittings go too; quotes stay in the grimoire. The mana already eaten stays with the familiar.</string>
+    <string name="delete_book_text">Its sittings go too. The mana already eaten stays with the familiar.</string>
     <string name="log_text">Read away from the app? Tell your familiar where you stopped, and it eats those pages too.</string>
 
     <!-- Sitting -->
@@ -164,9 +167,6 @@
     <string name="page_type">Or type a page, up to %d</string>
     <string name="read_now">That\'s %s read</string>
     <string name="finished_book">I finished the book</string>
-    <string name="what_happened">What happened in the chapter?</string>
-    <string name="what_happened_hint">One line is enough</string>
-    <string name="what_happened_note">It goes into the book\'s chronicle, so you can recall the story later.</string>
     <string name="slime_item">What should the slime swallow?</string>
     <string name="slime_item_hint">A sword, a letter, a key…</string>
     <string name="slime_item_note">One thing from what you read. It stays inside the slime for good.</string>
@@ -204,20 +204,6 @@
     <string name="book_done_title">The book is finished!</string>
     <string name="book_done_text">A new fruit is ripening on the tree of stories.</string>
 
-    <!-- Grimoire -->
-    <string name="grimoire_text">Quotes become spells, and every chapter gets a line in the chronicle.</string>
-    <string name="spells">Spells</string>
-    <string name="no_quotes">No spells yet. Tap + to write one down, or share a passage from any reader app to Familiar.</string>
-    <string name="no_notes">After each sitting the familiar asks what happened. Your answers gather here.</string>
-    <string name="quote_add">Add a quote</string>
-    <string name="quote_edit">Quote</string>
-    <string name="quote_hint">A line worth keeping</string>
-    <string name="quote_share_hint">Tip: select text in your e-reader or browser and share it to Familiar.</string>
-    <string name="quote_book">From the book</string>
-    <string name="quote_page">Page</string>
-    <string name="quote_tasted">The familiar tasted the spell: +%d mana</string>
-    <string name="quote_delete_title">Delete this quote?</string>
-    <string name="quote_delete_text">It disappears from the grimoire.</string>
 
     <!-- Tree -->
     <string name="tree_empty">Every finished book grows a glowing fruit here.</string>
@@ -233,8 +219,6 @@
     <string name="q_new_genre">Unknown lands</string>
     <string name="q_nights">Night watch</string>
     <string name="q_hour">The long candle</string>
-    <string name="q_quotes">Spellbinder</string>
-    <string name="q_notes">Chronicler</string>
     <string name="q_still">Quiet hours</string>
     <string name="qt_long_book">Finish a book of 300 pages or more.</string>
     <string name="qt_new_genre">Finish a book in a genre you haven\'t finished before.</string>
@@ -254,14 +238,6 @@
     <plurals name="qt_nights">
         <item quantity="one">Light the candle after ten at night %d time.</item>
         <item quantity="other">Light the candle after ten at night %d times.</item>
-    </plurals>
-    <plurals name="qt_quotes">
-        <item quantity="one">Save %d quote.</item>
-        <item quantity="other">Save %d quotes.</item>
-    </plurals>
-    <plurals name="qt_notes">
-        <item quantity="one">Write what happened in a chapter %d time.</item>
-        <item quantity="other">Write what happened in a chapter %d times.</item>
     </plurals>
     <plurals name="qt_still">
         <item quantity="one">Read %d time with the phone face down for 10 minutes.</item>
@@ -288,14 +264,9 @@
         <item quantity="one">Their longest streak lasted %d day.</item>
         <item quantity="other">Their longest streak lasted %d days.</item>
     </plurals>
-    <plurals name="saga_quotes">
-        <item quantity="one">%d spell went into the grimoire.</item>
-        <item quantity="other">%d spells went into the grimoire.</item>
-    </plurals>
     <string name="stat_books">books</string>
     <string name="stat_pages">pages</string>
     <string name="stat_nights">nights</string>
-    <string name="stat_quotes">spells</string>
 
     <plurals name="pages">
         <item quantity="one">%d page</item>
@@ -368,12 +339,12 @@
     <string name="backup_export">Save</string>
     <string name="backup_import">Restore</string>
     <string name="backup_import_title">Restore from a file?</string>
-    <string name="backup_import_text">Books, sittings, quotes and familiars on this phone will be replaced by the file\'s.</string>
+    <string name="backup_import_text">Books, sittings and familiars on this phone will be replaced by the file\'s.</string>
     <string name="backup_done">Backup saved</string>
     <string name="backup_restored">Restored</string>
     <string name="backup_failed">Couldn\'t read or write the file</string>
     <string name="about">About</string>
-    <string name="about_text">Familiar is free, has no ads and no account, and doesn\'t use the internet. Part of Stillcraft.</string>
+    <string name="about_text">Familiar is free, has no ads and no account. It goes online only to find a book and its cover. Part of Stillcraft.</string>
     <string name="about_version">Version %s</string>
 
     <!-- Notifications and widget -->

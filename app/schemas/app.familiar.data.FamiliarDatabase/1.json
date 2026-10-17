@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "32bc728145bb65cd2c66d3b601f0ae60",
+    "identityHash": "9f13d34080d7e8167846c418a9a5c1bd",
     "entities": [
       {
         "tableName": "books",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -70,6 +70,12 @@
             "fieldPath": "rating",
             "columnName": "rating",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cover",
+            "columnName": "cover",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -81,7 +87,7 @@
       },
       {
         "tableName": "readings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER NOT NULL, `petId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `fromPage` INTEGER NOT NULL, `toPage` INTEGER NOT NULL, `mana` INTEGER NOT NULL, `timed` INTEGER NOT NULL, `stillSec` INTEGER NOT NULL, `note` TEXT NOT NULL, `item` TEXT NOT NULL, `finishedBook` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER NOT NULL, `petId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `fromPage` INTEGER NOT NULL, `toPage` INTEGER NOT NULL, `mana` INTEGER NOT NULL, `timed` INTEGER NOT NULL, `stillSec` INTEGER NOT NULL, `item` TEXT NOT NULL, `finishedBook` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -144,12 +150,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "note",
-            "columnName": "note",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "item",
             "columnName": "item",
             "affinity": "TEXT",
@@ -158,46 +158,6 @@
           {
             "fieldPath": "finishedBook",
             "columnName": "finishedBook",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "quotes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER, `text` TEXT NOT NULL, `page` INTEGER, `created` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "bookId",
-            "columnName": "bookId",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "text",
-            "columnName": "text",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "page",
-            "columnName": "page",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "created",
-            "columnName": "created",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -260,7 +220,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '32bc728145bb65cd2c66d3b601f0ae60')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9f13d34080d7e8167846c418a9a5c1bd')"
     ]
   }
 }

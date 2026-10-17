@@ -84,7 +84,7 @@ object Alarms {
         if (s.remindAt < 0 || !canNotify(context)) return
         val dao = c.db.dao()
         val zone = ZoneId.systemDefault()
-        val st = Stats(dao.books(), dao.readings(), dao.quotes(), dao.pets(), System.currentTimeMillis(), zone, s.dailyGoal)
+        val st = Stats(dao.books(), dao.readings(), dao.pets(), System.currentTimeMillis(), zone, s.dailyGoal)
         if (st.todayPages > 0 || s.ritual != null) return
         val pet = st.active ?: return
         val sp = Species.of(pet.species)

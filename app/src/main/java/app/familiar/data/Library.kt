@@ -8,7 +8,7 @@ import app.familiar.domain.isNight
 import java.time.Instant
 import java.time.ZoneId
 
-/** The writes that feed the familiar: a sitting with a book, a quote, a guild reward. */
+/** The writes that feed the familiar: a sitting with a book, a guild reward. */
 object Library {
     class Result(val reading: Reading, val feast: Feast, val petId: Long, val manaBefore: Int)
 
@@ -22,7 +22,6 @@ object Library {
         end: Long,
         timed: Boolean,
         stillSec: Int = 0,
-        note: String = "",
         item: String = "",
         finish: Boolean = false,
         zone: ZoneId = ZoneId.systemDefault(),
@@ -53,7 +52,7 @@ object Library {
         )
         val reading = Reading(
             bookId = book.id, petId = pet.id, start = start, end = end, fromPage = fromPage, toPage = to, mana = feast.total,
-            timed = timed, stillSec = stillSec, note = note.trim(), item = item.trim(), finishedBook = done && book.shelfOf != Shelf.DONE,
+            timed = timed, stillSec = stillSec, item = item.trim(), finishedBook = done && book.shelfOf != Shelf.DONE,
         )
         val id = dao.insertReading(reading)
         dao.updateBook(
@@ -66,15 +65,6 @@ object Library {
         )
         dao.feed(pet.id, feast.total)
         return Result(reading.copy(id = id), feast, pet.id, pet.mana)
-    }
-
-    /** Saves a quote and gives the active familiar a taste of it; returns the mana. */
-    suspend fun quote(dao: FamiliarDao, q: Quote): Int {
-        dao.insertQuote(q)
-        val pet = dao.activePet() ?: return 0
-        val mana = Mana.quote(Species.of(pet.species))
-        dao.feed(pet.id, mana)
-        return mana
     }
 
     suspend fun reward(dao: FamiliarDao, mana: Int) {

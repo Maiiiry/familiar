@@ -34,9 +34,6 @@ object Lines {
         }?.replace("{n}", name)
     }
 
-    fun quote(locale: Locale, name: String, text: String): String =
-        (if (locale.language == "ru") "{n} вспоминает: «{q}»" else "{n} remembers: “{q}”").replace("{n}", name).replace("{q}", text)
-
     private fun common(locale: Locale): Map<State, List<String>> = if (locale.language == "ru") mapOf(
         State.EGG to listOf("Яйцо тёплое. Кажется, оно слушает, как ты читаешь.", "Внутри что-то шевелится. Ещё пара страниц…", "Тук-тук. Яйцо ждёт историю."),
         State.STONE to listOf("{n} каменеет: на нём чары забвения. Пара страниц снимет их.", "{n} почти статуя. Открой книгу, и камень треснет."),

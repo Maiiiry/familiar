@@ -47,7 +47,7 @@ class DenWidget : AppWidgetProvider() {
             val c = context.container
             val s = c.settings.now()
             val dao = c.db.dao()
-            val st = Stats(dao.books(), dao.readings(), dao.quotes(), dao.pets(), System.currentTimeMillis(), ZoneId.systemDefault(), s.dailyGoal)
+            val st = Stats(dao.books(), dao.readings(), dao.pets(), System.currentTimeMillis(), ZoneId.systemDefault(), s.dailyGoal)
             val l = context.localized()
             val views = RemoteViews(context.packageName, R.layout.widget_den)
             val pet = st.active

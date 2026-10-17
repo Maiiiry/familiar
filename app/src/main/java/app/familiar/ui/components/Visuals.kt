@@ -166,7 +166,19 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.motes(t: Float, col
 
 /** A cover drawn from the genre colour, with the title on it. */
 @Composable
-fun BookCover(title: String, genre: Genre, modifier: Modifier = Modifier, small: Boolean = false) {
+fun BookCover(title: String, genre: Genre, modifier: Modifier = Modifier, small: Boolean = false, cover: String = "") {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val picture by produceState(app.familiar.data.Covers.cached(cover), cover) {
+        if (cover.isNotBlank() && value == null) value = app.familiar.data.Covers.load(context, cover)
+    }
+    picture?.let { img ->
+        androidx.compose.foundation.Image(
+            img, title,
+            modifier.clip(RoundedCornerShape(topStart = 3.dp, bottomStart = 3.dp, topEnd = 8.dp, bottomEnd = 8.dp)),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+        )
+        return
+    }
     val c = Color(genre.argb)
     Box(
         modifier

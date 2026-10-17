@@ -6,7 +6,7 @@
 
 ### A familiar that feeds on stories
 
-*A reading tracker with a pixel-art pet. Every page you read is mana; your familiar eats it, hatches, grows and learns. Free, no ads, no account, no internet access.*
+*A reading tracker with a pixel-art pet. Every page you read is mana; your familiar eats it, hatches, grows and learns. Free, no ads, no account.*
 
 [![Android CI](https://github.com/bigdevwhale/familiar/actions/workflows/android.yml/badge.svg)](https://github.com/bigdevwhale/familiar/actions/workflows/android.yml)
 [![Release](https://img.shields.io/github/v/release/bigdevwhale/familiar?color=AE93FF&label=download&logo=android)](https://github.com/bigdevwhale/familiar/releases/latest)
@@ -41,10 +41,10 @@ All the art is pixel art painted by the app itself (shaded shapes, hue-shifted r
 | 🐉 | **Dragon** | long books | sits on a hoard of the books you finished |
 | 🔥 | **Phoenix** | coming back after a pause | never turns to stone: burns to ash and rises again |
 | 🦅 | **Griffin** | reading streaks | its wings spread wider every stage |
-| 🦉 | **Owlbear** | non-fiction, history, quotes | spectacles, then a scholar's mantle |
+| 🦉 | **Owlbear** | non-fiction and history | spectacles, then a scholar's mantle |
 | 🦋 | **Moon moth** | reading after ten at night | a star on its wings for every night of reading |
 
-Three can hatch at the start; the other five are found by reading (a 400-page book, five late nights, seven days in a row, ten quotes, a comeback after a pause).
+Three can hatch at the start; the other five are found by reading (a 400-page book, five late nights, seven days in a row, a non-fiction or history book, a comeback after a pause).
 
 ## What's inside
 
@@ -54,7 +54,7 @@ Three can hatch at the start; the other five are found by reading (a 400-page bo
 | ✍️ | **Log pages** | Read on the train? Tell it where you stopped and it eats those pages too. |
 | 🍖 | **The feast** | After each sitting: pages, candlelight, stillness, the familiar's favourite, a finished book. Too many pages in too little time and it sniffs at them suspiciously. |
 | 🎭 | **Moods** | After horror it trembles, after romance it blushes, after a mystery it squints, after non-fiction it puts on spectacles. |
-| 📜 | **Grimoire** | Quotes become spells (type them or share a passage from any e-reader); "what happened in the chapter?" builds each book's chronicle. The familiar recalls your quotes in the den. |
+| 🔎 | **Find a book** | Search Open Library (Google Books as a fallback) by title or author: the title, author, pages and the real cover fill in. Covers are kept on the phone. Or type it all by hand and get a cover drawn in the genre's colour. |
 | 🌳 | **Tree of stories** | Every finished book grows a glowing fruit in its genre's colour. Tap one to open the book. |
 | ⚔️ | **The guild** | Three monthly errands, the same for every reader, none of them a must. |
 | 📖 | **Saga** | Your year of reading told as a legend, ready to share. |
@@ -66,7 +66,7 @@ Get **Familiar.apk** from the [latest release](https://github.com/bigdevwhale/fa
 
 ## Privacy
 
-No account, no ads, no analytics, and no internet permission at all. Everything stays on the phone unless you export a backup.
+No account, no ads, no analytics. The app goes online only when you search for a book and to download its cover; your reading stays on the phone unless you export a backup.
 
 ## Build
 

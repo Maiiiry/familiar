@@ -2,7 +2,6 @@ package app.familiar.domain
 
 import app.familiar.data.Book
 import app.familiar.data.Pet
-import app.familiar.data.Quote
 import app.familiar.data.Reading
 import app.familiar.data.Shelf
 import java.time.Instant
@@ -21,7 +20,6 @@ fun isNight(start: Long, zone: ZoneId): Boolean {
 class Stats(
     val books: List<Book>,
     val readings: List<Reading>,
-    val quotes: List<Quote>,
     val pets: List<Pet>,
     val now: Long,
     val zone: ZoneId,
@@ -58,7 +56,6 @@ class Stats(
     val totalPages: Int = readings.sumOf { it.pages }
     val totalMinutes: Int = readings.filter { it.timed }.sumOf { it.minutes }
     val items: List<String> = readings.filter { it.item.isNotBlank() }.sortedByDescending { it.end }.map { it.item }
-    val notes: Int = readings.count { it.note.isNotBlank() }
 
     /** A sitting after five or more quiet days: the phoenix rises from that. */
     val cameBack: Boolean = readings.filter { it.pages > 0 }.sortedBy { it.start }.zipWithNext().any { (a, b) -> b.start - a.end >= 5 * 86_400_000L }
@@ -91,7 +88,6 @@ object Unlocks {
     const val DRAGON_PAGES = 400
     const val MOTH_NIGHTS = 5
     const val GRIFFIN_STREAK = 7
-    const val OWLBEAR_QUOTES = 10
     const val STARTERS_BOOKS = 2
 
     fun unlocked(s: Stats): Set<Species> {
@@ -101,7 +97,7 @@ object Unlocks {
         if (s.nights >= MOTH_NIGHTS) out += Species.MOTH
         if (s.cameBack) out += Species.PHOENIX
         if (s.bestStreak >= GRIFFIN_STREAK) out += Species.GRIFFIN
-        if (s.quotes.size >= OWLBEAR_QUOTES) out += Species.OWLBEAR
+        if (s.finished.any { it.genre == Genre.NONFICTION.name || it.genre == Genre.HISTORY.name }) out += Species.OWLBEAR
         return out
     }
 
@@ -111,7 +107,7 @@ object Unlocks {
         Species.MOTH -> s.nights.coerceAtMost(MOTH_NIGHTS) to MOTH_NIGHTS
         Species.PHOENIX -> (if (s.cameBack) 1 else 0) to 1
         Species.GRIFFIN -> s.bestStreak.coerceAtMost(GRIFFIN_STREAK) to GRIFFIN_STREAK
-        Species.OWLBEAR -> s.quotes.size.coerceAtMost(OWLBEAR_QUOTES) to OWLBEAR_QUOTES
+        Species.OWLBEAR -> s.finished.count { it.genre == Genre.NONFICTION.name || it.genre == Genre.HISTORY.name }.coerceAtMost(1) to 1
         else -> s.finished.size.coerceAtMost(STARTERS_BOOKS) to STARTERS_BOOKS
     }
 }
@@ -128,8 +124,6 @@ object Mana {
     const val BOOK_DONE = 50
     const val MIMIC_FEAST = 100
     const val SLIME_ITEM = 15
-    const val QUOTE = 3
-    const val OWLBEAR_QUOTE = 10
     const val QUEST = 100
 
     /** Faster than this many pages a minute is more than a person reads; the rest counts half. */
@@ -186,12 +180,11 @@ object Mana {
         return Feast(parts)
     }
 
-    fun quote(sp: Species?): Int = if (sp == Species.OWLBEAR) OWLBEAR_QUOTE else QUOTE
 }
 
 /** Monthly guild errands: three from the board, the same three for everyone in that month. */
 enum class Quest(val target: Int) {
-    STREAK(5), PAGES(500), TWO_BOOKS(2), LONG_BOOK(1), NEW_GENRE(1), NIGHTS(3), HOUR(1), QUOTES(5), NOTES(7), STILL(5);
+    STREAK(5), PAGES(500), TWO_BOOKS(2), LONG_BOOK(1), NEW_GENRE(1), NIGHTS(3), HOUR(1), STILL(5);
 
     companion object {
         fun of(month: YearMonth): List<Quest> = entries.shuffled(Random(month.year * 12 + month.monthValue)).take(3)
@@ -219,8 +212,6 @@ object Quests {
                 Quest.NEW_GENRE -> doneNow.count { it.genre !in oldGenres && it.genre != Genre.OTHER.name }
                 Quest.NIGHTS -> rs.count { it.timed && it.pages > 0 && isNight(it.start, s.zone) }
                 Quest.HOUR -> rs.count { it.timed && it.minutes >= 60 }
-                Quest.QUOTES -> s.quotes.count { inMonth(it.created) }
-                Quest.NOTES -> rs.count { it.note.isNotBlank() }
                 Quest.STILL -> rs.count { it.stillSec >= 600 }
             }
             QuestState(q, p.coerceAtMost(q.target), month)
@@ -234,7 +225,6 @@ class Year(private val s: Stats, val year: Int) {
     val books: List<Book> = s.finished.filter { it.finished != null && inYear(it.finished) }
     val pages: Int = s.readings.filter { inYear(it.end) }.sumOf { it.pages }
     val nights: Int = s.readings.count { inYear(it.end) && it.pages > 0 && isNight(it.start, s.zone) }
-    val quotes: Int = s.quotes.count { inYear(it.created) }
     val genre: Genre? = books.groupBy { Genre.of(it.genre) }.maxByOrNull { it.value.size }?.key
     val longest: Book? = books.maxByOrNull { it.pages }
     val bestStreak: Int = longestRun(s.readings.filter { inYear(it.end) && it.pages > 0 }.map { Instant.ofEpochMilli(it.end).atZone(s.zone).toLocalDate() }.toSet())

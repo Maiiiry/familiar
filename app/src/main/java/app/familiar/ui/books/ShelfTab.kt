@@ -71,7 +71,7 @@ fun ShelfTab(data: FamiliarData, go: Go) {
             }
             items(list, key = { it.id }) { b ->
                 Column(Modifier.clickable { go.book(b.id) }) {
-                    BookCover(b.title, Genre.of(b.genre), Modifier.fillMaxWidth().aspectRatio(0.68f))
+                    BookCover(b.title, Genre.of(b.genre), Modifier.fillMaxWidth().aspectRatio(0.68f), cover = b.cover)
                     Spacer(Modifier.height(6.dp))
                     Text(b.title, style = UType.Small.copy(color = U.c.ink), maxLines = 2)
                     if (b.shelfOf == Shelf.READING || b.shelfOf == Shelf.PAUSED) {

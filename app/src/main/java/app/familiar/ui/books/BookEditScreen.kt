@@ -17,6 +17,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
+import app.familiar.ui.components.BookCover
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,11 +59,30 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
     var page by remember { mutableStateOf(old?.page?.takeIf { it > 0 }?.toString() ?: "") }
     var genre by remember { mutableStateOf(old?.let { Genre.of(it.genre) } ?: Genre.FANTASY) }
     var shelf by remember { mutableStateOf(old?.shelfOf ?: Shelf.READING) }
+    var cover by remember { mutableStateOf(old?.cover ?: "") }
     val total = pages.toIntOrNull()?.takeIf { it in 1..20000 }
     val ok = title.isNotBlank() && total != null
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
         TopBar(stringResource(if (old == null) R.string.book_add else R.string.book_edit), { go.back() })
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp)) {
+            SectionTitle(stringResource(R.string.search_title))
+            BookSearch { f ->
+                title = f.title
+                author = f.author
+                f.pages?.let { pages = it.toString() }
+                cover = f.cover
+            }
+            if (cover.isNotBlank() || title.isNotBlank()) {
+                Spacer(Modifier.height(14.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    BookCover(title.ifBlank { "?" }, genre, Modifier.width(70.dp).height(102.dp), small = true, cover = cover)
+                    Spacer(Modifier.width(14.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(if (cover.isNotBlank()) stringResource(R.string.cover_found) else stringResource(R.string.cover_drawn), style = UType.Muted)
+                        if (cover.isNotBlank()) TextButton(onClick = { cover = "" }) { Text(stringResource(R.string.cover_remove), color = U.c.muted, style = UType.Button) }
+                    }
+                }
+            }
             SectionTitle(stringResource(R.string.f_title))
             UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
             SectionTitle(stringResource(R.string.f_author))
@@ -93,7 +116,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go) {
                 val now = System.currentTimeMillis()
                 val p = (page.toIntOrNull() ?: 0).coerceIn(0, total!!)
                 val b = (old ?: Book(title = "", pages = total, genre = genre.name, added = now)).copy(
-                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p,
+                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover,
                     shelf = if (old == null) shelf.name else old.shelf,
                     started = old?.started ?: if (shelf == Shelf.READING) now else null,
                 )

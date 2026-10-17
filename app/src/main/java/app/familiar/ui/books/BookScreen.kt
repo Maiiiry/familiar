@@ -75,7 +75,6 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
     }
     val genre = Genre.of(book.genre)
     val sittings = data.readings.filter { it.bookId == id }.sortedByDescending { it.end }
-    val quotes = data.quotes.filter { it.bookId == id }
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding()) {
         TopBar("", { go.back() }) {
             IconButton(onClick = { go.editBook(id) }) { Icon(Icons.Rounded.Edit, stringResource(R.string.edit), tint = U.c.muted) }
@@ -83,7 +82,7 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
         }
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                BookCover(book.title, genre, Modifier.width(104.dp).height(150.dp))
+                BookCover(book.title, genre, Modifier.width(104.dp).height(150.dp), cover = book.cover)
                 Spacer(Modifier.width(16.dp))
                 Column(Modifier.weight(1f)) {
                     Text(book.title, style = UType.Title)
@@ -131,20 +130,6 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                 }
             }
 
-            SectionTitle(stringResource(R.string.grimoire_of_book))
-            if (quotes.isEmpty()) Text(stringResource(R.string.no_quotes_book), style = UType.Muted)
-            quotes.forEach { q ->
-                UCard(Modifier.padding(bottom = 8.dp), onClick = { go.quote(q.id) }) {
-                    Text("“${q.text}”", style = UType.Quote.copy(fontSize = 18.sp, lineHeight = 23.sp))
-                    q.page?.let { Text(stringResource(R.string.page_n, it), style = UType.Small, modifier = Modifier.padding(top = 4.dp)) }
-                }
-            }
-            TextButton(onClick = { go.quote(bookId = id) }) {
-                Icon(Icons.Rounded.Add, null, tint = U.c.accent)
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(R.string.quote_add), color = U.c.accent, style = UType.Button)
-            }
-
             SectionTitle(stringResource(R.string.chronicle))
             if (sittings.isEmpty()) Text(stringResource(R.string.no_sittings), style = UType.Muted)
             else UCard {
@@ -160,7 +145,6 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                         }
                         Text("+${mana(r.mana)}", style = UType.Small.copy(color = U.c.mana))
                     }
-                    if (r.note.isNotBlank()) Text(r.note, style = UType.Body.copy(fontSize = 14.sp), modifier = Modifier.padding(top = 6.dp))
                     if (r.item.isNotBlank()) Text(stringResource(R.string.item_swallowed, r.item), style = UType.Small.copy(color = U.c.leaf), modifier = Modifier.padding(top = 4.dp))
                 }
             }

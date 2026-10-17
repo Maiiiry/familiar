@@ -139,7 +139,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                         val end = System.currentTimeMillis()
                         val r = Library.sit(
                             container.db.dao(), book, ritual.fromPage, input.toPage, ritual.start, end, timed = true,
-                            stillSec = (ritual.stillMs / 1000).toInt(), note = input.note, item = input.item, finish = input.finish,
+                            stillSec = (ritual.stillMs / 1000).toInt(), item = input.item, finish = input.finish,
                         )
                         container.settings.update { it.copy(ritual = null) }
                         container.changed()
@@ -213,8 +213,11 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
         danger = true,
         onConfirm = {
             closing = true
-            container.scope.launch { container.settings.update { it.copy(ritual = null) } }
-            go.back()
+            // Put the candle out first, then leave, so nothing relights it on the way.
+            container.scope.launch {
+                container.settings.update { it.copy(ritual = null) }
+                withContext(Dispatchers.Main) { go.back() }
+            }
         },
         onDismiss = { discarding = false },
     )

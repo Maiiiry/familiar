@@ -93,7 +93,7 @@ fun speciesHow(sp: Species): String = when (sp) {
     Species.MOTH -> pluralStringResource(R.plurals.how_moth, Unlocks.MOTH_NIGHTS, Unlocks.MOTH_NIGHTS)
     Species.PHOENIX -> stringResource(R.string.how_phoenix)
     Species.GRIFFIN -> pluralStringResource(R.plurals.how_griffin, Unlocks.GRIFFIN_STREAK, Unlocks.GRIFFIN_STREAK)
-    Species.OWLBEAR -> pluralStringResource(R.plurals.how_owlbear, Unlocks.OWLBEAR_QUOTES, Unlocks.OWLBEAR_QUOTES)
+    Species.OWLBEAR -> stringResource(R.string.how_owlbear)
     else -> pluralStringResource(R.plurals.how_starter, Unlocks.STARTERS_BOOKS, Unlocks.STARTERS_BOOKS)
 }
 
@@ -139,8 +139,6 @@ fun questTitle(q: Quest): String = stringResource(
         Quest.NEW_GENRE -> R.string.q_new_genre
         Quest.NIGHTS -> R.string.q_nights
         Quest.HOUR -> R.string.q_hour
-        Quest.QUOTES -> R.string.q_quotes
-        Quest.NOTES -> R.string.q_notes
         Quest.STILL -> R.string.q_still
     }
 )
@@ -154,8 +152,6 @@ fun questText(q: Quest): String = when (q) {
     Quest.NEW_GENRE -> stringResource(R.string.qt_new_genre)
     Quest.NIGHTS -> pluralStringResource(R.plurals.qt_nights, q.target, q.target)
     Quest.HOUR -> stringResource(R.string.qt_hour)
-    Quest.QUOTES -> pluralStringResource(R.plurals.qt_quotes, q.target, q.target)
-    Quest.NOTES -> pluralStringResource(R.plurals.qt_notes, q.target, q.target)
     Quest.STILL -> pluralStringResource(R.plurals.qt_still, q.target, q.target)
 }
 

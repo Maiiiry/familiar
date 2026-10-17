@@ -3,7 +3,6 @@ package app.familiar
 import app.familiar.content.Lines
 import app.familiar.data.Book
 import app.familiar.data.Pet
-import app.familiar.data.Quote
 import app.familiar.data.Reading
 import app.familiar.data.Shelf
 import app.familiar.domain.Genre
@@ -34,14 +33,14 @@ class FamiliarTest {
 
     private fun at(daysAgo: Int, hour: Int = 20) = today.minusDays(daysAgo.toLong()).atTime(hour, 0).toInstant(zone).toEpochMilli()
 
-    private fun read(daysAgo: Int, pages: Int = 20, hour: Int = 20, book: Long = 1, note: String = "", item: String = "", still: Int = 0, minutes: Int = 30) =
-        Reading(bookId = book, petId = 1, start = at(daysAgo, hour), end = at(daysAgo, hour) + minutes * 60_000L, fromPage = 0, toPage = pages, mana = pages, timed = true, note = note, item = item, stillSec = still)
+    private fun read(daysAgo: Int, pages: Int = 20, hour: Int = 20, book: Long = 1, item: String = "", still: Int = 0, minutes: Int = 30) =
+        Reading(bookId = book, petId = 1, start = at(daysAgo, hour), end = at(daysAgo, hour) + minutes * 60_000L, fromPage = 0, toPage = pages, mana = pages, timed = true, item = item, stillSec = still)
 
     private fun book(id: Long, genre: Genre = Genre.FANTASY, pages: Int = 300, done: Int? = null) =
         Book(id = id, title = "B$id", pages = pages, genre = genre.name, shelf = if (done != null) Shelf.DONE.name else Shelf.READING.name, added = 0, finished = done?.let { at(it) })
 
-    private fun stats(readings: List<Reading>, books: List<Book> = listOf(book(1)), quotes: List<Quote> = emptyList(), pets: List<Pet> = listOf(pet)) =
-        Stats(books, readings, quotes, pets, now, zone, 20)
+    private fun stats(readings: List<Reading>, books: List<Book> = listOf(book(1)), pets: List<Pet> = listOf(pet)) =
+        Stats(books, readings, pets, now, zone, 20)
 
     private fun sitting(pages: Int = 30, timed: Boolean = true, minutes: Int = 30, still: Float = 0f, night: Boolean = false, genre: Genre = Genre.FANTASY, prev: Genre? = null, bookPages: Int = 300, streak: Int = 1, gap: Int = 0, finished: Boolean = false, item: String = "") =
         Mana.Sitting(pages, timed, minutes, still, night, genre, prev, bookPages, streak, gap, finished, item)
@@ -136,7 +135,7 @@ class FamiliarTest {
         assertTrue(Species.MOTH in stats((1..5).map { read(it, hour = 23) }).unlocked)
         assertTrue(Species.PHOENIX in stats(listOf(read(9), read(1))).unlocked)
         assertTrue(Species.GRIFFIN in stats((1..7).map { read(it) }).unlocked)
-        assertTrue(Species.OWLBEAR in stats(emptyList(), quotes = (1..10).map { Quote(text = "q$it", created = 0) }).unlocked)
+        assertTrue(Species.OWLBEAR in stats(emptyList(), listOf(book(1, Genre.HISTORY, done = 1))).unlocked)
     }
 
     @Test
@@ -144,7 +143,7 @@ class FamiliarTest {
         val m = YearMonth.of(2026, 10)
         assertEquals(Quest.of(m), Quest.of(m))
         assertEquals(3, Quest.of(m).toSet().size)
-        val s = stats((0..9).map { read(it, pages = 60, note = "x", still = 700) })
+        val s = stats((0..9).map { read(it, pages = 60, still = 700) })
         Quests.state(s, m).forEach { q -> assertTrue(q.progress in 0..q.quest.target) }
     }
 
