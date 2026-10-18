@@ -45,6 +45,11 @@ class FamiliarApp : Application() {
         // Re-arm on every start: OEM task killers (HyperOS & co.) silently drop alarms.
         container.scope.launch {
             if (BuildConfig.DEMO) DemoSeed.seedIfEmpty(container.db, container.settings)
+            // The database was started fresh (a changed schema): meet a new familiar instead of an empty den.
+            val s = container.settings.now()
+            if (s.onboarded && container.db.dao().pets().isEmpty()) {
+                container.settings.update { app.familiar.data.Settings(theme = it.theme, name = it.name, remindAt = it.remindAt, dailyGoal = it.dailyGoal) }
+            }
             container.changed()
         }
     }

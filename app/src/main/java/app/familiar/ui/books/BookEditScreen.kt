@@ -55,7 +55,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
     val old = data.book(id)
     var title by remember { mutableStateOf(old?.title ?: "") }
     var author by remember { mutableStateOf(old?.author ?: "") }
-    var pages by remember { mutableStateOf(old?.pages?.toString() ?: "") }
+    var pages by remember { mutableStateOf(old?.pages?.takeIf { it > 0 }?.toString() ?: "") }
     var page by remember { mutableStateOf(old?.page?.takeIf { it > 0 }?.toString() ?: "") }
     var genre by remember { mutableStateOf(old?.let { Genre.of(it.genre) } ?: Genre.FANTASY) }
     var shelf by remember { mutableStateOf(old?.shelfOf ?: Shelf.READING) }

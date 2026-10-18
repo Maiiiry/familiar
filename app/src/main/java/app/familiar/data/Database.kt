@@ -1,6 +1,7 @@
 package app.familiar.data
 
 import android.content.Context
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
@@ -42,7 +43,7 @@ data class Book(
     val series: String = "",
     val volume: Int? = null,
     /** The user's own shelves this book is on, one name per line. */
-    val tags: String = "",
+    @ColumnInfo(defaultValue = "") val tags: String = "",
 ) {
     val tagList: List<String> get() = tags.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     /** The last page you can reach: the book's end, or no limit when its length isn't known. */
@@ -73,7 +74,7 @@ data class Reading(
     /** This sitting finished the book. */
     val finishedBook: Boolean = false,
     /** Listened rather than read, even if the book is on paper too. */
-    val listened: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val listened: Boolean = false,
 ) {
     val pages: Int get() = (toPage - fromPage).coerceAtLeast(0)
     /** What this sitting gave: its pages, or its minutes when no page was given (listening, reading by time). */
@@ -169,12 +170,15 @@ abstract class FamiliarDao {
     }
 }
 
-@Database(entities = [Book::class, Reading::class, Pet::class], version = 1, exportSchema = true)
+@Database(entities = [Book::class, Reading::class, Pet::class], version = 2, exportSchema = true)
 abstract class FamiliarDatabase : RoomDatabase() {
     abstract fun dao(): FamiliarDao
 
     companion object {
         fun create(context: Context): FamiliarDatabase =
-            Room.databaseBuilder(context.applicationContext, FamiliarDatabase::class.java, "familiar.db").build()
+            Room.databaseBuilder(context.applicationContext, FamiliarDatabase::class.java, "familiar.db")
+                // No migrations: a changed schema starts a fresh database (and onboarding again, see FamiliarApp).
+                .fallbackToDestructiveMigration(dropAllTables = true)
+                .build()
     }
 }

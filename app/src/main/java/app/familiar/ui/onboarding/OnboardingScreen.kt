@@ -134,10 +134,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         f.pages?.let { pages = it.toString() }
                         cover = f.cover
                     }
-                    if (cover.isNotBlank()) {
-                        Spacer(Modifier.height(12.dp))
-                        app.familiar.ui.components.BookCover(title, genre, Modifier.width(70.dp).height(102.dp), small = true, cover = cover)
-                    }
+                    SectionTitle(stringResource(R.string.f_cover))
+                    app.familiar.ui.books.CoverPicker(title, genre, cover) { cover = it }
                     SectionTitle(stringResource(R.string.f_title))
                     UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
                     SectionTitle(stringResource(R.string.f_author))

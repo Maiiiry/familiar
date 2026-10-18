@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2026-10-19
+
+- **Fixed: 1.1.0 didn't start after updating from 1.0.0.** The database changed without a new version. Updating now starts with a fresh database and a new egg; the books, sittings and familiars from 1.0.0 are not carried over.
+- A book with no page count shows an empty field in the editor instead of 0, so it can be saved.
+- The first book in onboarding can get its own cover from the gallery.
+
 ## [1.1.0] - 2026-10-19
 
 - **Read or listen.** Any book can be switched between reading and its audio version, sitting by sitting: a gramophone turns instead of the candle, the minutes count by themselves, and the page in the text is optional. Listened sittings are marked with 🎧 in the book's chronicle.

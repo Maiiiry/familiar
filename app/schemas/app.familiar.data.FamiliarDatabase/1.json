@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "048bb705f4f762bb131e4c623c901474",
+    "identityHash": "0329681cb585a3a23b511e5fe7f4b2ba",
     "entities": [
       {
         "tableName": "books",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL, `audio` INTEGER NOT NULL, `series` TEXT NOT NULL, `volume` INTEGER, `tags` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `pages` INTEGER NOT NULL, `genre` TEXT NOT NULL, `shelf` TEXT NOT NULL, `page` INTEGER NOT NULL, `added` INTEGER NOT NULL, `started` INTEGER, `finished` INTEGER, `rating` INTEGER, `cover` TEXT NOT NULL, `audio` INTEGER NOT NULL, `series` TEXT NOT NULL, `volume` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -93,12 +93,6 @@
             "fieldPath": "volume",
             "columnName": "volume",
             "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "tags",
-            "columnName": "tags",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -110,7 +104,7 @@
       },
       {
         "tableName": "readings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER NOT NULL, `petId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `fromPage` INTEGER NOT NULL, `toPage` INTEGER NOT NULL, `mana` INTEGER NOT NULL, `timed` INTEGER NOT NULL, `stillSec` INTEGER NOT NULL, `item` TEXT NOT NULL, `finishedBook` INTEGER NOT NULL, `listened` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER NOT NULL, `petId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `fromPage` INTEGER NOT NULL, `toPage` INTEGER NOT NULL, `mana` INTEGER NOT NULL, `timed` INTEGER NOT NULL, `stillSec` INTEGER NOT NULL, `item` TEXT NOT NULL, `finishedBook` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -183,12 +177,6 @@
             "columnName": "finishedBook",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "listened",
-            "columnName": "listened",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -255,7 +243,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '048bb705f4f762bb131e4c623c901474')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0329681cb585a3a23b511e5fe7f4b2ba')"
     ]
   }
 }

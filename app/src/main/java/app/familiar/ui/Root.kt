@@ -154,6 +154,8 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
     // Onboarded elsewhere (a restored backup, the demo seed): leave the welcome screens.
     LaunchedEffect(settings.onboarded, route) {
         if (settings.onboarded && route == "welcome") nav.navigate("main") { popUpTo("welcome") { inclusive = true } }
+        // Reset elsewhere (a fresh database): start over with an egg.
+        if (!settings.onboarded && route == "main") nav.navigate("welcome") { popUpTo("main") { inclusive = true } }
     }
 
     val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
