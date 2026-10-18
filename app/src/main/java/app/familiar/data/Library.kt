@@ -30,7 +30,7 @@ object Library {
     ): Result? {
         val pet = dao.activePet() ?: dao.pets().firstOrNull() ?: return null
         val sp = Species.of(pet.species)
-        val to = toPage.coerceIn(0, book.pages)
+        val to = toPage.coerceIn(0, book.cap)
         val done = finish || (book.pages > 0 && to >= book.pages)
         val past = dao.readings()
         val books = dao.books().associateBy { it.id }
@@ -59,7 +59,7 @@ object Library {
         val id = dao.insertReading(reading)
         dao.updateBook(
             book.copy(
-                page = maxOf(book.page, to),
+                page = if (done && book.pages > 0) book.pages else maxOf(book.page, to),
                 shelf = if (done) Shelf.DONE.name else Shelf.READING.name,
                 started = book.started ?: start,
                 finished = if (done) (book.finished ?: end) else book.finished,

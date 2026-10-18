@@ -27,13 +27,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material.icons.rounded.Chair
-import androidx.compose.material.icons.rounded.SportsBaseball
 import androidx.compose.ui.platform.LocalContext
 import app.familiar.container
 import app.familiar.domain.Den
@@ -91,11 +89,9 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
         Spacer(Modifier.height(10.dp))
         val container = LocalContext.current.container
         val now = rememberNow(1000)
-        // Moments that pass: purring after a stroke, a sleepy eye after a tap at night, a game.
+        // Moments that pass: purring after a stroke, a sleepy eye after a tap at night.
         var purrUntil by remember { mutableLongStateOf(0L) }
         var wokenUntil by remember { mutableLongStateOf(0L) }
-        var playUntil by remember { mutableLongStateOf(0L) }
-        var toss by remember { mutableIntStateOf(0) }
         val hour = LocalTime.now().hour
         val night = hour < 6 || hour >= 20
         val asleep = hour < 6 && now > wokenUntil && data.settings.ritual == null
@@ -105,7 +101,7 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
         val books = s.finished.map { Genre.of(it.genre).argb.toInt() }.takeLast(24)
         Box(Modifier.fillMaxWidth().aspectRatio(Room.W / Room.H.toFloat())) {
             if (look != null) DenScene(
-                look, placed, books, night, Modifier.fillMaxSize(), toss,
+                look, placed, books, night, Modifier.fillMaxSize(),
                 onTap = { if (asleep || now < wokenUntil) wokenUntil = System.currentTimeMillis() + 8_000 },
                 onStroke = { purrUntil = System.currentTimeMillis() + 2_500 },
             )
@@ -117,7 +113,6 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
             val seed = remember(data.now / 600_000) { (data.now / 600_000).toInt() }
             val l = locale()
             val line = when {
-                now < playUntil -> Lines.line(l, sp, Lines.State.PLAY, pet.name, seed)
                 purring -> Lines.line(l, sp, Lines.State.PURR, pet.name, seed)
                 asleep -> Lines.line(l, sp, Lines.State.SLEEP, pet.name, seed)
                 now < wokenUntil && hour < 6 -> Lines.line(l, sp, Lines.State.WOKEN, pet.name, seed)
@@ -130,26 +125,10 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
                 modifier = Modifier.fillMaxWidth().clip(U.RMd).background(U.c.surface).border(1.dp, U.c.line, U.RMd).padding(horizontal = 14.dp, vertical = 10.dp),
             )
             Spacer(Modifier.height(10.dp))
-            val today = s.today.toEpochDay()
-            val playedToday = data.settings.played == today
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SoftButton(
-                    stringResource(if (playedToday) R.string.play_done else R.string.play),
-                    {
-                        if (!playedToday && s.stage != Stage.EGG && !asleep) {
-                            toss++
-                            playUntil = System.currentTimeMillis() + 4_000
-                            container.scope.launch { container.settings.update { it.copy(played = today) } }
-                        }
-                    },
-                    Modifier.weight(1f), color = if (playedToday || s.stage == Stage.EGG) U.c.muted else U.c.accent,
-                    soft = if (playedToday || s.stage == Stage.EGG) U.c.surface2 else U.c.accentSoft, icon = Icons.Rounded.SportsBaseball,
-                )
-                SoftButton(
-                    stringResource(R.string.furnish_short, Den.sparks(data.pets, data.settings.spent)), { go.furnish() },
-                    Modifier.weight(1f), color = U.c.gold, soft = U.c.goldSoft, icon = Icons.Rounded.Chair,
-                )
-            }
+            SoftButton(
+                stringResource(R.string.furnish_short, Den.sparks(data.pets, data.settings.spent)), { go.furnish() },
+                Modifier.fillMaxWidth(), color = U.c.gold, soft = U.c.goldSoft, icon = Icons.Rounded.Chair,
+            )
         }
         if (pet != null) {
             Spacer(Modifier.height(12.dp))
@@ -205,7 +184,7 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
                         Text(book.title, style = UType.Strong, maxLines = 2)
                         if (book.author.isNotBlank()) Text(book.author, style = UType.Muted, maxLines = 1)
                         Spacer(Modifier.height(6.dp))
-                        Bar(book.fraction, color = U.c.accent, track = U.c.accentSoft)
+                        if (book.pages > 0) Bar(book.fraction, color = U.c.accent, track = U.c.accentSoft)
                         Spacer(Modifier.height(4.dp))
                         Text(app.familiar.ui.progressLabel(book), style = UType.Small)
                     }

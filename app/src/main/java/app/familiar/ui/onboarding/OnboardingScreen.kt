@@ -68,6 +68,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
     var petName by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
+    var author by remember { mutableStateOf("") }
     var pages by remember { mutableStateOf("") }
     var genre by remember { mutableStateOf(Genre.FANTASY) }
     var cover by remember { mutableStateOf("") }
@@ -129,6 +130,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     SectionTitle(stringResource(R.string.search_title))
                     app.familiar.ui.books.BookSearch { f ->
                         title = f.title
+                        author = f.author
                         f.pages?.let { pages = it.toString() }
                         cover = f.cover
                     }
@@ -138,8 +140,10 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     }
                     SectionTitle(stringResource(R.string.f_title))
                     UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
+                    SectionTitle(stringResource(R.string.f_author))
+                    UTextField(author, { author = it.take(80) }, placeholder = stringResource(R.string.f_author_hint))
                     SectionTitle(stringResource(R.string.f_pages))
-                    UTextField(pages, { pages = it.filter(Char::isDigit).take(5) }, number = true, placeholder = "320")
+                    UTextField(pages, { pages = it.filter(Char::isDigit).take(5) }, number = true, placeholder = stringResource(R.string.f_pages_optional))
                     SectionTitle(stringResource(R.string.f_genre))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Genre.entries.forEach { g -> Chip(genreName(g), genre == g, { genre = g }, genreColor(g)) }
@@ -150,7 +154,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
             }
             Spacer(Modifier.height(20.dp))
         }
-        val bookOk = title.isNotBlank() && (pages.toIntOrNull() ?: 0) > 0
+        val bookOk = title.isNotBlank()
         PrimaryButton(
             stringResource(
                 when {
@@ -167,7 +171,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         val dao = container.db.dao()
                         val now = System.currentTimeMillis()
                         Library.adopt(dao, species, pet, now)
-                        if (bookOk) dao.insertBook(Book(title = title.trim(), pages = pages.toInt(), genre = genre.name, added = now, started = now, cover = cover))
+                        if (bookOk) dao.insertBook(Book(title = title.trim(), author = author.trim(), pages = pages.toIntOrNull() ?: 0, genre = genre.name, added = now, started = now, cover = cover))
                         container.settings.update {
                             it.copy(onboarded = true, name = name.trim(), remindAt = if (remind) 21 * 60 else -1, seenUnlocks = it.seenUnlocks + species.name)
                         }

@@ -112,7 +112,7 @@ object Unlocks {
     }
 }
 
-enum class Part { PAGES, RITUAL, STILL, FAVOURITE, BOOK_DONE, ITEM, SNIFF }
+enum class Part { PAGES, TIME, RITUAL, STILL, FAVOURITE, BOOK_DONE, ITEM, SNIFF }
 
 class Feast(val parts: List<Pair<Part, Int>>) {
     val total: Int get() = parts.sumOf { it.second }.coerceAtLeast(0)
@@ -128,6 +128,9 @@ object Mana {
 
     /** Faster than this many pages a minute is more than a person reads; the rest counts half. */
     const val MAX_PACE = 2.5f
+
+    /** Minutes counted for a ritual without a page, at most. */
+    const val MAX_MINUTES = 180
 
     class Sitting(
         val pages: Int,
@@ -149,6 +152,13 @@ object Mana {
 
     fun feast(sp: Species, s: Sitting): Feast {
         val parts = mutableListOf<Pair<Part, Int>>()
+        // No page given after a ritual: the familiar eats the minutes by the candle instead.
+        if (s.timed && s.pages == 0 && s.minutes > 0) {
+            parts += Part.TIME to s.minutes.coerceAtMost(MAX_MINUTES)
+            if (s.finishedBook) parts += Part.BOOK_DONE to BOOK_DONE
+            if (sp == Species.SLIME && s.item.isNotBlank()) parts += Part.ITEM to SLIME_ITEM
+            return Feast(parts)
+        }
         var pages = s.pages
         parts += Part.PAGES to s.pages
         if (s.timed) {

@@ -125,7 +125,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
     val elapsed = (now - ritual.start).coerceAtLeast(0)
     val left = 1f - elapsed / (s.candleMin * 60_000f)
     // An audiobook counts itself: every minute listened is a minute further.
-    val heard = (ritual.fromPage + (elapsed / 60_000).toInt()).coerceAtMost(book.pages)
+    val heard = (ritual.fromPage + (elapsed / 60_000).toInt()).coerceAtMost(book.cap)
 
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
         TopBar(book.title, null) {
@@ -135,7 +135,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
                 Text(stringResource(R.string.ritual_done_title), style = UType.Title)
                 Text(stringResource(R.string.ritual_done_minutes, (elapsed / 60_000).toInt()), style = UType.Sub)
-                SittingForm(book, ritual.fromPage, if (book.audio) heard else ritual.page, data.species == Species.SLIME, stringResource(R.string.feed)) { input ->
+                SittingForm(book, ritual.fromPage, if (book.audio) heard else ritual.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = true) { input ->
                     if (closing) return@SittingForm
                     closing = true
                     container.scope.launch {
@@ -198,7 +198,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             SoftButton("", { update { r -> r.copy(page = (r.page - 1).coerceAtLeast(r.fromPage)) } }, Modifier.width(56.dp), color = U.c.muted, soft = U.c.surface2, icon = Icons.Rounded.Remove)
                             PrimaryButton(stringResource(R.string.turn_page), {
-                                update { r -> r.copy(page = (r.page + 1).coerceAtMost(book.pages)) }
+                                update { r -> r.copy(page = (r.page + 1).coerceAtMost(book.cap)) }
                                 if (s.pageSound) Sound.page()
                                 if (s.haptics) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             }, Modifier.weight(1f), icon = Icons.AutoMirrored.Rounded.ArrowForward)

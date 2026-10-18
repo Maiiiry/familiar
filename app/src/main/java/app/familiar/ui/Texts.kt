@@ -143,6 +143,7 @@ fun shelfName(s: Shelf): String = stringResource(
 @Composable
 fun partName(p: Part, sp: Species?, audio: Boolean = false): String = when (p) {
     Part.PAGES -> stringResource(if (audio) R.string.part_minutes else R.string.part_pages)
+    Part.TIME -> stringResource(R.string.part_time)
     Part.RITUAL -> stringResource(R.string.part_ritual)
     Part.STILL -> stringResource(R.string.part_still)
     Part.FAVOURITE -> stringResource(R.string.part_favourite, sp?.let { speciesLoves(it) } ?: "")
@@ -186,7 +187,11 @@ fun hm(min: Int): String = "%d:%02d".format(min / 60, min % 60)
 /** "Page 12 of 300", or for an audiobook "1:05 of 9:30". */
 @Composable
 fun progressLabel(b: app.familiar.data.Book): String =
-    if (b.audio) stringResource(R.string.audio_of, hm(b.page), hm(b.pages)) else stringResource(R.string.page_of, b.page, b.pages)
+    when {
+        b.pages <= 0 -> if (b.audio) stringResource(R.string.minute_at, hm(b.page)) else stringResource(R.string.page_n, b.page)
+        b.audio -> stringResource(R.string.audio_of, hm(b.page), hm(b.pages))
+        else -> stringResource(R.string.page_of, b.page, b.pages)
+    }
 
 /** Pages read, or minutes listened. */
 @Composable

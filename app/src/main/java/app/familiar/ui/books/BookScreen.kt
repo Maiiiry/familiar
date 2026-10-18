@@ -95,7 +95,7 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                         modifier = Modifier.padding(top = 4.dp).clickable { go.series(book.series) },
                     )
                     Spacer(Modifier.height(10.dp))
-                    Bar(book.fraction, color = U.c.accent, track = U.c.accentSoft)
+                    if (book.pages > 0) Bar(book.fraction, color = U.c.accent, track = U.c.accentSoft)
                     Spacer(Modifier.height(4.dp))
                     Text(app.familiar.ui.progressLabel(book), style = UType.Small)
                 }
@@ -134,6 +134,9 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                     }
                 }
             }
+
+            SectionTitle(stringResource(R.string.f_shelves))
+            ShelfChips(data.settings.shelves, book.tagList.toSet()) { t -> container.write { dao().updateBook(book.copy(tags = t.joinToString(NL))) } }
 
             SectionTitle(stringResource(R.string.chronicle))
             if (sittings.isEmpty()) Text(stringResource(R.string.no_sittings), style = UType.Muted)
@@ -175,3 +178,5 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
         onDismiss = { deleting = false },
     )
 }
+
+private const val NL = "\n"

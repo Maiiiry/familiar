@@ -63,11 +63,13 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
     var audio by remember { mutableStateOf(old?.audio ?: false) }
     var series by remember { mutableStateOf(old?.series ?: newSeries) }
     // A new volume of a cycle gets the next number.
+    var tags by remember { mutableStateOf(old?.tagList?.toSet() ?: emptySet()) }
     var volume by remember {
         mutableStateOf(old?.volume?.toString() ?: if (newSeries.isBlank()) "" else ((data.books.filter { it.series.equals(newSeries, true) }.mapNotNull { it.volume }.maxOrNull() ?: 0) + 1).toString())
     }
-    val total = pages.toIntOrNull()?.takeIf { it in 1..20000 }
-    val ok = title.isNotBlank() && total != null
+    // The length is optional: 0 means not known yet.
+    val total = pages.toIntOrNull()?.takeIf { it in 1..20000 } ?: 0
+    val ok = title.isNotBlank() && (pages.isBlank() || pages.toIntOrNull()?.let { it in 1..20000 } == true)
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding().imePadding()) {
         TopBar(stringResource(if (old == null) R.string.book_add else R.string.book_edit), { go.back() })
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp)) {
@@ -78,17 +80,8 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
                 f.pages?.let { pages = it.toString() }
                 cover = f.cover
             }
-            if (cover.isNotBlank() || title.isNotBlank()) {
-                Spacer(Modifier.height(14.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    BookCover(title.ifBlank { "?" }, genre, Modifier.width(70.dp).height(102.dp), small = true, cover = cover)
-                    Spacer(Modifier.width(14.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(if (cover.isNotBlank()) stringResource(R.string.cover_found) else stringResource(R.string.cover_drawn), style = UType.Muted)
-                        if (cover.isNotBlank()) TextButton(onClick = { cover = "" }) { Text(stringResource(R.string.cover_remove), color = U.c.muted, style = UType.Button) }
-                    }
-                }
-            }
+            SectionTitle(stringResource(R.string.f_cover))
+            CoverPicker(title, genre, cover) { cover = it }
             SectionTitle(stringResource(R.string.f_title))
             UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
             SectionTitle(stringResource(R.string.f_author))
@@ -98,7 +91,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Column(Modifier.weight(1f)) {
                     SectionTitle(stringResource(if (audio) R.string.f_minutes else R.string.f_pages))
-                    UTextField(pages, { pages = it.filter(Char::isDigit).take(5) }, number = true, placeholder = "320")
+                    UTextField(pages, { pages = it.filter(Char::isDigit).take(5) }, number = true, placeholder = stringResource(R.string.f_pages_optional))
                 }
                 Column(Modifier.weight(1f)) {
                     SectionTitle(stringResource(if (audio) R.string.f_minute_now else R.string.f_page_now))
@@ -124,6 +117,8 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
                 Genre.entries.forEach { g -> Chip(genreName(g), genre == g, { genre = g }, genreColor(g)) }
             }
             Text(stringResource(R.string.f_genre_note), style = UType.Small.copy(color = U.c.muted), modifier = Modifier.padding(top = 6.dp))
+            SectionTitle(stringResource(R.string.f_shelves))
+            ShelfChips(data.settings.shelves, tags) { tags = it }
             if (old == null) {
                 SectionTitle(stringResource(R.string.f_shelf))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -136,9 +131,9 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
             stringResource(R.string.save),
             {
                 val now = System.currentTimeMillis()
-                val p = (page.toIntOrNull() ?: 0).coerceIn(0, total!!)
+                val p = (page.toIntOrNull() ?: 0).coerceIn(0, if (total > 0) total else 99_999)
                 val b = (old ?: Book(title = "", pages = total, genre = genre.name, added = now)).copy(
-                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover, audio = audio, series = series.trim(), volume = volume.toIntOrNull()?.takeIf { series.isNotBlank() },
+                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover, audio = audio, tags = tags.joinToString("\n"), series = series.trim(), volume = volume.toIntOrNull()?.takeIf { series.isNotBlank() },
                     shelf = if (old == null) shelf.name else old.shelf,
                     started = old?.started ?: if (shelf == Shelf.READING) now else null,
                 )

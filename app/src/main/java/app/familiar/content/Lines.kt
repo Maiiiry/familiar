@@ -9,7 +9,7 @@ import java.util.Locale
  * present tense so they fit any name, whatever its grammatical gender.
  */
 object Lines {
-    enum class State { EGG, STONE, ASH, HUNGRY, FED, READING, SLEEP, WOKEN, PURR, PLAY, TIRED }
+    enum class State { EGG, STONE, ASH, HUNGRY, FED, READING, SLEEP, WOKEN, PURR }
 
     fun of(locale: Locale): Map<Species, Map<State, List<String>>> = if (locale.language == "ru") RU else EN
 
@@ -42,8 +42,6 @@ object Lines {
         State.SLEEP to listOf("{n} спит и сопит. Тсс…", "{n} видит сны о недочитанных главах."),
         State.WOKEN to listOf("{n} сонно приоткрывает один глаз…", "{n} зевает: «Уже утро?»"),
         State.PURR to listOf("{n} жмурится и мурлычет.", "{n} подставляет макушку: ещё, ещё!"),
-        State.PLAY to listOf("{n} гоняет клубок по всему логову!", "{n} ловит клубок и гордо приносит обратно."),
-        State.TIRED to listOf("На сегодня игр хватит: {n} отдыхает. Завтра — ещё!"),
     ) else mapOf(
         State.EGG to listOf("The egg is warm. It seems to be listening to you read.", "Something stirs inside. A few more pages…", "Tap, tap. The egg is waiting for a story."),
         State.STONE to listOf("{n} is turning to stone: the spell of forgetting. A page or two will break it.", "{n} is almost a statue. Open a book and the stone will crack."),
@@ -52,8 +50,6 @@ object Lines {
         State.SLEEP to listOf("{n} is asleep and snoring softly. Shh…", "{n} dreams of unfinished chapters."),
         State.WOKEN to listOf("{n} opens one sleepy eye…", "{n} yawns: “Is it morning already?”"),
         State.PURR to listOf("{n} squeezes its eyes shut and purrs.", "{n} pushes its head into your hand: more, more!"),
-        State.PLAY to listOf("{n} chases the yarn all over the den!", "{n} catches the yarn and proudly brings it back."),
-        State.TIRED to listOf("{n} has played enough for today. More tomorrow!"),
     )
 
     private val EN: Map<Species, Map<State, List<String>>> = mapOf(

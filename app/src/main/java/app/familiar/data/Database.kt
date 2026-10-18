@@ -22,6 +22,7 @@ data class Book(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
     val author: String = "",
+    /** Total pages (minutes for an audiobook); 0 when not known. */
     val pages: Int,
     /** [app.familiar.domain.Genre] name. */
     val genre: String,
@@ -40,7 +41,13 @@ data class Book(
     /** The cycle this book belongs to, and its number in it; empty for a standalone book. */
     val series: String = "",
     val volume: Int? = null,
+    /** The user's own shelves this book is on, one name per line. */
+    val tags: String = "",
 ) {
+    val tagList: List<String> get() = tags.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
+    /** The last page you can reach: the book's end, or no limit when its length isn't known. */
+    val cap: Int get() = if (pages > 0) pages else 99_999
+
     val shelfOf: Shelf get() = runCatching { Shelf.valueOf(shelf) }.getOrDefault(Shelf.READING)
     val fraction: Float get() = if (pages <= 0) 0f else (page.toFloat() / pages).coerceIn(0f, 1f)
 }

@@ -27,6 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Row
+import app.familiar.container
+import app.familiar.ui.books
+import app.familiar.ui.components.Chip
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.remember
 import app.familiar.domain.Series
 import androidx.compose.ui.Alignment
@@ -40,21 +46,28 @@ import app.familiar.ui.FamiliarData
 import app.familiar.ui.Go
 import app.familiar.ui.components.Bar
 import app.familiar.ui.components.BookCover
-import app.familiar.ui.components.Segmented
 import app.familiar.ui.shelfName
 import app.familiar.ui.theme.U
 import app.familiar.ui.theme.UType
 
 @Composable
 fun ShelfTab(data: FamiliarData, go: Go) {
-    // null is the cycles view.
-    var shelf by rememberSaveable { mutableStateOf<Shelf?>(Shelf.READING) }
-    val list = when (shelf) {
-        Shelf.READING -> data.reading + data.books.filter { it.shelfOf == Shelf.PAUSED }
-        Shelf.DONE -> data.books.filter { it.shelfOf == Shelf.DONE }.sortedByDescending { it.finished ?: it.added }
-        null -> emptyList()
-        else -> data.books.filter { it.shelfOf == shelf }
+    // Which shelf is open: a built-in one, the cycles, or one of your own ("own:<name>").
+    var view by rememberSaveable { mutableStateOf(Shelf.READING.name) }
+    val own = view.removePrefix(OWN).takeIf { view.startsWith(OWN) && it in data.settings.shelves }
+    if (view.startsWith(OWN) && own == null) view = Shelf.READING.name
+    val shelf: Shelf? = Shelf.entries.firstOrNull { it.name == view }
+    val list = when {
+        own != null -> data.books.filter { own in it.tagList }.sortedByDescending { it.added }
+        shelf == Shelf.READING -> data.reading + data.books.filter { it.shelfOf == Shelf.PAUSED }
+        shelf == Shelf.DONE -> data.books.filter { it.shelfOf == Shelf.DONE }.sortedByDescending { it.finished ?: it.added }
+        shelf != null -> data.books.filter { it.shelfOf == shelf }
+        else -> emptyList()
     }
+    val container = androidx.compose.ui.platform.LocalContext.current.container
+    var adding by remember { mutableStateOf(false) }
+    var renaming by remember { mutableStateOf<String?>(null) }
+    var removing by remember { mutableStateOf<String?>(null) }
     val cycles = remember(data.books) { Series.all(data.books) }
     Box(Modifier.fillMaxSize()) {
         LazyVerticalGrid(
@@ -68,15 +81,26 @@ fun ShelfTab(data: FamiliarData, go: Go) {
                 Column {
                     Text(stringResource(R.string.tab_shelf), style = UType.Display, modifier = Modifier.padding(top = 14.dp))
                     Spacer(Modifier.height(12.dp))
-                    Segmented(listOf(Shelf.READING, Shelf.WANT, Shelf.DONE, null), shelf, { if (it == null) stringResource(R.string.cycles) else if (it == Shelf.WANT) stringResource(R.string.shelf_want_short) else shelfName(it) }, { shelf = it })
-                    if (shelf == null && cycles.isEmpty()) Text(stringResource(R.string.cycles_empty), style = UType.Sub, modifier = Modifier.padding(top = 24.dp))
+                    androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(listOf(Shelf.READING, Shelf.WANT, Shelf.DONE)) { sh -> Chip(shelfName(sh), view == sh.name, { view = sh.name }) }
+                        item { Chip(stringResource(R.string.cycles), view == CYCLES, { view = CYCLES }) }
+                        items(data.settings.shelves) { n -> Chip(n, own == n, { view = OWN + n }, U.c.gold) }
+                        item { Chip("+ " + stringResource(R.string.shelf_new), false, { adding = true }, U.c.gold) }
+                    }
+                    if (own != null) Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(books(list.size), style = UType.Muted, modifier = Modifier.weight(1f))
+                        androidx.compose.material3.TextButton(onClick = { renaming = own }) { Text(stringResource(R.string.shelf_rename), color = U.c.accent, style = UType.Button) }
+                        androidx.compose.material3.TextButton(onClick = { removing = own }) { Text(stringResource(R.string.delete), color = U.c.muted, style = UType.Button) }
+                    }
+                    if (view == CYCLES && cycles.isEmpty()) Text(stringResource(R.string.cycles_empty), style = UType.Sub, modifier = Modifier.padding(top = 24.dp))
+                    if (own != null && list.isEmpty()) Text(stringResource(R.string.shelf_own_empty), style = UType.Sub, modifier = Modifier.padding(top = 16.dp))
                     if (shelf != null && list.isEmpty()) Text(
                         stringResource(when (shelf) { Shelf.READING -> R.string.empty_reading; Shelf.WANT -> R.string.empty_want; else -> R.string.empty_done }),
                         style = UType.Sub, modifier = Modifier.padding(top = 24.dp),
                     )
                 }
             }
-            if (shelf == null) items(cycles, key = { it.key }, span = { GridItemSpan(3) }) { c -> CycleCard(c) { go.series(c.name) } }
+            if (view == CYCLES) items(cycles, key = { it.key }, span = { GridItemSpan(3) }) { c -> CycleCard(c) { go.series(c.name) } }
             items(list, key = { it.id }) { b ->
                 Column(Modifier.clickable { go.book(b.id) }) {
                     BookCover(b.title, Genre.of(b.genre), Modifier.fillMaxWidth().aspectRatio(0.68f), cover = b.cover)
@@ -84,7 +108,7 @@ fun ShelfTab(data: FamiliarData, go: Go) {
                     Text(b.title, style = UType.Small.copy(color = U.c.ink), maxLines = 2)
                     if (b.shelfOf == Shelf.READING || b.shelfOf == Shelf.PAUSED) {
                         Spacer(Modifier.height(4.dp))
-                        Bar(b.fraction, Modifier.height(5.dp), color = if (b.shelfOf == Shelf.PAUSED) U.c.faint else U.c.accent, track = U.c.accentSoft)
+                        if (b.pages > 0) Bar(b.fraction, Modifier.height(5.dp), color = if (b.shelfOf == Shelf.PAUSED) U.c.faint else U.c.accent, track = U.c.accentSoft)
                         if (b.shelfOf == Shelf.PAUSED) Text(shelfName(Shelf.PAUSED), style = UType.Small)
                     }
                     if (b.shelfOf == Shelf.DONE && b.rating != null) Text("★".repeat(b.rating), style = UType.Small.copy(color = U.c.gold))
@@ -98,7 +122,25 @@ fun ShelfTab(data: FamiliarData, go: Go) {
             modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
         ) { Icon(Icons.Rounded.Add, stringResource(R.string.book_add)) }
     }
+    if (adding) ShelfNameDialog(onDismiss = { adding = false }) { n ->
+        container.scope.launch { Shelves.add(container, n) }
+        view = OWN + n
+    }
+    renaming?.let { r -> ShelfNameDialog(r, onDismiss = { renaming = null }) { n -> container.scope.launch { Shelves.rename(container, r, n) }; view = OWN + n } }
+    removing?.let { r ->
+        app.familiar.ui.components.ConfirmDialog(
+            title = stringResource(R.string.shelf_delete_title, r),
+            text = stringResource(R.string.shelf_delete_text),
+            confirm = stringResource(R.string.delete),
+            danger = true,
+            onConfirm = { container.scope.launch { Shelves.remove(container, r) }; view = Shelf.READING.name },
+            onDismiss = { removing = null },
+        )
+    }
 }
+
+private const val OWN = "own:"
+private const val CYCLES = "cycles"
 
 /** A cycle: its covers fanned out, and how many volumes are read. */
 @Composable

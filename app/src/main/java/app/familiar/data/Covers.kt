@@ -84,6 +84,26 @@ object Covers {
         return File(File(context.filesDir, "covers").apply { mkdirs() }, "$h.jpg")
     }
 
+    /** Covers picked from the gallery are stored as files and referred to like this. */
+    const val LOCAL = "file://"
+
+    /** Copies a picture the user picked into the app, scaled down to a cover; returns its address. */
+    suspend fun importPicked(context: Context, uri: android.net.Uri): String? = withContext(Dispatchers.IO) {
+        runCatching {
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            context.contentResolver.openInputStream(uri)!!.use { BitmapFactory.decodeStream(it, null, bounds) }
+            var sample = 1
+            while (maxOf(bounds.outWidth, bounds.outHeight) / (sample * 2) >= 900) sample *= 2
+            val bmp = context.contentResolver.openInputStream(uri)!!.use {
+                BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+            } ?: return@runCatching null
+            val dir = File(context.filesDir, "covers").apply { mkdirs() }
+            val out = File(dir, "own-${System.currentTimeMillis()}.jpg")
+            out.outputStream().use { bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 88, it) }
+            LOCAL + out.path
+        }.getOrNull()
+    }
+
     private val memory = object : LinkedHashMap<String, ImageBitmap>(32, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>?) = size > 40
     }
@@ -94,7 +114,8 @@ object Covers {
     suspend fun load(context: Context, url: String): ImageBitmap? = withContext(Dispatchers.IO) {
         if (url.isBlank()) return@withContext null
         cached(url)?.let { return@withContext it }
-        val f = file(context, url)
+        val f = if (url.startsWith(LOCAL)) File(url.removePrefix(LOCAL)) else file(context, url)
+        if (url.startsWith(LOCAL) && !f.exists()) return@withContext null
         if (!f.exists()) {
             val bytes = get(url) ?: return@withContext null
             // Open Library answers with a 1-pixel GIF when it has no picture.

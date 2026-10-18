@@ -161,4 +161,20 @@ class FamiliarTest {
         assertEquals(Glyph.LETTER, Glyph.of("a letter from Mr. Darcy"))
         assertEquals(Glyph.of("something odd"), Glyph.of("something odd"))
     }
+
+    @Test
+    fun ritualWithoutPageEatsMinutes() {
+        val f = Mana.feast(Species.MIMIC, sitting(pages = 0, minutes = 40))
+        assertEquals(40, f.total)
+        assertTrue(f.parts.any { it.first == Part.TIME })
+        // Logged by hand with no pages there's nothing to eat.
+        assertEquals(0, Mana.feast(Species.MIMIC, sitting(pages = 0, timed = false, minutes = 40)).total)
+    }
+
+    @Test
+    fun unknownLengthHasNoLimit() {
+        val b = book(1, pages = 0)
+        assertEquals(99_999, b.cap)
+        assertEquals(0f, b.fraction, 0f)
+    }
 }

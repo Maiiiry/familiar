@@ -398,8 +398,6 @@
     <string name="item_remove">Убрать</string>
     <string name="item_owned">Твоё</string>
     <string name="item_standing">В логове</string>
-    <string name="play">Поиграть</string>
-    <string name="play_done">Уже играли</string>
     <string name="shiny">сияющий</string>
     <string name="cel_shiny">Сияющий!</string>
     <string name="cel_shiny_text">Редкий окрас: так вылупляется примерно одно яйцо из %d.</string>
@@ -448,4 +446,18 @@
     <string name="heat_title">Каждый день года</string>
     <string name="heat_less">Меньше</string>
     <string name="heat_more">Больше</string>
+    <string name="f_pages_optional">Необязательно</string>
+    <string name="page_type_any">Или введи страницу</string>
+    <string name="no_page">Не считать страницы</string>
+    <string name="no_page_sub">Фамильяр съест минуты при свече</string>
+    <string name="part_time">Минуты при свече</string>
+    <string name="f_cover">Обложка</string>
+    <string name="cover_pick">Выбрать из галереи</string>
+    <string name="f_shelves">Мои полки</string>
+    <string name="shelf_new">Полка</string>
+    <string name="shelf_rename">Переименовать</string>
+    <string name="shelf_name_hint">Например, В отпуск</string>
+    <string name="shelf_own_empty">Здесь пока пусто. Открой книгу и положи её на эту полку.</string>
+    <string name="shelf_delete_title">Удалить полку «%s»?</string>
+    <string name="shelf_delete_text">Книги останутся, просто уйдут с этой полки.</string>
 </resources>

@@ -23,30 +23,44 @@ import app.familiar.ui.components.Stepper
 import app.familiar.ui.components.SwitchRow
 import app.familiar.ui.components.UCard
 import app.familiar.ui.components.UTextField
-import app.familiar.ui.pages
 import app.familiar.ui.theme.U
 import app.familiar.ui.theme.UType
 
 class SittingInput(val toPage: Int, val item: String, val finish: Boolean)
 
-/** Where you stopped and (for a slime) what it should swallow. */
+/**
+ * Where you stopped and (for a slime) what it should swallow. After a [timed] ritual the page can
+ * be left out: then the familiar eats the minutes by the candle.
+ */
 @Composable
-fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, button: String, onSave: (SittingInput) -> Unit) {
-    var page by remember { mutableIntStateOf(startPage.coerceIn(fromPage, book.pages)) }
+fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, button: String, timed: Boolean = false, onSave: (SittingInput) -> Unit) {
+    var page by remember { mutableIntStateOf(startPage.coerceIn(fromPage, book.cap)) }
     var typed by remember { mutableStateOf("") }
     var item by remember { mutableStateOf("") }
     var finish by remember { mutableStateOf(false) }
+    var noPage by remember { mutableStateOf(false) }
+    val known = book.pages > 0
     Column {
         SectionTitle(stringResource(R.string.stopped_at))
         UCard {
-            Stepper(if (book.audio) stringResource(R.string.minute_at, app.familiar.ui.hm(page)) else stringResource(R.string.page_n, page), "+${page - fromPage}", { page = (page - 1).coerceAtLeast(fromPage) }, { page = (page + 1).coerceAtMost(book.pages) }, color = U.c.accent)
-            UTextField(typed, {
-                typed = it.filter(Char::isDigit).take(5)
-                typed.toIntOrNull()?.let { v -> page = v.coerceIn(fromPage, book.pages) }
-            }, number = true, placeholder = stringResource(if (book.audio) R.string.minute_type else R.string.page_type, book.pages))
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(if (book.audio) R.string.listened_now else R.string.read_now, app.familiar.ui.amount(page - fromPage, book.audio)), style = UType.Small.copy(color = U.c.muted))
-            SwitchRow(stringResource(R.string.finished_book), null, finish || page >= book.pages, { finish = it; if (it) page = book.pages })
+            if (timed && !book.audio) SwitchRow(stringResource(R.string.no_page), stringResource(R.string.no_page_sub), noPage, { noPage = it })
+            if (!noPage) {
+                Stepper(
+                    if (book.audio) stringResource(R.string.minute_at, app.familiar.ui.hm(page)) else stringResource(R.string.page_n, page), "+${page - fromPage}",
+                    { page = (page - 1).coerceAtLeast(fromPage) }, { page = (page + 1).coerceAtMost(book.cap) }, color = U.c.accent,
+                )
+                UTextField(typed, {
+                    typed = it.filter(Char::isDigit).take(5)
+                    typed.toIntOrNull()?.let { v -> page = v.coerceIn(fromPage, book.cap) }
+                }, number = true, placeholder = when {
+                    book.audio -> stringResource(R.string.minute_type, book.pages)
+                    known -> stringResource(R.string.page_type, book.pages)
+                    else -> stringResource(R.string.page_type_any)
+                })
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(if (book.audio) R.string.listened_now else R.string.read_now, app.familiar.ui.amount(page - fromPage, book.audio)), style = UType.Small.copy(color = U.c.muted))
+            }
+            SwitchRow(stringResource(R.string.finished_book), null, finish || (known && page >= book.pages && !noPage), { finish = it; if (it && known && !noPage) page = book.pages })
         }
         if (slime) {
             SectionTitle(stringResource(R.string.slime_item))
@@ -54,6 +68,9 @@ fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, butto
             Text(stringResource(R.string.slime_item_note), style = UType.Small.copy(color = U.c.muted), modifier = Modifier.padding(top = 4.dp))
         }
         Spacer(Modifier.height(18.dp))
-        PrimaryButton(button, { onSave(SittingInput(page, item, finish || page >= book.pages)) }, Modifier.fillMaxWidth())
+        PrimaryButton(button, {
+            val to = if (noPage) fromPage else page
+            onSave(SittingInput(to, item, finish || (known && to >= book.pages)))
+        }, Modifier.fillMaxWidth())
     }
 }
