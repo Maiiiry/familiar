@@ -52,7 +52,7 @@ Three can hatch at the start; the other five are found by reading (a 400-page bo
 
 Your familiar lives in a little pixel room. Every mana it ever ate leaves a **spark**, and sparks buy furniture: a window with the real day or night in it, stained glass, a bookshelf filled with the colours of your finished books, a bubbling cauldron, a mandrake that peeks out of its pot, a telescope, fairy lights, rugs, candles, a lantern. Spending sparks never takes anything from growth.
 
-Stroke the familiar and it squeezes its eyes shut and purrs; toss it a ball of yarn once a day. After midnight it sleeps and snores, and a tap wakes it for a sleepy moment.
+Stroke the familiar sideways and it squeezes its eyes shut and purrs. After midnight it sleeps and snores, and a tap wakes it for a sleepy moment.
 
 <br clear="right" />
 
@@ -61,12 +61,12 @@ Stroke the familiar and it squeezes its eyes shut and purrs; toss it a ball of y
 | | Feature | How it works |
 |---|---|---|
 | 🕯️ | **The ritual** | A candle that burns down while you read, a big "turn the page" button with a rustle, or just read and say where you stopped at the end. A synthesised fireplace or rain. Lay the phone face down and the familiar dozes on your lap; quiet time feeds a bonus. |
-| 🎧 | **Audiobooks** | Counted in minutes: a gramophone turns instead of a candle, and every minute listened counts by itself. |
-| ✍️ | **Log pages** | Read on the train? Tell it where you stopped and it eats those pages too. |
+| 🎧 | **Read or listen** | Switch any book between reading and its audio version, sitting by sitting: a gramophone turns instead of the candle and the minutes count by themselves; the page in the text is optional. Audio-only books are counted in minutes. |
+| ✍️ | **Log reading** | Read on the train? Log the page you reached, or just the minutes you read or listened. |
 | 🍖 | **The feast** | After each sitting: pages, candlelight, stillness, the familiar's favourite, a finished book. Too many pages in too little time and it sniffs at them suspiciously. |
 | 🎭 | **Moods** | After horror it trembles, after romance it blushes, after a mystery it squints, after non-fiction it puts on spectacles. |
-| 🔎 | **Find a book** | Search Open Library (Google Books as a fallback) by title or author: the title, author, pages and the real cover fill in. Covers are kept on the phone. Or type it in and get a cover drawn in the genre's colour. |
-| 📚 | **Cycles** | Give books a cycle and a volume number; the volumes gather together, and reading the whole cycle earns a reward. |
+| 🔎 | **Find a book** | Search Open Library (Google Books as a fallback) by title or author: the title, author, pages and the real cover fill in. Covers are kept on the phone. Or pick your own picture from the gallery, or get a cover drawn in the genre's colour. The length is optional. |
+| 📚 | **Shelves and cycles** | Make your own shelves and put books on several. Give books a cycle and a volume number; the volumes gather together, and reading the whole cycle earns a reward. |
 | 🌳 | **Tree of stories** | Every finished book grows a glowing fruit in its genre's colour. Tap one to open the book. |
 | 🎯 | **Goal for the year** | How many books this year, with how far ahead of or behind the pace you are. |
 | ⚔️ | **The guild** | Three monthly errands, the same for every reader, none of them a must. |

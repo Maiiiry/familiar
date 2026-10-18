@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0] - 2026-10-19
+
+- **Read or listen.** Any book can be switched between reading and its audio version, sitting by sitting: a gramophone turns instead of the candle, the minutes count by themselves, and the page in the text is optional. Listened sittings are marked with 🎧 in the book's chronicle.
+- **Log reading** without the app by the page you reached, or just by minutes of reading or listening.
+- **Minutes count like pages:** they feed the daily fill, the streak, nights, guild errands and the heatmap, so a day of listening keeps the chain.
+- **Pages are optional:** a book's length can be left out, and a ritual can end without a page; the familiar then eats the minutes.
+- **Your own shelves**, with books on as many as you like; rename or delete them any time.
+- **Your own cover** from the gallery.
+- The first book in onboarding gets its own author field.
+- The yarn game is gone; stroking the familiar is sideways only, so the page scrolls over the den.
+- A just-made shelf opens at once; a listening ritual has its own wording.
+
 ## [1.0.0] - 2026-10-17
 
 The first release of Familiar: a reading tracker with a pixel-art familiar that feeds on stories.
