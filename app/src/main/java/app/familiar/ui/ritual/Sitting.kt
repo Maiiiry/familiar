@@ -33,13 +33,13 @@ class SittingInput(val toPage: Int, val item: String, val finish: Boolean)
  * be left out: then the familiar eats the minutes by the candle.
  */
 @Composable
-fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, button: String, timed: Boolean = false, listen: Boolean = false, onSave: (SittingInput) -> Unit) {
+fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, button: String, timed: Boolean = false, listen: Boolean = false, skipPage: Boolean = listen, onSave: (SittingInput) -> Unit) {
     var page by remember { mutableIntStateOf(startPage.coerceIn(fromPage, book.cap)) }
     var typed by remember { mutableStateOf("") }
     var item by remember { mutableStateOf("") }
     var finish by remember { mutableStateOf(false) }
     // After listening the page in the text is often unknown: skipping it is the default then.
-    var noPage by remember { mutableStateOf(listen) }
+    var noPage by remember { mutableStateOf(skipPage) }
     val known = book.pages > 0
     Column {
         SectionTitle(stringResource(R.string.stopped_at))

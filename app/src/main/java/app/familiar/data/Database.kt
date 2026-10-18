@@ -76,6 +76,10 @@ data class Reading(
     val listened: Boolean = false,
 ) {
     val pages: Int get() = (toPage - fromPage).coerceAtLeast(0)
+    /** What this sitting gave: its pages, or its minutes when no page was given (listening, reading by time). */
+    val amount: Int get() = if (pages > 0) pages else if (timed) minutes else 0
+    /** It counts as a day of reading. */
+    val counts: Boolean get() = amount > 0
     val minutes: Int get() = ((end - start) / 60_000).toInt()
 }
 

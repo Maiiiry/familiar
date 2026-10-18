@@ -57,7 +57,7 @@ fun ShelfNameDialog(initial: String = "", onDismiss: () -> Unit, onName: (String
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = U.c.bg,
-        title = { Text(stringResource(if (initial.isEmpty()) R.string.shelf_new else R.string.shelf_rename), style = UType.Strong) },
+        title = { Text(stringResource(if (initial.isEmpty()) R.string.shelf_new_title else R.string.shelf_rename), style = UType.Strong) },
         text = { UTextField(name, { name = it.take(30) }, placeholder = stringResource(R.string.shelf_name_hint)) },
         confirmButton = {
             TextButton(onClick = { if (name.isNotBlank()) onName(name.trim()); onDismiss() }) { Text(stringResource(R.string.save), color = U.c.accent, style = UType.Button) }

@@ -184,4 +184,14 @@ class FamiliarTest {
         assertEquals(25, f.total)
         assertTrue(f.parts.any { it.first == Part.LISTEN })
     }
+
+    @Test
+    fun minutesCountAsADayOfReading() {
+        // Listened yesterday without a page: still part of the streak, and today's minutes feed the familiar.
+        val listened = Reading(bookId = 1, petId = 1, start = at(1), end = at(1) + 30 * 60_000L, fromPage = 10, toPage = 10, mana = 30, timed = true, listened = true)
+        val today = Reading(bookId = 1, petId = 1, start = at(0, 18), end = at(0, 18) + 25 * 60_000L, fromPage = 10, toPage = 10, mana = 25, timed = true)
+        val s = stats(listOf(read(2), listened, today))
+        assertEquals(3, s.streak)
+        assertEquals(25, s.todayPages)
+    }
 }

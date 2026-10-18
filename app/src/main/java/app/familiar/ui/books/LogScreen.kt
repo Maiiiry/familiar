@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** Pages read away from the app (on the train, in bed), logged afterwards. */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun LogScreen(id: Long, data: FamiliarData, go: Go) {
     val container = LocalContext.current.container
@@ -48,19 +49,31 @@ fun LogScreen(id: Long, data: FamiliarData, go: Go) {
         TopBar(book.title, { go.back() })
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
             Text(stringResource(R.string.log_text), style = UType.Sub)
-            // Listened to it instead (an audiobook, or the audio version of this one): count the minutes.
-            var listened by remember { mutableStateOf(book.audio) }
+            // What to log: pages, minutes of reading (pages unknown), or minutes of the audio version.
+            var mode by remember { mutableStateOf(LogMode.PAGES) }
             var minutes by remember { mutableStateOf("30") }
-            if (!book.audio) app.familiar.ui.components.SwitchRow(stringResource(R.string.log_listened), stringResource(R.string.log_listened_sub), listened, { listened = it })
-            if (listened && !book.audio) {
-                app.familiar.ui.components.SectionTitle(stringResource(R.string.log_minutes))
+            val byTime = mode != LogMode.PAGES
+            val listened = book.audio || mode == LogMode.LISTEN
+            if (!book.audio) {
+                app.familiar.ui.components.SectionTitle(stringResource(R.string.log_what))
+                androidx.compose.foundation.layout.FlowRow(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+                    LogMode.entries.forEach { m ->
+                        app.familiar.ui.components.Chip(
+                            stringResource(when (m) { LogMode.PAGES -> R.string.log_pages_mode; LogMode.READ -> R.string.log_read_mode; LogMode.LISTEN -> R.string.log_listen_mode }),
+                            mode == m, { mode = m },
+                        )
+                    }
+                }
+            }
+            if (byTime) {
+                app.familiar.ui.components.SectionTitle(stringResource(if (listened) R.string.log_minutes else R.string.log_minutes_read))
                 app.familiar.ui.components.UTextField(minutes, { minutes = it.filter(Char::isDigit).take(3) }, number = true, placeholder = "30")
             }
-            androidx.compose.runtime.key(listened) {
-            SittingForm(book, book.page, book.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = listened && !book.audio, listen = listened && !book.audio) { input ->
+            androidx.compose.runtime.key(mode) {
+            SittingForm(book, book.page, book.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = byTime, listen = byTime && listened, skipPage = byTime) { input ->
                 container.scope.launch {
                     val now = System.currentTimeMillis()
-                    val mins = if (listened && !book.audio) (minutes.toIntOrNull() ?: 0).coerceIn(0, 600) else 0
+                    val mins = if (byTime) (minutes.toIntOrNull() ?: 0).coerceIn(0, 600) else 0
                     val r = Library.sit(
                         container.db.dao(), book, book.page, input.toPage, now - mins * 60_000L, now, timed = mins > 0,
                         listened = listened, item = input.item, finish = input.finish,
@@ -76,3 +89,5 @@ fun LogScreen(id: Long, data: FamiliarData, go: Go) {
         }
     }
 }
+
+private enum class LogMode { PAGES, READ, LISTEN }

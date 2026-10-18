@@ -54,8 +54,8 @@ import app.familiar.ui.theme.UType
 fun ShelfTab(data: FamiliarData, go: Go) {
     // Which shelf is open: a built-in one, the cycles, or one of your own ("own:<name>").
     var view by rememberSaveable { mutableStateOf(Shelf.READING.name) }
-    val own = view.removePrefix(OWN).takeIf { view.startsWith(OWN) && it in data.settings.shelves }
-    if (view.startsWith(OWN) && own == null) view = Shelf.READING.name
+    // A shelf just made may not be in settings for a moment yet; it's still the one to show.
+    val own = view.removePrefix(OWN).takeIf { view.startsWith(OWN) }
     val shelf: Shelf? = Shelf.entries.firstOrNull { it.name == view }
     val list = when {
         own != null -> data.books.filter { own in it.tagList }.sortedByDescending { it.added }

@@ -96,7 +96,7 @@
     <string name="mana_to_hatch">%d more to hatch: a page is one mana.</string>
     <string name="mana_to_next">%2$d more to become %1$s.</string>
     <string name="fed_title">Fed today</string>
-    <string name="fed_of">%1$d / %2$d pages</string>
+    <string name="fed_of">%1$d / %2$d</string>
     <string name="streak_line">Reading %s in a row</string>
     <string name="stone_title">The spell of forgetting</string>
     <string name="stone_text">Two quiet days and %s starts turning to stone, from the paws up. A few pages will crack it.</string>
@@ -107,7 +107,7 @@
     <string name="page_n">Page %d</string>
     <string name="page_range">pp. %1$d–%2$d</string>
     <string name="ritual_start">Light the candle</string>
-    <string name="log_pages">Log pages read</string>
+    <string name="log_pages">Log reading</string>
     <string name="no_book_title">Nothing on the reading desk</string>
     <string name="no_book_text">Add the book you\'re reading: its pages are what your familiar eats.</string>
     <string name="book_add">Add a book</string>
@@ -160,7 +160,7 @@
     <string name="item_swallowed">Swallowed: %s</string>
     <string name="delete_book_title">Delete this book?</string>
     <string name="delete_book_text">Its sittings go too. The mana already eaten stays with the familiar.</string>
-    <string name="log_text">Read away from the app? Tell your familiar where you stopped, and it eats those pages too.</string>
+    <string name="log_text">Read away from the app? Tell your familiar how it went: the page you reached, or just how long you read or listened.</string>
 
     <!-- Sitting -->
     <string name="stopped_at">Stopped at</string>
@@ -312,7 +312,7 @@
 
     <!-- Settings -->
     <string name="set_name">Your name</string>
-    <string name="set_goal">Pages a day for a full familiar</string>
+    <string name="set_goal">Pages or minutes a day for a full familiar</string>
     <string name="set_goal_note">Only the "fed" bar uses this; every page feeds mana either way.</string>
     <string name="set_ritual">The ritual</string>
     <string name="set_candle">How long the candle burns</string>
@@ -434,8 +434,8 @@
     <string name="f_pages_optional">Optional</string>
     <string name="page_type_any">Or type the page</string>
     <string name="no_page">Don\'t count pages</string>
-    <string name="no_page_sub">The familiar eats the minutes by the candle instead</string>
-    <string name="part_time">Minutes by the candle</string>
+    <string name="no_page_sub">The familiar eats the minutes instead</string>
+    <string name="part_time">Minutes of reading</string>
     <string name="f_cover">Cover</string>
     <string name="cover_pick">Pick from the gallery</string>
     <string name="f_shelves">My shelves</string>
@@ -453,4 +453,13 @@
     <string name="log_listened">I listened to it</string>
     <string name="log_listened_sub">The audio version: count the minutes</string>
     <string name="log_minutes">Minutes listened</string>
+    <string name="shelf_new_title">New shelf</string>
+    <string name="log_what">What to log</string>
+    <string name="log_pages_mode">Pages</string>
+    <string name="log_read_mode">Reading time</string>
+    <string name="log_listen_mode">Listening time</string>
+    <string name="log_minutes_read">Minutes read</string>
+    <string name="listen_done_title">The record has stopped</string>
+    <string name="listen_done_minutes">%d minutes listened.</string>
+    <string name="listen_continue">Listen a little more</string>
 </resources>

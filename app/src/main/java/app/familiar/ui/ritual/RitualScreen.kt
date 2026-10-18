@@ -135,8 +135,8 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
         }
         if (finishing) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
-                Text(stringResource(R.string.ritual_done_title), style = UType.Title)
-                Text(stringResource(R.string.ritual_done_minutes, (elapsed / 60_000).toInt()), style = UType.Sub)
+                Text(stringResource(if (listening) R.string.listen_done_title else R.string.ritual_done_title), style = UType.Title)
+                Text(stringResource(if (listening) R.string.listen_done_minutes else R.string.ritual_done_minutes, (elapsed / 60_000).toInt()), style = UType.Sub)
                 SittingForm(book, ritual.fromPage, if (book.audio) heard else ritual.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = true, listen = ritual.listen && !book.audio) { input ->
                     if (closing) return@SittingForm
                     closing = true
@@ -154,7 +154,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                         }
                     }
                 }
-                SoftButton(stringResource(R.string.ritual_continue), { finishing = false }, Modifier.fillMaxWidth().padding(top = 8.dp), color = U.c.muted, soft = U.c.surface2)
+                SoftButton(stringResource(if (listening) R.string.listen_continue else R.string.ritual_continue), { finishing = false }, Modifier.fillMaxWidth().padding(top = 8.dp), color = U.c.muted, soft = U.c.surface2)
             }
             return@Column
         }
@@ -229,7 +229,8 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                 }
             }
             Spacer(Modifier.height(12.dp))
-            UCard {
+            // Face down is for paper; while listening there's nothing to put down.
+            if (!listening) UCard {
                 Text(stringResource(if (down) R.string.still_on else R.string.still_title), style = UType.Strong.copy(color = if (down) U.c.leaf else U.c.ink))
                 Spacer(Modifier.height(2.dp))
                 Text(stringResource(R.string.still_text, data.pet?.name ?: ""), style = UType.Muted)

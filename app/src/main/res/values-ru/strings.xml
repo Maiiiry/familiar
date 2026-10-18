@@ -99,7 +99,7 @@
     <string name="mana_to_hatch">Ещё %d до вылупления: одна страница — одна мана.</string>
     <string name="mana_to_next">Ещё %2$d до стадии «%1$s».</string>
     <string name="fed_title">Сытость сегодня</string>
-    <string name="fed_of">%1$d / %2$d стр.</string>
+    <string name="fed_of">%1$d / %2$d</string>
     <string name="streak_line">Читаешь %s подряд</string>
     <string name="stone_title">Чары забвения</string>
     <string name="stone_text">Два тихих дня, и %s начинает каменеть — от лап вверх. Несколько страниц разобьют камень.</string>
@@ -110,7 +110,7 @@
     <string name="page_n">Стр. %d</string>
     <string name="page_range">с. %1$d–%2$d</string>
     <string name="ritual_start">Зажечь свечу</string>
-    <string name="log_pages">Записать страницы</string>
+    <string name="log_pages">Записать чтение</string>
     <string name="no_book_title">На столе нет книги</string>
     <string name="no_book_text">Добавь книгу, которую читаешь: её страницы и ест фамильяр.</string>
     <string name="book_add">Добавить книгу</string>
@@ -162,7 +162,7 @@
     <string name="item_swallowed">Проглочено: %s</string>
     <string name="delete_book_title">Удалить книгу?</string>
     <string name="delete_book_text">Удалятся и записи чтения. Съеденная мана останется у фамильяра.</string>
-    <string name="log_text">Читаешь без приложения? Скажи фамильяру, на какой странице остановка, и он съест и эти страницы.</string>
+    <string name="log_text">Читаешь без приложения? Расскажи фамильяру, как прошло: страница, на которой остановка, или просто сколько минут ушло на чтение или прослушивание.</string>
 
     <string name="stopped_at">Где остановка</string>
     <string name="page_type">Или введи страницу, до %d</string>
@@ -326,7 +326,7 @@
     <string name="ob_skip_book">Начать без книги</string>
 
     <string name="set_name">Твоё имя</string>
-    <string name="set_goal">Страниц в день для полной сытости</string>
+    <string name="set_goal">Страниц или минут в день для полной сытости</string>
     <string name="set_goal_note">Влияет только на шкалу сытости; мана капает за каждую страницу в любом случае.</string>
     <string name="set_ritual">Ритуал</string>
     <string name="set_candle">Сколько горит свеча</string>
@@ -449,8 +449,8 @@
     <string name="f_pages_optional">Необязательно</string>
     <string name="page_type_any">Или введи страницу</string>
     <string name="no_page">Не считать страницы</string>
-    <string name="no_page_sub">Фамильяр съест минуты при свече</string>
-    <string name="part_time">Минуты при свече</string>
+    <string name="no_page_sub">Фамильяр съест минуты вместо страниц</string>
+    <string name="part_time">Минуты чтения</string>
     <string name="f_cover">Обложка</string>
     <string name="cover_pick">Выбрать из галереи</string>
     <string name="f_shelves">Мои полки</string>
@@ -468,4 +468,13 @@
     <string name="log_listened">Это было прослушивание</string>
     <string name="log_listened_sub">Аудиоверсия: считаем минуты</string>
     <string name="log_minutes">Минут прослушано</string>
+    <string name="shelf_new_title">Новая полка</string>
+    <string name="log_what">Что записать</string>
+    <string name="log_pages_mode">Страницы</string>
+    <string name="log_read_mode">Время чтения</string>
+    <string name="log_listen_mode">Время прослушивания</string>
+    <string name="log_minutes_read">Минут чтения</string>
+    <string name="listen_done_title">Пластинка остановлена</string>
+    <string name="listen_done_minutes">Минут прослушивания: %d.</string>
+    <string name="listen_continue">Послушать ещё</string>
 </resources>

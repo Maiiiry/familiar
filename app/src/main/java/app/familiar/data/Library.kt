@@ -36,9 +36,9 @@ object Library {
         val past = dao.readings()
         val books = dao.books().associateBy { it.id }
         val previousGenre = past.filter { it.bookId != book.id }.maxByOrNull { it.end }?.let { books[it.bookId] }?.let { Genre.of(it.genre) }
-        val lastEnd = past.filter { it.pages > 0 }.maxOfOrNull { it.end }
+        val lastEnd = past.filter { it.counts }.maxOfOrNull { it.end }
         val gapDays = lastEnd?.let { ((start - it) / 86_400_000L).toInt() } ?: 0
-        val days = (past.filter { it.pages > 0 }.map { it.end } + end).map { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() }.toSet()
+        val days = (past.filter { it.counts }.map { it.end } + end).map { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() }.toSet()
         var d = Instant.ofEpochMilli(end).atZone(zone).toLocalDate()
         var streak = 0
         while (d in days) { streak++; d = d.minusDays(1) }

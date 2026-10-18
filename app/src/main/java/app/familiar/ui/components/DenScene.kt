@@ -5,7 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -76,9 +76,10 @@ fun DenScene(
                 }
             }
             .pointerInput(Unit) {
-                detectDragGestures(onDragStart = { stroked = 0f }) { change, amount ->
+                // Sideways strokes only, so a vertical swipe still scrolls the page.
+                detectHorizontalDragGestures(onDragStart = { stroked = 0f }) { change, amount ->
                     change.consume()
-                    stroked += amount.getDistance()
+                    stroked += kotlin.math.abs(amount)
                     if (stroked > 260f) { stroked = 0f; onStroke() }
                 }
             }
