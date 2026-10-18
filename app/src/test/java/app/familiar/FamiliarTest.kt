@@ -177,4 +177,11 @@ class FamiliarTest {
         assertEquals(99_999, b.cap)
         assertEquals(0f, b.fraction, 0f)
     }
+
+    @Test
+    fun listeningWithoutPageEatsMinutesListened() {
+        val f = Mana.feast(Species.MIMIC, Mana.Sitting(0, true, 25, 0f, false, Genre.FANTASY, null, 300, 1, 0, false, "", listened = true))
+        assertEquals(25, f.total)
+        assertTrue(f.parts.any { it.first == Part.LISTEN })
+    }
 }

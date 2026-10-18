@@ -112,7 +112,7 @@ object Unlocks {
     }
 }
 
-enum class Part { PAGES, TIME, RITUAL, STILL, FAVOURITE, BOOK_DONE, ITEM, SNIFF }
+enum class Part { PAGES, TIME, LISTEN, RITUAL, STILL, FAVOURITE, BOOK_DONE, ITEM, SNIFF }
 
 class Feast(val parts: List<Pair<Part, Int>>) {
     val total: Int get() = parts.sumOf { it.second }.coerceAtLeast(0)
@@ -148,13 +148,14 @@ object Mana {
         val gapDays: Int,
         val finishedBook: Boolean,
         val item: String,
+        val listened: Boolean = false,
     )
 
     fun feast(sp: Species, s: Sitting): Feast {
         val parts = mutableListOf<Pair<Part, Int>>()
         // No page given after a ritual: the familiar eats the minutes by the candle instead.
         if (s.timed && s.pages == 0 && s.minutes > 0) {
-            parts += Part.TIME to s.minutes.coerceAtMost(MAX_MINUTES)
+            parts += (if (s.listened) Part.LISTEN else Part.TIME) to s.minutes.coerceAtMost(MAX_MINUTES)
             if (s.finishedBook) parts += Part.BOOK_DONE to BOOK_DONE
             if (sp == Species.SLIME && s.item.isNotBlank()) parts += Part.ITEM to SLIME_ITEM
             return Feast(parts)

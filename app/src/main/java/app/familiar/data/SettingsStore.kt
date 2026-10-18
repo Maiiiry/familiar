@@ -21,7 +21,7 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 enum class Ambience { OFF, FIRE, RAIN }
 
 /** A ritual in progress; kept in settings so it survives the app being closed. */
-data class Ritual(val bookId: Long, val start: Long, val fromPage: Int, val page: Int, val stillMs: Long)
+data class Ritual(val bookId: Long, val start: Long, val fromPage: Int, val page: Int, val stillMs: Long, val listen: Boolean = false)
 
 data class Settings(
     val theme: ThemeMode = ThemeMode.SYSTEM,
@@ -76,7 +76,7 @@ class SettingsStore(context: Context) {
         stillDim = this[STILL_DIM] ?: true,
         remindAt = this[REMIND_AT] ?: -1,
         ritual = (this[R_BOOK] ?: 0L).takeIf { it > 0 }?.let {
-            Ritual(it, this[R_START] ?: 0L, this[R_FROM] ?: 0, this[R_PAGE] ?: 0, this[R_STILL] ?: 0L)
+            Ritual(it, this[R_START] ?: 0L, this[R_FROM] ?: 0, this[R_PAGE] ?: 0, this[R_STILL] ?: 0L, this[R_LISTEN] ?: false)
         },
         seenUnlocks = this[SEEN_UNLOCKS] ?: emptySet(),
         seenStages = this[SEEN_STAGES] ?: emptySet(),
@@ -110,6 +110,7 @@ class SettingsStore(context: Context) {
             it[R_FROM] = r?.fromPage ?: 0
             it[R_PAGE] = r?.page ?: 0
             it[R_STILL] = r?.stillMs ?: 0L
+            it[R_LISTEN] = r?.listen ?: false
             it[SEEN_UNLOCKS] = s.seenUnlocks
             it[SEEN_STAGES] = s.seenStages
             it[CLAIMED] = s.claimed
@@ -138,6 +139,7 @@ class SettingsStore(context: Context) {
         val R_FROM = intPreferencesKey("ritual_from")
         val R_PAGE = intPreferencesKey("ritual_page")
         val R_STILL = longPreferencesKey("ritual_still")
+        val R_LISTEN = booleanPreferencesKey("ritual_listen")
         val SEEN_UNLOCKS = stringSetPreferencesKey("seen_unlocks")
         val SEEN_STAGES = stringSetPreferencesKey("seen_stages")
         val CLAIMED = stringSetPreferencesKey("claimed")

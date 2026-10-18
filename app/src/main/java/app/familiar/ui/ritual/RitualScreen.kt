@@ -101,8 +101,10 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
 
     val down = rememberFaceDown()
     // No fireplace over an audiobook: the voice matters more.
-    DisposableEffect(s.ambience, book.audio) {
-        Sound.ambience(if (book.audio) Ambience.OFF else s.ambience)
+    // Listening: an audiobook, or a book switched to its audio version for this sitting.
+    val listening = book.audio || ritual.listen
+    DisposableEffect(s.ambience, listening) {
+        Sound.ambience(if (listening) Ambience.OFF else s.ambience)
         onDispose { Sound.stop() }
     }
     LaunchedEffect(down, s.stillDim) { dim(down && s.stillDim) }
@@ -135,14 +137,14 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
                 Text(stringResource(R.string.ritual_done_title), style = UType.Title)
                 Text(stringResource(R.string.ritual_done_minutes, (elapsed / 60_000).toInt()), style = UType.Sub)
-                SittingForm(book, ritual.fromPage, if (book.audio) heard else ritual.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = true) { input ->
+                SittingForm(book, ritual.fromPage, if (book.audio) heard else ritual.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = true, listen = ritual.listen && !book.audio) { input ->
                     if (closing) return@SittingForm
                     closing = true
                     container.scope.launch {
                         val end = System.currentTimeMillis()
                         val r = Library.sit(
                             container.db.dao(), book, ritual.fromPage, input.toPage, ritual.start, end, timed = true,
-                            stillSec = (ritual.stillMs / 1000).toInt(), item = input.item, finish = input.finish,
+                            stillSec = (ritual.stillMs / 1000).toInt(), listened = listening, item = input.item, finish = input.finish,
                         )
                         container.settings.update { it.copy(ritual = null) }
                         container.changed()
@@ -160,8 +162,13 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // A book on paper can be listened to this time, and back again.
+            if (!book.audio) Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 6.dp)) {
+                Chip(stringResource(R.string.mode_read), !ritual.listen, { update { it.copy(listen = false) } })
+                Chip(stringResource(R.string.mode_listen), ritual.listen, { update { it.copy(listen = true) } })
+            }
             Box(Modifier.fillMaxWidth().height(300.dp)) {
-                if (book.audio) Gramophone(Modifier.align(Alignment.Center).width(260.dp).fillMaxHeight())
+                if (listening) Gramophone(Modifier.align(Alignment.Center).width(260.dp).fillMaxHeight())
                 else Candle(left, Modifier.align(Alignment.Center).width(150.dp).fillMaxHeight())
                 data.look(sleeping = down)?.let { look ->
                     FamiliarArt(look, Modifier.align(Alignment.BottomEnd).size(120.dp), fps = if (down) 2f else 5f)
@@ -171,6 +178,11 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             val sec = (elapsed / 1000) % 60
             Text("%d:%02d".format(min, sec), style = UType.Timer)
             when {
+                ritual.listen && !book.audio -> {
+                    Text(stringResource(R.string.listen_text), style = UType.Sub.copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
+                    Spacer(Modifier.height(10.dp))
+                    Text("+" + app.familiar.ui.amount((elapsed / 60_000).toInt(), true), style = UType.Strong.copy(color = U.c.mana))
+                }
                 book.audio -> {
                     Text(stringResource(R.string.audio_playing), style = UType.Muted)
                     Spacer(Modifier.height(14.dp))
@@ -207,7 +219,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                 }
             }
             Spacer(Modifier.height(16.dp))
-            if (!book.audio) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (!listening) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Ambience.entries.forEach { a ->
                     Chip(
                         stringResource(when (a) { Ambience.OFF -> R.string.amb_off; Ambience.FIRE -> R.string.amb_fire; Ambience.RAIN -> R.string.amb_rain }),
@@ -226,7 +238,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
             Spacer(Modifier.height(16.dp))
         }
         PrimaryButton(
-            stringResource(if (book.audio) R.string.audio_finish else R.string.ritual_finish), { finishing = true },
+            stringResource(if (listening) R.string.audio_finish else R.string.ritual_finish), { finishing = true },
             Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp).navigationBarsPadding(), color = U.c.ember,
         )
     }

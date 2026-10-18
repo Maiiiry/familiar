@@ -147,8 +147,12 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
                         Column(Modifier.weight(1f)) {
                             Text(dateShort(r.end), style = UType.Strong.copy(fontSize = 14.sp))
                             Text(
-                                if (book.audio) app.familiar.ui.amount(r.pages, true) + " · " + app.familiar.ui.hm(r.fromPage) + "–" + app.familiar.ui.hm(r.toPage)
-                                else pages(r.pages) + (if (r.timed) " · " + stringResource(R.string.minutes_n, r.minutes) else "") + " · " + stringResource(R.string.page_range, r.fromPage, r.toPage),
+                                (if (r.listened) "🎧 " else "") + when {
+                                    book.audio -> app.familiar.ui.amount(r.pages, true) + " · " + app.familiar.ui.hm(r.fromPage) + "–" + app.familiar.ui.hm(r.toPage)
+                                    // Listened or read by the candle without a page: only the time is known.
+                                    r.pages == 0 && r.timed -> stringResource(R.string.minutes_n, r.minutes)
+                                    else -> pages(r.pages) + (if (r.timed) " · " + stringResource(R.string.minutes_n, r.minutes) else "") + " · " + stringResource(R.string.page_range, r.fromPage, r.toPage)
+                                },
                                 style = UType.Small,
                             )
                         }

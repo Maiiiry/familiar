@@ -33,17 +33,18 @@ class SittingInput(val toPage: Int, val item: String, val finish: Boolean)
  * be left out: then the familiar eats the minutes by the candle.
  */
 @Composable
-fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, button: String, timed: Boolean = false, onSave: (SittingInput) -> Unit) {
+fun SittingForm(book: Book, fromPage: Int, startPage: Int, slime: Boolean, button: String, timed: Boolean = false, listen: Boolean = false, onSave: (SittingInput) -> Unit) {
     var page by remember { mutableIntStateOf(startPage.coerceIn(fromPage, book.cap)) }
     var typed by remember { mutableStateOf("") }
     var item by remember { mutableStateOf("") }
     var finish by remember { mutableStateOf(false) }
-    var noPage by remember { mutableStateOf(false) }
+    // After listening the page in the text is often unknown: skipping it is the default then.
+    var noPage by remember { mutableStateOf(listen) }
     val known = book.pages > 0
     Column {
         SectionTitle(stringResource(R.string.stopped_at))
         UCard {
-            if (timed && !book.audio) SwitchRow(stringResource(R.string.no_page), stringResource(R.string.no_page_sub), noPage, { noPage = it })
+            if (timed && !book.audio) SwitchRow(stringResource(R.string.no_page), stringResource(if (listen) R.string.no_page_listen else R.string.no_page_sub), noPage, { noPage = it })
             if (!noPage) {
                 Stepper(
                     if (book.audio) stringResource(R.string.minute_at, app.familiar.ui.hm(page)) else stringResource(R.string.page_n, page), "+${page - fromPage}",

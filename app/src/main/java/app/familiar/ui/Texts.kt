@@ -144,6 +144,7 @@ fun shelfName(s: Shelf): String = stringResource(
 fun partName(p: Part, sp: Species?, audio: Boolean = false): String = when (p) {
     Part.PAGES -> stringResource(if (audio) R.string.part_minutes else R.string.part_pages)
     Part.TIME -> stringResource(R.string.part_time)
+    Part.LISTEN -> stringResource(R.string.part_listen)
     Part.RITUAL -> stringResource(R.string.part_ritual)
     Part.STILL -> stringResource(R.string.part_still)
     Part.FAVOURITE -> stringResource(R.string.part_favourite, sp?.let { speciesLoves(it) } ?: "")

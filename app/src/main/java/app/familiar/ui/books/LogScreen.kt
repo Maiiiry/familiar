@@ -12,6 +12,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,16 +48,30 @@ fun LogScreen(id: Long, data: FamiliarData, go: Go) {
         TopBar(book.title, { go.back() })
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
             Text(stringResource(R.string.log_text), style = UType.Sub)
-            SittingForm(book, book.page, book.page, data.species == Species.SLIME, stringResource(R.string.feed)) { input ->
+            // Listened to it instead (an audiobook, or the audio version of this one): count the minutes.
+            var listened by remember { mutableStateOf(book.audio) }
+            var minutes by remember { mutableStateOf("30") }
+            if (!book.audio) app.familiar.ui.components.SwitchRow(stringResource(R.string.log_listened), stringResource(R.string.log_listened_sub), listened, { listened = it })
+            if (listened && !book.audio) {
+                app.familiar.ui.components.SectionTitle(stringResource(R.string.log_minutes))
+                app.familiar.ui.components.UTextField(minutes, { minutes = it.filter(Char::isDigit).take(3) }, number = true, placeholder = "30")
+            }
+            androidx.compose.runtime.key(listened) {
+            SittingForm(book, book.page, book.page, data.species == Species.SLIME, stringResource(R.string.feed), timed = listened && !book.audio, listen = listened && !book.audio) { input ->
                 container.scope.launch {
                     val now = System.currentTimeMillis()
-                    val r = Library.sit(container.db.dao(), book, book.page, input.toPage, now, now, timed = false, item = input.item, finish = input.finish)
+                    val mins = if (listened && !book.audio) (minutes.toIntOrNull() ?: 0).coerceIn(0, 600) else 0
+                    val r = Library.sit(
+                        container.db.dao(), book, book.page, input.toPage, now - mins * 60_000L, now, timed = mins > 0,
+                        listened = listened, item = input.item, finish = input.finish,
+                    )
                     container.changed()
                     withContext(Dispatchers.Main) {
                         lastFeast.value = r
                         if (r != null) go.feast() else go.back()
                     }
                 }
+            }
             }
         }
     }

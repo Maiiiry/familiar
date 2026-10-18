@@ -24,6 +24,7 @@ object Library {
         end: Long,
         timed: Boolean,
         stillSec: Int = 0,
+        listened: Boolean = false,
         item: String = "",
         finish: Boolean = false,
         zone: ZoneId = ZoneId.systemDefault(),
@@ -49,12 +50,12 @@ object Library {
                 stillFraction = if (end > start) stillSec * 1000f / (end - start) else 0f,
                 night = isNight(start, zone), genre = Genre.of(book.genre), previousGenre = previousGenre,
                 bookPages = book.pages, streak = streak, gapDays = gapDays, finishedBook = done && book.shelfOf != Shelf.DONE,
-                item = item,
+                item = item, listened = listened,
             ),
         )
         val reading = Reading(
             bookId = book.id, petId = pet.id, start = start, end = end, fromPage = fromPage, toPage = to, mana = feast.total,
-            timed = timed, stillSec = stillSec, item = item.trim(), finishedBook = done && book.shelfOf != Shelf.DONE,
+            timed = timed, stillSec = stillSec, item = item.trim(), finishedBook = done && book.shelfOf != Shelf.DONE, listened = listened,
         )
         val id = dao.insertReading(reading)
         dao.updateBook(

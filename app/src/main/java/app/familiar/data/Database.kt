@@ -72,6 +72,8 @@ data class Reading(
     val item: String = "",
     /** This sitting finished the book. */
     val finishedBook: Boolean = false,
+    /** Listened rather than read, even if the book is on paper too. */
+    val listened: Boolean = false,
 ) {
     val pages: Int get() = (toPage - fromPage).coerceAtLeast(0)
     val minutes: Int get() = ((end - start) / 60_000).toInt()

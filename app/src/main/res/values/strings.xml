@@ -445,4 +445,12 @@
     <string name="shelf_own_empty">Nothing here yet. Open a book and put it on this shelf.</string>
     <string name="shelf_delete_title">Delete the shelf “%s”?</string>
     <string name="shelf_delete_text">The books stay; they just leave this shelf.</string>
+    <string name="mode_read">Reading</string>
+    <string name="mode_listen">Listening</string>
+    <string name="listen_text">Listening to the audio version. Every minute counts by itself; switch back to reading any time.</string>
+    <string name="no_page_listen">Leave it if you don\'t know the page in the text: the familiar eats the minutes listened</string>
+    <string name="part_listen">Minutes listened</string>
+    <string name="log_listened">I listened to it</string>
+    <string name="log_listened_sub">The audio version: count the minutes</string>
+    <string name="log_minutes">Minutes listened</string>
 </resources>

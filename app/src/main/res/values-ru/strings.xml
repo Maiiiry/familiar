@@ -460,4 +460,12 @@
     <string name="shelf_own_empty">Здесь пока пусто. Открой книгу и положи её на эту полку.</string>
     <string name="shelf_delete_title">Удалить полку «%s»?</string>
     <string name="shelf_delete_text">Книги останутся, просто уйдут с этой полки.</string>
+    <string name="mode_read">Читаю</string>
+    <string name="mode_listen">Слушаю</string>
+    <string name="listen_text">Слушаешь аудиоверсию. Каждая минута засчитывается сама; вернуться к чтению можно в любой момент.</string>
+    <string name="no_page_listen">Оставь, если не знаешь страницу в тексте: фамильяр съест минуты прослушивания</string>
+    <string name="part_listen">Минуты прослушивания</string>
+    <string name="log_listened">Это было прослушивание</string>
+    <string name="log_listened_sub">Аудиоверсия: считаем минуты</string>
+    <string name="log_minutes">Минут прослушано</string>
 </resources>
