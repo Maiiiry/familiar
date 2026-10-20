@@ -22,6 +22,10 @@ object Backup {
         }))
         .put("pets", JSONArray(s.pets.map {
             JSONObject().put("id", it.id).put("species", it.species).put("name", it.name).put("joined", it.joined).put("mana", it.mana).put("active", it.active).put("shiny", it.shiny)
+                .put("trait", it.trait).put("form", it.form)
+        }))
+        .put("finds", JSONArray(s.finds.map {
+            JSONObject().put("id", it.id).put("kind", it.kind).put("at", it.at).put("petId", it.petId).put("readingId", it.readingId)
         }))
         .toString(2)
 
@@ -44,7 +48,8 @@ object Backup {
                     stillSec = optInt("stillSec"), item = optString("item"), finishedBook = optBoolean("finishedBook"), listened = optBoolean("listened"),
                 )
             },
-            pets = root.list("pets") { Pet(getLong("id"), getString("species"), getString("name"), getLong("joined"), getInt("mana"), optBoolean("active"), optBoolean("shiny")) },
+            pets = root.list("pets") { Pet(getLong("id"), getString("species"), getString("name"), getLong("joined"), getInt("mana"), optBoolean("active"), optBoolean("shiny"), optString("trait"), optString("form")) },
+            finds = root.list("finds") { Find(getLong("id"), getString("kind"), getLong("at"), optLong("petId"), optLong("readingId")) },
         )
     }
 

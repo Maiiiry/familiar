@@ -119,7 +119,7 @@
     <string name="bestiary">Бестиарий</string>
     <string name="bestiary_count">Найдено фамильяров: %1$d из %2$d</string>
     <string name="bestiary_eggs">Тебя ждут яйца: %d</string>
-    <string name="bestiary_text">На этих страницах живут восемь фамильяров. Читай, и они придут к тебе один за другим, яйцами. Читаешь всегда с одним; остальные отдыхают в логове со всем, что успели съесть.</string>
+    <string name="bestiary_text">На этих страницах живут двенадцать фамильяров. Читай, и они придут к тебе один за другим, яйцами. Читаешь всегда с одним; остальные отдыхают в логове со всем, что успели съесть.</string>
     <string name="bestiary_note">Мана достаётся тому, с кем ты читаешь. Сменить можно когда угодно.</string>
     <string name="with_you">с тобой</string>
     <string name="egg_waiting">Яйцо ждёт тебя</string>
@@ -134,7 +134,7 @@
     <string name="search_title">Найти книгу</string>
     <string name="search_hint">Название или автор</string>
     <string name="search">Искать</string>
-    <string name="search_note">Из Open Library: название, автор, страницы и обложка. Или заполни ниже вручную.</string>
+    <string name="search_note">Из Фантлаба и Open Library: название, автор, страницы и обложка. Или заполни ниже вручную.</string>
     <string name="search_failed">Не удалось связаться с каталогом книг. Проверь интернет или заполни вручную.</string>
     <string name="search_nothing">Ничего не нашлось. Попробуй другое написание или заполни вручную.</string>
     <string name="cover_found">Обложка сохранится на телефоне.</string>
@@ -312,8 +312,8 @@
     <string name="ob_intro">Ты — маг-читатель, а у каждого мага есть фамильяр. Твой питается маной, а мана берётся из страниц: каждая прочитанная страница — искра, которую он съедает.</string>
     <string name="ob_intro2">Читай, и он вылупится, вырастет и научится новому. Забудешь о книгах, и он медленно окаменеет, пока несколько страниц не снимут чары.</string>
     <string name="ob_choose">Выбери яйцо</string>
-    <string name="ob_choose_text">Каждый фамильяр любит своё чтение. Ещё пятерых найдёшь по пути.</string>
-    <string name="ob_others">Дракончик, феникс, грифон, совомедведь и лунный мотылёк приходят к тем, кто читает.</string>
+    <string name="ob_choose_text">Каждый фамильяр любит своё чтение. Ещё девятерых найдёшь по пути.</string>
+    <string name="ob_others">Дракончик, феникс, грифон, совомедведь, лунный мотылёк, тануки, росток, призрак и книжный червь приходят к тем, кто читает.</string>
     <string name="ob_names">Как назовём фамильяра?</string>
     <string name="ob_pet_name">Имя фамильяра</string>
     <string name="ob_your_name">Твоё имя</string>
@@ -358,7 +358,7 @@
     <string name="backup_restored">Восстановлено</string>
     <string name="backup_failed">Не удалось прочитать или записать файл</string>
     <string name="about">О приложении</string>
-    <string name="about_text">Фамильяр бесплатный, без рекламы и аккаунта. В интернет он ходит только за книгой и её обложкой. Часть Stillcraft.</string>
+    <string name="about_text">Фамильяр бесплатный, без рекламы и аккаунта. В интернет он ходит только за книгой и её обложкой; визиты передаются с телефона на телефон QR-кодом. Часть Stillcraft.</string>
     <string name="about_version">Версия %s</string>
 
     <string name="channel_remind">Вечернее напоминание</string>
@@ -477,4 +477,252 @@
     <string name="listen_done_title">Пластинка остановлена</string>
     <string name="listen_done_minutes">Минут прослушивания: %d.</string>
     <string name="listen_continue">Послушать ещё</string>
+
+    <!-- 1.2.0: ещё четыре фамильяра -->
+    <string name="sp_tanuki">Тануки</string>
+    <string name="sp_sprout">Росток</string>
+    <string name="sp_ghost">Призрак</string>
+    <string name="sp_wyrm">Книжный червь</string>
+    <string name="lore_tanuki">Круглая енотовидная собака с листиком на голове. Обожает истории вслух и отращивает большие наушники, чтобы лучше их слышать.</string>
+    <string name="lore_sprout">Маленький корешок, проснувшийся в горшке. Каждое утро чтения раскрывает на его листьях новый цветок.</string>
+    <string name="lore_ghost">Добрая простынка, которая живёт в библиотеках. Каждый дочитанный ужастик или детектив зажигает вокруг неё ещё один огонёк.</string>
+    <string name="lore_wyrm">Живёт внутри книг и с каждой стадией отращивает новое колечко цвета дочитанной книги. Без очков читать не может.</string>
+    <string name="loves_tanuki" formatted="false">слушать аудиокниги (+50%)</string>
+    <string name="loves_sprout" formatted="false">чтение до десяти утра (+50%)</string>
+    <string name="loves_ghost" formatted="false">ужасы и детективы (+50%)</string>
+    <string name="loves_wyrm" formatted="false">долгое чтение, от 45 минут (+50%)</string>
+    <string name="how_ghost">Дочитай ужастик или детектив.</string>
+    <plurals name="how_tanuki">
+        <item quantity="one">Послушай аудиокнигу %d раз.</item>
+        <item quantity="few">Послушай аудиокниги %d раза.</item>
+        <item quantity="many">Послушай аудиокниги %d раз.</item>
+        <item quantity="other">Послушай аудиокниги %d раза.</item>
+    </plurals>
+    <plurals name="how_sprout">
+        <item quantity="one">Почитай до десяти утра %d раз.</item>
+        <item quantity="few">Почитай до десяти утра %d раза.</item>
+        <item quantity="many">Почитай до десяти утра %d раз.</item>
+        <item quantity="other">Почитай до десяти утра %d раза.</item>
+    </plurals>
+    <plurals name="how_wyrm">
+        <item quantity="one">Почитай %2$d минут за раз %1$d раз.</item>
+        <item quantity="few">Почитай %2$d минут за раз %1$d раза.</item>
+        <item quantity="many">Почитай %2$d минут за раз %1$d раз.</item>
+        <item quantity="other">Почитай %2$d минут за раз %1$d раза.</item>
+    </plurals>
+
+    <!-- Характер -->
+    <string name="tr_sleepy">Соня</string>
+    <string name="tr_glutton">Обжора</string>
+    <string name="tr_curious">Любопытный нос</string>
+    <string name="tr_grumpy">Ворчун</string>
+    <string name="tr_playful">Непоседа</string>
+    <string name="tr_brave">Храбрец</string>
+    <string name="trt_sleepy">Ложится спать на час раньше.</string>
+    <string name="trt_glutton">Долго жуёт и всегда просит добавки.</string>
+    <string name="trt_curious">Чаще приносит находки.</string>
+    <string name="trt_grumpy">Мурлычет, только если гладить подольше.</string>
+    <string name="trt_playful">Подпрыгивает дважды, если тапнуть.</string>
+    <string name="trt_brave">Не дрожит после ужастиков.</string>
+    <string name="trait_line">Характер: %1$s. %2$s</string>
+
+    <!-- Формы -->
+    <string name="form_none">Классическая</string>
+    <string name="form_astral">Звёздная</string>
+    <string name="form_shadow">Туманная</string>
+    <string name="form_bloom">Цветущая</string>
+    <string name="form_sage">Мудрая</string>
+    <string name="form_wild">Лесная</string>
+    <string name="form_line">Форма: %s</string>
+    <string name="form_leaning">Склоняется к форме «%1$s», %2$d%%. Выбирается навсегда, когда вырастет.</string>
+    <string name="forms_title">Формы</string>
+    <string name="forms_text">Выросший фамильяр принимает форму по книгам, которыми его кормили, со своими цветами и короной:</string>
+    <string name="form_of">%1$s: %2$s</string>
+    <string name="cel_form">Форма выбрана</string>
+    <string name="cel_form_text">%1$s вырастает на твоих книгах и навсегда принимает форму «%2$s».</string>
+
+    <!-- Находки и шкатулка -->
+    <string name="casket">Шкатулка</string>
+    <string name="casket_short">Шкатулка · %1$d/%2$d</string>
+    <string name="casket_text">Вещицы, которые фамильяры приносят из историй. В каждом жанре прячется своя, а некоторые попадаются только в особые дни года.</string>
+    <string name="casket_count">Найдено %1$d из %2$d</string>
+    <string name="find_title">%s что-то приносит!</string>
+    <string name="find_new">Новое в шкатулке</string>
+    <string name="find_again">Ещё одна в шкатулку</string>
+    <string name="find_from_genre">Попадается после жанра «%s»</string>
+    <string name="find_from_season">Только в дни: %s</string>
+    <string name="find_from_any">Попадается после любой книги</string>
+    <string name="find_times">×%d</string>
+    <string name="find_unknown">Ещё не найдено</string>
+    <string name="tk_bookmark">Шёлковая закладка</string>
+    <string name="tk_acorn">Жёлудь</string>
+    <string name="tk_button">Потерянная пуговица</string>
+    <string name="tk_candle_stub">Огарок свечи</string>
+    <string name="tk_teacup">Чайная чашка</string>
+    <string name="tk_dice">Игральная кость</string>
+    <string name="tk_ribbon">Бантик</string>
+    <string name="tk_seashell">Ракушка</string>
+    <string name="tk_bell">Колокольчик</string>
+    <string name="tk_moon_pebble">Лунный камешек</string>
+    <string name="tk_dragon_scale">Драконья чешуйка</string>
+    <string name="tk_gear">Шестерёнка робота</string>
+    <string name="tk_magnifier">Лупа</string>
+    <string name="tk_spider">Крошечный паучок</string>
+    <string name="tk_love_letter">Любовное письмо</string>
+    <string name="tk_compass">Компас</string>
+    <string name="tk_quill">Гусиное перо</string>
+    <string name="tk_old_coin">Древняя монета</string>
+    <string name="tk_spectacles">Очки</string>
+    <string name="tk_pressed_flower">Засушенный цветок</string>
+    <string name="tk_pumpkin">Тыква-фонарь</string>
+    <string name="tk_snow_globe">Снежный шар</string>
+    <string name="tk_valentine">Валентинка</string>
+    <string name="tk_first_edition">Первое издание</string>
+    <string name="tk_firefly_jar">Светлячок в банке</string>
+    <string name="tkt_bookmark">Кто-то оставил её на 213-й странице. Что же там случилось?</string>
+    <string name="tkt_acorn">Белки в книгах тоже их прячут.</string>
+    <string name="tkt_button">С пальто героя, который очень спешил.</string>
+    <string name="tkt_candle_stub">Горела всю ночь, пока читалась последняя глава.</string>
+    <string name="tkt_teacup">Ещё тёплая. Кто-то читал за чаем.</string>
+    <string name="tkt_dice">В этот раз судьба выкинула шестёрку.</string>
+    <string name="tkt_ribbon">Был на подарке во второй главе.</string>
+    <string name="tkt_seashell">Приложи к уху: слышно следующую главу.</string>
+    <string name="tkt_bell">Тихо звенит, когда в истории вот-вот случится поворот.</string>
+    <string name="tkt_moon_pebble">Слегка светится в ночи, когда ты читаешь.</string>
+    <string name="tkt_dragon_scale">Тёплая на ощупь. Дракон даже не заметил пропажи.</string>
+    <string name="tkt_gear">Отвалилась от робота из далёкого будущего. Всё ещё тикает.</string>
+    <string name="tkt_magnifier">Для улик, следов и очень мелкого шрифта.</string>
+    <string name="tkt_spider">Совсем не страшный и очень гордится своей паутинкой.</string>
+    <string name="tkt_love_letter">Запечатано сердечком. Не нам, но как мило.</string>
+    <string name="tkt_compass">Показывает не на север, а на следующее приключение.</string>
+    <string name="tkt_quill">Пахнет чернилами и старой бумагой.</string>
+    <string name="tkt_old_coin">Отчеканена королём, которого никто не помнит.</string>
+    <string name="tkt_spectacles">Сквозь них всё кажется интереснее.</string>
+    <string name="tkt_pressed_flower">Хранился между страниц стихотворения.</string>
+    <string name="tkt_pumpkin">Ухмыляется в темноте. Только в дни Самайна.</string>
+    <string name="tkt_snow_globe">Встряхни, и внутри пойдёт снег. Только зимой.</string>
+    <string name="tkt_valentine">Сердечко от тайного поклонника. Только в дни Валентина.</string>
+    <string name="tkt_first_edition">Крошечное, золотое и очень редкое. Только во Всемирный день книги.</string>
+    <string name="tkt_firefly_jar">Поймана в самую короткую ночь. Только в дни летнего солнцестояния.</string>
+
+    <!-- Сезоны -->
+    <string name="season_none">Каждый день</string>
+    <string name="season_samhain">Самайн</string>
+    <string name="season_winter">Зимние праздники</string>
+    <string name="season_valentine">Дни Валентина</string>
+    <string name="season_bookday">Всемирный день книги</string>
+    <string name="season_midsummer">Летнее солнцестояние</string>
+    <string name="season_title">%s в логове</string>
+    <string name="season_text">Логово украшено, фамильяры чаще приносят находки, и среди них есть одна, которую можно найти только в эти дни: %s.</string>
+
+    <!-- Сны -->
+    <string name="dream">Сон</string>
+    <string name="dream_title">Что снилось: %s</string>
+    <string name="dreams">Альбом снов</string>
+    <string name="dreams_text">Почитай вечером, и утром фамильяр расскажет, что ему снилось: у каждого жанра свой сон.</string>
+    <string name="dream_unknown">Ещё не снилось</string>
+    <string name="dream_fantasy">%s снится замок на холме: флаг на самой высокой башне, и кто-то машет из окна.</string>
+    <string name="dream_scifi">%s летит на маленькой ракете вокруг планеты с кольцами и машет звёздам.</string>
+    <string name="dream_mystery">%s идёт по следам сквозь туман с лупой в лапе. Преступник совсем близко…</string>
+    <string name="dream_horror">%s снится кладбище и привидение, которое оказывается очень милым.</string>
+    <string name="dream_romance">%s снится роза и сердечки, улетающие в небо.</string>
+    <string name="dream_adventure">%s плывёт на маленьком корабле по волнам навстречу солнцу.</string>
+    <string name="dream_classic">%s танцует на балу под люстрой из сотни свечей.</string>
+    <string name="dream_history">%s едет на верблюде через пустыню мимо пирамид.</string>
+    <string name="dream_nonfiction">%s снится сон, который становится идеей, яркой, как лампочка.</string>
+    <string name="dream_poetry">%s сидит у озера, где луна пишет стихи на воде.</string>
+    <string name="dream_other">%s считает овечек, прыгающих через забор, и сбивается со счёта.</string>
+
+    <!-- Жребий -->
+    <string name="lottery">Жребий фамильяра</string>
+    <string name="lottery_short">Пусть выберет фамильяр</string>
+    <string name="lottery_text">Не знаешь, что читать дальше? %s вытянет книгу с полки «Хочу прочитать».</string>
+    <string name="lottery_empty">Полка «Хочу прочитать» пуста. Положи туда несколько книг.</string>
+    <string name="lottery_drawing">Тасуем…</string>
+    <string name="lottery_again">Тянуть ещё</string>
+    <string name="lottery_take">Начать читать</string>
+    <string name="prophecy_fantasy">Карты шепчут о драконах и дороге вдали от дома.</string>
+    <string name="prophecy_scifi">Звёзды сошлись: впереди путешествие за край неба.</string>
+    <string name="prophecy_mystery">Здесь спрятана тайна, и разгадать её можешь только ты.</string>
+    <string name="prophecy_horror">Зажги свечу. Лучше две.</string>
+    <string name="prophecy_romance">Сердце скажет «да» раньше, чем голова.</string>
+    <string name="prophecy_adventure">Собирай рюкзак: карта уже нарисована.</string>
+    <string name="prophecy_classic">Тебя ждёт старый друг всех читателей.</string>
+    <string name="prophecy_history">Прошлое хочет рассказать тебе историю.</string>
+    <string name="prophecy_nonfiction">Ты закроешь эту книгу чуть мудрее.</string>
+    <string name="prophecy_poetry">Читай медленно, вслух, при свече.</string>
+    <string name="prophecy_other">Никто не знает, что внутри. В этом и прелесть.</string>
+
+    <!-- Совсем чуть-чуть -->
+    <plurals name="nudge_fed">
+        <item quantity="one">Ещё %1$d страница, и ужин сегодня будет сытным</item>
+        <item quantity="few">Ещё %1$d страницы, и ужин сегодня будет сытным</item>
+        <item quantity="many">Ещё %1$d страниц, и ужин сегодня будет сытным</item>
+        <item quantity="other">Ещё %1$d страницы, и ужин сегодня будет сытным</item>
+    </plurals>
+    <plurals name="nudge_hatch">
+        <item quantity="one">Ещё %d страница, и яйцо проклюнется</item>
+        <item quantity="few">Ещё %d страницы, и яйцо проклюнется</item>
+        <item quantity="many">Ещё %d страниц, и яйцо проклюнется</item>
+        <item quantity="other">Ещё %d страницы, и яйцо проклюнется</item>
+    </plurals>
+    <plurals name="nudge_stage">
+        <item quantity="one">Ещё %1$d страница до новой стадии: %2$s подрастёт</item>
+        <item quantity="few">Ещё %1$d страницы до новой стадии: %2$s подрастёт</item>
+        <item quantity="many">Ещё %1$d страниц до новой стадии: %2$s подрастёт</item>
+        <item quantity="other">Ещё %1$d страницы до новой стадии: %2$s подрастёт</item>
+    </plurals>
+    <plurals name="nudge_book">
+        <item quantity="one">До конца книги %d страница</item>
+        <item quantity="few">До конца книги %d страницы</item>
+        <item quantity="many">До конца книги %d страниц</item>
+        <item quantity="other">До конца книги %d страницы</item>
+    </plurals>
+    <plurals name="nudge_item">
+        <item quantity="one">Ещё %d страница, и хватит искр на новую вещь в логово</item>
+        <item quantity="few">Ещё %d страницы, и хватит искр на новую вещь в логово</item>
+        <item quantity="many">Ещё %d страниц, и хватит искр на новую вещь в логово</item>
+        <item quantity="other">Ещё %d страницы, и хватит искр на новую вещь в логово</item>
+    </plurals>
+
+    <!-- Свеча-хранитель -->
+    <string name="guard_title">Свеча-хранитель</string>
+    <string name="guard_text">Сама сгорает в день без чтения: серия не прерывается, и фамильяр не каменеет. Можно держать до %d.</string>
+    <string name="guard_have">Ждут: %1$d из %2$d</string>
+    <string name="guard_buy">Купить за ✦ %d</string>
+    <string name="guard_full">Больше не унести</string>
+    <string name="guard_n">🕯 %d</string>
+    <string name="guard_burned_title">Свеча-хранитель сгорела за тебя</string>
+    <string name="guard_burned_text">Она сохранила серию: %s.</string>
+
+    <!-- Визиты -->
+    <string name="visit">Визиты</string>
+    <string name="visit_text">Покажи этот код другу с Фамильяром или отправь картинкой. Твой фамильяр погостит в его логове день, посоветует книгу и не придёт с пустыми лапами.</string>
+    <string name="visit_recommend">Какую книгу советовать</string>
+    <string name="visit_no_book">Без совета</string>
+    <string name="visit_share">Отправить карточку</string>
+    <string name="visit_guest">Принять гостя</string>
+    <string name="visit_scan">Сканировать код друга</string>
+    <string name="visit_pick">С картинки</string>
+    <string name="visit_bad">Не нашлось карточки Фамильяра.</string>
+    <string name="visit_own">Это же твой собственный фамильяр!</string>
+    <string name="visit_welcome">В гости: %s!</string>
+    <string name="visit_welcome_text">Гость побудет в твоём логове день.</string>
+    <string name="visit_gift">И приносит подарок: %s. Подарок уже в шкатулке.</string>
+    <string name="guest_title">В гостях: %s</string>
+    <string name="guest_from">Гость от: %s</string>
+    <string name="guest_recommends">Советует «%1$s»</string>
+    <string name="guest_add">На полку «Хочу прочитать»</string>
+    <string name="guest_added">Уже на полке</string>
+    <string name="guest_bye">Проводить гостя</string>
+    <string name="guest_hours">Уйдёт через %d ч</string>
+    <string name="guest_reader">друга</string>
+
+    <!-- Открытка -->
+    <string name="postcard">Открытка</string>
+    <string name="postcard_reading">Читаем «%s»</string>
+    <string name="postcard_streak">%s подряд</string>
+    <string name="postcard_year">%1$s за %2$d</string>
+    <string name="postcard_footer">Фамильяр · фамильяр, который питается историями</string>
+    <string name="postcard_failed">Не получилось сделать открытку</string>
 </resources>

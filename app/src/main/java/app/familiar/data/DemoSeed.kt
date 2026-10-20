@@ -30,7 +30,7 @@ object DemoSeed {
     )
     private val want = listOf(
         B("The Three Musketeers", "Три мушкетёра", "Alexandre Dumas", "Александр Дюма", 704, Genre.ADVENTURE, 11929973),
-        B("The Wise Man's Fear", "Страхи мудреца", "Patrick Rothfuss", "Патрик Ротфусс", 1008, Genre.FANTASY, 8294024, "The Kingkiller Chronicle", "Хроника убийцы короля", 2),
+        B("The Wise Man's Fear", "Страхи мудреца", "Patrick Rothfuss", "Патрик Ротфусс", 1008, Genre.FANTASY, 12518396, "The Kingkiller Chronicle", "Хроника убийцы короля", 2),
         B("A Wizard of Earthsea", "Волшебник Земноморья", "Ursula K. Le Guin", "Урсула Ле Гуин", 264, Genre.FANTASY, 13617691),
         B("SPQR", "SPQR", "Mary Beard", "Мэри Бирд", 608, Genre.HISTORY, 7418788),
     )
@@ -45,7 +45,7 @@ object DemoSeed {
         val start = today.minusDays(74)
         fun at(d: LocalDate, h: Int, m: Int) = d.atTime(h, m).atZone(zone).toInstant().toEpochMilli()
 
-        val fox = dao.insertPet(Pet(species = Species.KITSUNE.name, name = if (ru) "Юзу" else "Yuzu", joined = at(start, 20, 0), active = true))
+        val fox = dao.insertPet(Pet(species = Species.KITSUNE.name, name = if (ru) "Юзу" else "Yuzu", joined = at(start, 20, 0), active = true, trait = app.familiar.domain.Trait.CURIOUS.name))
         suspend fun insert(b: B, shelf: Shelf, added: LocalDate) = dao.insertBook(
             Book(title = if (ru) b.ru else b.en, author = if (ru) b.authorRu else b.authorEn, pages = b.pages, genre = b.genre.name, shelf = shelf.name, added = at(added, 19, 0),
                 cover = if (b.coverId > 0) "https://covers.openlibrary.org/b/id/${b.coverId}-L.jpg" else "",
@@ -67,7 +67,7 @@ object DemoSeed {
                 // A quiet day now and then.
                 if (rnd.nextFloat() < 0.12f && day != today) { day = day.plusDays(1); continue }
                 if (day == today.minusDays(9) && moth == 0L) {
-                    moth = dao.insertPet(Pet(species = Species.MOTH.name, name = if (ru) "Луна" else "Luna", joined = at(day, 18, 0)))
+                    moth = dao.insertPet(Pet(species = Species.MOTH.name, name = if (ru) "Луна" else "Luna", joined = at(day, 18, 0), trait = app.familiar.domain.Trait.SLEEPY.name))
                     dao.activate(moth)
                 }
                 if (day == today.minusDays(3) && moth != 0L) dao.activate(fox)
@@ -88,16 +88,29 @@ object DemoSeed {
         dao.activate(fox)
         // Grown, with the last stage still ahead.
         dao.pets().first { it.id == fox }.let { dao.updatePet(it.copy(mana = 3150)) }
+        Library.settleForms(dao)
+        dao.insertPet(Pet(species = Species.GHOST.name, name = if (ru) "Шуршик" else "Rustle", joined = at(today.minusDays(5), 21, 0), mana = 420, trait = app.familiar.domain.Trait.BRAVE.name))
+        // A casket already half full.
+        val finds = listOf("BOOKMARK", "ACORN", "TEACUP", "DRAGON_SCALE", "MAGNIFIER", "MAGNIFIER", "SPIDER", "LOVE_LETTER", "QUILL", "SPECTACLES", "MOON_PEBBLE", "BELL")
+        finds.forEachIndexed { i, k -> dao.insertFind(Find(kind = k, at = at(start.plusDays(i * 6L), 21, 0), petId = fox)) }
         // Ratings on the finished ones.
         dao.books().filter { it.shelfOf == Shelf.DONE }.forEachIndexed { i, b -> dao.updateBook(b.copy(rating = listOf(5, 4, 5, 5, 4, 5, 4)[i % 7])) }
-        val pets = dao.pets()
         val den = listOf(app.familiar.domain.Item.WINDOW_MOON, app.familiar.domain.Item.BOOKSHELF, app.familiar.domain.Item.RUG_RED, app.familiar.domain.Item.CAULDRON, app.familiar.domain.Item.LANTERN, app.familiar.domain.Item.CANDLES, app.familiar.domain.Item.MANDRAKE)
+        val pets = dao.pets()
         settings.update {
             it.copy(
                 onboarded = true, name = if (ru) "Мира" else "Mira", remindAt = 21 * 60, theme = ThemeMode.DARK,
                 owned = den.map { d -> d.name }.toSet(), placed = den.map { d -> d.name }.toSet(), spent = den.sumOf { d -> d.price }, yearGoal = 12, dailyGoal = 30,
                 seenUnlocks = Species.entries.map { s -> s.name }.toSet(),
                 seenStages = pets.flatMap { p -> app.familiar.domain.Stage.entries.map { st -> "${p.id}:${st.name}" } }.toSet(),
+                candles = 1,
+                dreams = setOf(Genre.FANTASY.name, Genre.MYSTERY.name, Genre.HORROR.name, Genre.SCIFI.name, Genre.ROMANCE.name),
+                // A friend's tanuki staying the day, with a book to recommend.
+                guest = app.familiar.domain.Visit(
+                    Species.TANUKI, if (ru) "Моти" else "Mochi", 900, false, app.familiar.domain.Form.NONE, app.familiar.domain.Trait.PLAYFUL, if (ru) "Аня" else "Anna",
+                    if (ru) "Пикник на обочине" else "Roadside Picnic", if (ru) "Аркадий и Борис Стругацкие" else "Arkady and Boris Strugatsky", Genre.SCIFI,
+                ).encode(),
+                guestUntil = System.currentTimeMillis() + 20 * 3_600_000L,
             )
         }
     }

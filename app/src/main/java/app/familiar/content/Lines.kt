@@ -1,7 +1,9 @@
 package app.familiar.content
 
 import app.familiar.domain.Mood
+import app.familiar.domain.Season
 import app.familiar.domain.Species
+import app.familiar.domain.Trait
 import java.util.Locale
 
 /**
@@ -31,6 +33,33 @@ object Lines {
             Mood.STARS -> if (ru) "{n} смотрит на звёзды и что-то считает." else "{n} looks at the stars, counting something."
             Mood.GLASSES -> if (ru) "{n} поправляет очки и выглядит очень учёно." else "{n} adjusts the spectacles, looking very learned."
             Mood.NONE -> null
+        }?.replace("{n}", name)
+    }
+
+    /** A line in the familiar's character, now and then instead of the usual one. */
+    fun trait(locale: Locale, t: Trait, name: String, seed: Int): String {
+        val ru = locale.language == "ru"
+        val list = when (t) {
+            Trait.SLEEPY -> if (ru) listOf("{n} зевает так, что видно все зубки.", "{n} дремлет прямо на раскрытой книге.") else listOf("{n} yawns so wide you can see every tooth.", "{n} dozes right on the open book.")
+            Trait.GLUTTON -> if (ru) listOf("{n} облизывается: а будет ещё глава?", "{n} проверяет, не осталось ли страниц на добавку.") else listOf("{n} licks its lips: is there another chapter?", "{n} checks for any pages left for seconds.")
+            Trait.CURIOUS -> if (ru) listOf("{n} суёт нос между страниц: что там спрятано?", "{n} разглядывает корешки на полке и что-то замышляет.") else listOf("{n} pokes its nose between the pages: what's hidden there?", "{n} studies the spines on the shelf, plotting something.")
+            Trait.GRUMPY -> if (ru) listOf("{n} ворчит, но тихонько придвигается поближе.", "{n} делает вид, что ему всё равно. Ему не всё равно.") else listOf("{n} grumbles, but quietly shuffles closer.", "{n} pretends not to care. It cares.")
+            Trait.PLAYFUL -> if (ru) listOf("{n} гоняется за закладкой по всему логову.", "{n} прыгает вокруг: ну давай почитаем!") else listOf("{n} chases a bookmark all around the den.", "{n} bounces around: come on, let's read!")
+            Trait.BRAVE -> if (ru) listOf("{n} готово к любой истории, даже самой страшной.", "{n} охраняет логово с картонным мечом.") else listOf("{n} is ready for any story, even the scariest.", "{n} guards the den with a cardboard sword.")
+        }
+        return list[Math.floorMod(seed, list.size)].replace("{n}", name)
+    }
+
+    /** A line for the days of a season. */
+    fun season(locale: Locale, s: Season, name: String): String? {
+        val ru = locale.language == "ru"
+        return when (s) {
+            Season.SAMHAIN -> if (ru) "{n} примеряет ведьминскую шляпу и рычит на тыкву. Для порядка." else "{n} tries on a witch's hat and growls at the pumpkin. Just in case."
+            Season.WINTER -> if (ru) "{n} в шапке с помпоном смотрит, как за окном идёт снег." else "{n} watches the snow fall, in a hat with a bobble."
+            Season.VALENTINE -> if (ru) "{n} прячет за спиной валентинку. Для тебя." else "{n} hides a valentine behind its back. It's for you."
+            Season.BOOKDAY -> if (ru) "{n} в бумажной короне: сегодня праздник всех книг!" else "{n} wears a paper crown: today is the feast of all books!"
+            Season.MIDSUMMER -> if (ru) "{n} ловит светлячков в самую короткую ночь." else "{n} catches fireflies on the shortest night."
+            Season.NONE -> null
         }?.replace("{n}", name)
     }
 
@@ -86,6 +115,22 @@ object Lines {
             State.HUNGRY to listOf("{n} circles the lamp, waiting for the night pages.", "{n} folds its wings and waits for dark."),
             State.FED to listOf("{n} rests on the lampshade, wings full of stars.", "{n} dusts the page with a little moonlight."),
         ),
+        Species.TANUKI to mapOf(
+            State.HUNGRY to listOf("{n} drums on its belly: tell me a story!", "{n} turns into a teapot out of boredom. Then back."),
+            State.FED to listOf("{n} hums the narrator's voice and pats its full belly.", "{n} naps with the headphones still on."),
+        ),
+        Species.SPROUT to mapOf(
+            State.HUNGRY to listOf("{n} droops its leaves a little. Some morning pages?", "{n} turns to the window, waiting for the sun and a story."),
+            State.FED to listOf("{n} rustles happily and opens a petal.", "{n} soaks up the story like morning sun."),
+        ),
+        Species.GHOST to mapOf(
+            State.HUNGRY to listOf("{n} rattles a little chain: boo? a book?", "{n} floats through the shelf looking for a scary one."),
+            State.FED to listOf("{n} glows softly and hums an eerie lullaby.", "{n} hides under its sheet, pleasantly spooked."),
+        ),
+        Species.WYRM to mapOf(
+            State.HUNGRY to listOf("{n} nibbles the corner of a page. Just a little.", "{n} pushes its spectacles up its nose and waits."),
+            State.FED to listOf("{n} curls up between two chapters, very pleased.", "{n} has read every footnote and wants more."),
+        ),
     )
 
     private val RU: Map<Species, Map<State, List<String>>> = mapOf(
@@ -121,6 +166,22 @@ object Lines {
         Species.MOTH to mapOf(
             State.HUNGRY to listOf("{n} кружит у лампы и ждёт ночных страниц.", "{n} складывает крылья и ждёт темноты."),
             State.FED to listOf("{n} сидит на абажуре, крылья полны звёзд.", "{n} посыпает страницу лунной пыльцой."),
+        ),
+        Species.TANUKI to mapOf(
+            State.HUNGRY to listOf("{n} барабанит по пузику: расскажи историю!", "{n} от скуки превращается в чайник. И обратно."),
+            State.FED to listOf("{n} напевает голосом чтеца и гладит сытое пузико.", "{n} дремлет, не снимая наушников."),
+        ),
+        Species.SPROUT to mapOf(
+            State.HUNGRY to listOf("{n} чуть опускает листики. Почитаем утром?", "{n} тянется к окну: ждёт солнца и историю."),
+            State.FED to listOf("{n} радостно шелестит и раскрывает лепесток.", "{n} впитывает историю, как утреннее солнце."),
+        ),
+        Species.GHOST to mapOf(
+            State.HUNGRY to listOf("{n} звенит цепочкой: бу? книгу?", "{n} проплывает сквозь полку в поисках страшилки."),
+            State.FED to listOf("{n} мягко светится и напевает жуткую колыбельную.", "{n} прячется под простынкой: приятно страшно."),
+        ),
+        Species.WYRM to mapOf(
+            State.HUNGRY to listOf("{n} покусывает уголок страницы. Совсем чуть-чуть.", "{n} поправляет очки и ждёт."),
+            State.FED to listOf("{n} сворачивается между двумя главами, очень довольный.", "{n} прочитывает все сноски и хочет ещё."),
         ),
     )
 }

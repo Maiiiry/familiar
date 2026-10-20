@@ -29,7 +29,7 @@ You are a reading mage, and every mage needs a familiar. Yours lives on mana, an
 
 ## The familiars
 
-<img src="docs/familiars.png" alt="The eight familiars: mimic, kitsune, slime, dragon, phoenix, griffin, owlbear and moon moth" width="100%" />
+<img src="docs/familiars.png" alt="The twelve familiars: mimic, kitsune, slime, dragon, phoenix, griffin, owlbear, moon moth, tanuki, sprout, ghost and bookworm" width="100%" />
 
 All the art is pixel art painted by the app itself (shaded shapes, hue-shifted ramps, dither, rim light), so every familiar shows what *you* read:
 
@@ -43,8 +43,18 @@ All the art is pixel art painted by the app itself (shaded shapes, hue-shifted r
 | 🦅 | **Griffin** | reading streaks | its wings spread wider every stage |
 | 🦉 | **Owlbear** | non-fiction and history | spectacles, then a scholar's mantle |
 | 🦋 | **Moon moth** | reading after ten at night | a star on its wings for every night of reading |
+| 🦝 | **Tanuki** | audiobooks | big headphones and a leaf on its head, golden when ancient |
+| 🌱 | **Sprout** | reading before ten in the morning | a flower on its leaves for every morning of reading |
+| 👻 | **Ghost** | horror and mysteries | a lantern, a wisp for every horror or mystery read, a top hat when ancient |
+| 🐛 | **Bookworm** | long sittings, 45 minutes and more | a new segment in a finished book's colour at every stage, and spectacles |
 
-Three can hatch at the start; the other five are found by reading (a 400-page book, five late nights, seven days in a row, a non-fiction or history book, a comeback after a pause). About one egg in sixteen hatches **shining**, in a rare colouring: a moonlit kitsune, an ice phoenix, a snowy owlbear.
+Three can hatch at the start; the other nine are found by reading (a 400-page book, five late nights, seven days in a row, a non-fiction or history book, a comeback after a pause, five audiobooks, five mornings, a horror or mystery, three long sittings).
+
+**Forms.** A grown familiar takes one of five forms for good, after the books it was fed on, with its own colours and crown: astral (fantasy, sci-fi), shadow (mystery, horror), bloom (romance, poetry), sage (classic, history, non-fiction) or wild (adventure and the rest). The bestiary shows which way it leans.
+
+**Character.** Every egg hatches with a nature of its own: a sleepy one goes to bed early, a glutton chews longer, a curious one brings back more finds, a grumpy one wants a longer stroke, a playful one hops twice, a brave one isn't scared of horror.
+
+<img src="docs/evolutions.png" alt="Every familiar: five stages and five grown forms" width="100%" /> About one egg in sixteen hatches **shining**, in a rare colouring: a moonlit kitsune, an ice phoenix, a snowy owlbear.
 
 ## The den
 
@@ -65,7 +75,15 @@ Stroke the familiar sideways and it squeezes its eyes shut and purrs. After midn
 | ✍️ | **Log reading** | Read on the train? Log the page you reached, or just the minutes you read or listened. |
 | 🍖 | **The feast** | After each sitting: pages, candlelight, stillness, the familiar's favourite, a finished book. Too many pages in too little time and it sniffs at them suspiciously. |
 | 🎭 | **Moods** | After horror it trembles, after romance it blushes, after a mystery it squints, after non-fiction it puts on spectacles. |
-| 🔎 | **Find a book** | Search Open Library (Google Books as a fallback) by title or author: the title, author, pages and the real cover fill in. Covers are kept on the phone. Or pick your own picture from the gallery, or get a cover drawn in the genre's colour. The length is optional. |
+| 🧺 | **Finds and the casket** | Now and then the familiar brings back a little thing from the story: a bookmark, a dragon scale, a magnifying glass, a love letter. Each genre has its own; 25 to collect. |
+| 💭 | **Dreams** | Read in the evening and in the morning a bubble shows what it dreamt, after last night's book. Dreams fill an album. |
+| 🎲 | **The draw** | Can't choose? The familiar draws a book from Want to read, with a little prophecy. |
+| ✨ | **Only N more** | The nearest little goal: a full familiar today, the next stage, the end of the book, a new piece for the den. |
+| 🕯️ | **Guardian candles** | Bought with sparks; one burns by itself on a day you didn't read, so the streak lives on. |
+| 🎃 | **Seasons** | Samhain, the winter holidays, Valentine's days, World Book Day and midsummer dress up the den and the familiar, with a find you can only get then. |
+| 🤝 | **Visits** | Show a QR code to a friend (or send it as a picture): your familiar stays in their den for a day, recommends a book and leaves a gift. Phone to phone, no server. |
+| 💌 | **Postcard** | A picture of the familiar in its den with your book and streak, to share. |
+| 🔎 | **Find a book** | Search Fantlab (Russian books and translations) and Open Library (Google Books as a fallback) by title or author: the title, author, pages and the real cover fill in. Covers are kept on the phone. Or pick your own picture from the gallery, or get a cover drawn in the genre's colour. The length is optional. |
 | 📚 | **Shelves and cycles** | Make your own shelves and put books on several. Give books a cycle and a volume number; the volumes gather together, and reading the whole cycle earns a reward. |
 | 🌳 | **Tree of stories** | Every finished book grows a glowing fruit in its genre's colour. Tap one to open the book. |
 | 🎯 | **Goal for the year** | How many books this year, with how far ahead of or behind the pace you are. |
@@ -96,7 +114,7 @@ Some phones (Xiaomi, Huawei, Samsung) stop apps in the background: allow autosta
 
 ## Privacy
 
-No account, no ads, no analytics. The app goes online only when you search for a book and to download its cover; your reading stays on the phone unless you export a backup.
+No account, no ads, no analytics. The app goes online only when you search for a book and to download its cover; your reading stays on the phone unless you export a backup. Visits travel phone to phone as a QR code; the camera is used only while you scan a friend's code.
 
 ## Build
 
@@ -107,7 +125,7 @@ No account, no ads, no analytics. The app goes online only when you search for a
 ./gradlew testDebugUnitTest -Prender --tests '*RenderArt*'   # sprite sheets to app/build/art, launcher icons
 ```
 
-The sprites live in `app/src/main/java/app/familiar/ui/pix`: `Pix.kt` is the shading toolkit, `Sprites.kt` holds the eight familiars and their eggs, `Room.kt` the den and its furniture, `Scenes.kt` the candle, the gramophone and the tree.
+The sprites live in `app/src/main/java/app/familiar/ui/pix`: `Pix.kt` is the shading toolkit, `Sprites.kt` and `Newcomers.kt` hold the twelve familiars and their eggs, `Wardrobe.kt` their forms and seasonal hats, `Room.kt` the den and its furniture, `Scenes.kt` the candle, the gramophone and the tree.
 
 ## License
 

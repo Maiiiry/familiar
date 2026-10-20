@@ -76,7 +76,7 @@ fun LogScreen(id: Long, data: FamiliarData, go: Go) {
                     val mins = if (byTime) (minutes.toIntOrNull() ?: 0).coerceIn(0, 600) else 0
                     val r = Library.sit(
                         container.db.dao(), book, book.page, input.toPage, now - mins * 60_000L, now, timed = mins > 0,
-                        listened = listened, item = input.item, finish = input.finish,
+                        listened = listened, item = input.item, finish = input.finish, guarded = data.settings.guardedDays,
                     )
                     container.changed()
                     withContext(Dispatchers.Main) {

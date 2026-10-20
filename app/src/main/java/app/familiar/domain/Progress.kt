@@ -16,6 +16,9 @@ fun isNight(start: Long, zone: ZoneId): Boolean {
     return h >= 22 || h < 5
 }
 
+/** A sitting started early in the morning, before ten. */
+fun isMorning(start: Long, zone: ZoneId): Boolean = Instant.ofEpochMilli(start).atZone(zone).hour in 5..9
+
 /** Everything derived from the shelf, the sittings and the den at one moment. */
 class Stats(
     val books: List<Book>,
@@ -24,6 +27,8 @@ class Stats(
     val now: Long,
     val zone: ZoneId,
     val dailyGoal: Int,
+    /** Quiet days a guardian candle burned for: they keep the chain like days of reading. */
+    val guarded: Set<LocalDate> = emptySet(),
 ) {
     val today: LocalDate = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
     private fun day(t: Long): LocalDate = Instant.ofEpochMilli(t).atZone(zone).toLocalDate()
@@ -32,16 +37,23 @@ class Stats(
     val todayPages: Int = readings.filter { day(it.end) == today }.sumOf { it.amount }
     val fed: Float = if (dailyGoal <= 0) 1f else (todayPages.toFloat() / dailyGoal).coerceIn(0f, 1f)
 
+    /** Days that keep the chain: read, or kept by a guardian candle. */
+    private val chain: Set<LocalDate> = readDays + guarded
+
     /** Days in a row with reading, counting today or (if not yet) up to yesterday. */
     val streak: Int = run {
-        var d = if (today in readDays) today else today.minusDays(1)
+        var d = if (today in chain) today else today.minusDays(1)
         var n = 0
-        while (d in readDays) { n++; d = d.minusDays(1) }
+        while (d in chain) { n++; d = d.minusDays(1) }
         n
     }
-    val bestStreak: Int = longestRun(readDays)
+    val bestStreak: Int = longestRun(chain)
 
-    val lastRead: Long? = readings.filter { it.counts }.maxOfOrNull { it.end }
+    /** The last sitting, or the end of a day a candle burned for, whichever is later. */
+    val lastRead: Long? = listOfNotNull(
+        readings.filter { it.counts }.maxOfOrNull { it.end },
+        guarded.maxOrNull()?.plusDays(1)?.atStartOfDay(zone)?.toInstant()?.toEpochMilli()?.minus(1),
+    ).maxOrNull()
 
     /**
      * The spell of forgetting: nothing for two days and the familiar starts turning to stone,
@@ -53,6 +65,11 @@ class Stats(
     val genresFinished: Set<Genre> = finished.map { Genre.of(it.genre) }.toSet()
     val tails: Int = genresFinished.count { it != Genre.OTHER }.coerceIn(1, 9)
     val nights: Int = readings.count { it.counts && isNight(it.start, zone) }
+    val mornings: Int = readings.count { it.counts && isMorning(it.start, zone) }
+    val listens: Int = readings.count { it.counts && it.listened }
+    val longSits: Int = readings.count { it.timed && it.minutes >= Unlocks.WYRM_MINUTES }
+    /** Horror and mystery books finished: the ghost's lanterns. */
+    val spooky: Int = finished.count { it.genre == Genre.HORROR.name || it.genre == Genre.MYSTERY.name }
     val totalPages: Int = readings.sumOf { it.pages }
     val totalMinutes: Int = readings.filter { it.timed }.sumOf { it.minutes }
     val items: List<String> = readings.filter { it.item.isNotBlank() }.sortedByDescending { it.end }.map { it.item }
@@ -89,6 +106,10 @@ object Unlocks {
     const val MOTH_NIGHTS = 5
     const val GRIFFIN_STREAK = 7
     const val STARTERS_BOOKS = 2
+    const val TANUKI_LISTENS = 5
+    const val SPROUT_MORNINGS = 5
+    const val WYRM_SITS = 3
+    const val WYRM_MINUTES = 45
 
     fun unlocked(s: Stats): Set<Species> {
         val out = s.pets.map { Species.of(it.species) }.toMutableSet()
@@ -98,6 +119,10 @@ object Unlocks {
         if (s.cameBack) out += Species.PHOENIX
         if (s.bestStreak >= GRIFFIN_STREAK) out += Species.GRIFFIN
         if (s.finished.any { it.genre == Genre.NONFICTION.name || it.genre == Genre.HISTORY.name }) out += Species.OWLBEAR
+        if (s.listens >= TANUKI_LISTENS) out += Species.TANUKI
+        if (s.mornings >= SPROUT_MORNINGS) out += Species.SPROUT
+        if (s.spooky >= 1) out += Species.GHOST
+        if (s.longSits >= WYRM_SITS) out += Species.WYRM
         return out
     }
 
@@ -108,6 +133,10 @@ object Unlocks {
         Species.PHOENIX -> (if (s.cameBack) 1 else 0) to 1
         Species.GRIFFIN -> s.bestStreak.coerceAtMost(GRIFFIN_STREAK) to GRIFFIN_STREAK
         Species.OWLBEAR -> s.finished.count { it.genre == Genre.NONFICTION.name || it.genre == Genre.HISTORY.name }.coerceAtMost(1) to 1
+        Species.TANUKI -> s.listens.coerceAtMost(TANUKI_LISTENS) to TANUKI_LISTENS
+        Species.SPROUT -> s.mornings.coerceAtMost(SPROUT_MORNINGS) to SPROUT_MORNINGS
+        Species.GHOST -> s.spooky.coerceAtMost(1) to 1
+        Species.WYRM -> s.longSits.coerceAtMost(WYRM_SITS) to WYRM_SITS
         else -> s.finished.size.coerceAtMost(STARTERS_BOOKS) to STARTERS_BOOKS
     }
 }
@@ -149,13 +178,31 @@ object Mana {
         val finishedBook: Boolean,
         val item: String,
         val listened: Boolean = false,
+        /** Started before ten in the morning. */
+        val morning: Boolean = false,
     )
+
+    private fun loves(sp: Species, s: Sitting): Boolean = when (sp) {
+        Species.KITSUNE -> s.previousGenre != null && s.previousGenre != s.genre
+        Species.DRAGON -> s.bookPages >= Unlocks.DRAGON_PAGES
+        Species.PHOENIX -> s.gapDays >= 3
+        Species.GRIFFIN -> s.streak >= 3
+        Species.OWLBEAR -> s.genre == Genre.NONFICTION || s.genre == Genre.HISTORY
+        Species.MOTH -> s.night
+        Species.TANUKI -> s.listened
+        Species.SPROUT -> s.morning
+        Species.GHOST -> s.genre == Genre.HORROR || s.genre == Genre.MYSTERY
+        Species.WYRM -> s.timed && s.minutes >= Unlocks.WYRM_MINUTES
+        Species.MIMIC, Species.SLIME -> false
+    }
 
     fun feast(sp: Species, s: Sitting): Feast {
         val parts = mutableListOf<Pair<Part, Int>>()
         // No page given after a ritual: the familiar eats the minutes by the candle instead.
         if (s.timed && s.pages == 0 && s.minutes > 0) {
-            parts += (if (s.listened) Part.LISTEN else Part.TIME) to s.minutes.coerceAtMost(MAX_MINUTES)
+            val minutes = s.minutes.coerceAtMost(MAX_MINUTES)
+            parts += (if (s.listened) Part.LISTEN else Part.TIME) to minutes
+            if (loves(sp, s)) parts += Part.FAVOURITE to (minutes * 0.5f).toInt().coerceAtLeast(1)
             if (s.finishedBook) parts += Part.BOOK_DONE to BOOK_DONE
             if (sp == Species.SLIME && s.item.isNotBlank()) parts += Part.ITEM to SLIME_ITEM
             return Feast(parts)
@@ -173,16 +220,7 @@ object Mana {
             val still = (pages * 0.2f * s.stillFraction.coerceIn(0f, 1f)).toInt()
             if (still > 0) parts += Part.STILL to still
         }
-        val loves = when (sp) {
-            Species.KITSUNE -> s.previousGenre != null && s.previousGenre != s.genre
-            Species.DRAGON -> s.bookPages >= Unlocks.DRAGON_PAGES
-            Species.PHOENIX -> s.gapDays >= 3
-            Species.GRIFFIN -> s.streak >= 3
-            Species.OWLBEAR -> s.genre == Genre.NONFICTION || s.genre == Genre.HISTORY
-            Species.MOTH -> s.night
-            Species.MIMIC, Species.SLIME -> false
-        }
-        if (loves && pages > 0) parts += Part.FAVOURITE to (pages * if (sp == Species.PHOENIX) 1f else 0.5f).toInt().coerceAtLeast(1)
+        if (loves(sp, s) && pages > 0) parts += Part.FAVOURITE to (pages * if (sp == Species.PHOENIX) 1f else 0.5f).toInt().coerceAtLeast(1)
         if (s.finishedBook) {
             parts += Part.BOOK_DONE to BOOK_DONE
             if (sp == Species.MIMIC) parts += Part.FAVOURITE to MIMIC_FEAST

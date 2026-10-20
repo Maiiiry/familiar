@@ -145,6 +145,7 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                         val r = Library.sit(
                             container.db.dao(), book, ritual.fromPage, input.toPage, ritual.start, end, timed = true,
                             stillSec = (ritual.stillMs / 1000).toInt(), listened = listening, item = input.item, finish = input.finish,
+                            guarded = s.guardedDays,
                         )
                         container.settings.update { it.copy(ritual = null) }
                         container.changed()
@@ -206,6 +207,10 @@ fun RitualScreen(id: Long, data: FamiliarData, go: Go, dim: (Boolean) -> Unit) {
                     } else {
                         Text(stringResource(R.string.page_n, ritual.page), style = UType.Title)
                         Text("+${ritual.page - ritual.fromPage}", style = UType.Strong.copy(color = U.c.mana))
+                        val cheapest = app.familiar.domain.Item.entries.filter { it.name !in s.owned }.minOfOrNull { it.price }
+                        app.familiar.domain.Nudge.next(data.stats, app.familiar.domain.Den.sparks(data.pets, s.spent), cheapest, book, ritual.page - ritual.fromPage)?.let { n ->
+                            Text(app.familiar.ui.nudgeText(n, data.pet?.name ?: ""), style = UType.Small.copy(color = U.c.muted), modifier = Modifier.padding(top = 4.dp))
+                        }
                         Spacer(Modifier.height(12.dp))
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             SoftButton("", { update { r -> r.copy(page = (r.page - 1).coerceAtLeast(r.fromPage)) } }, Modifier.width(56.dp), color = U.c.muted, soft = U.c.surface2, icon = Icons.Rounded.Remove)

@@ -15,7 +15,18 @@ import app.familiar.domain.Species
 import app.familiar.domain.Stage
 import app.familiar.domain.Stats
 import app.familiar.domain.Unlocks
+import app.familiar.domain.Dreams
+import app.familiar.domain.Finds
+import app.familiar.domain.Form
+import app.familiar.domain.Guard
+import app.familiar.domain.Nudge
+import app.familiar.domain.Season
+import app.familiar.domain.Trait
+import app.familiar.domain.Trinket
+import app.familiar.domain.Visit
 import app.familiar.ui.pix.Glyph
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -183,6 +194,110 @@ class FamiliarTest {
         val f = Mana.feast(Species.MIMIC, Mana.Sitting(0, true, 25, 0f, false, Genre.FANTASY, null, 300, 1, 0, false, "", listened = true))
         assertEquals(25, f.total)
         assertTrue(f.parts.any { it.first == Part.LISTEN })
+    }
+
+    @Test
+    fun newcomersAreFoundAndFed() {
+        fun listen(d: Int) = read(d, pages = 0).copy(listened = true)
+        assertTrue(Species.TANUKI in stats((1..5).map { listen(it) }).unlocked)
+        assertTrue(Species.SPROUT in stats((1..5).map { read(it, hour = 7) }).unlocked)
+        assertTrue(Species.GHOST in stats(emptyList(), listOf(book(1, Genre.MYSTERY, done = 1))).unlocked)
+        assertTrue(Species.WYRM in stats((1..3).map { read(it, minutes = 50) }).unlocked)
+        assertFalse(Species.WYRM in stats((1..3).map { read(it, minutes = 30) }).unlocked)
+        fun fav(sp: Species, s: Mana.Sitting) = Mana.feast(sp, s).parts.any { it.first == Part.FAVOURITE }
+        assertTrue(fav(Species.GHOST, sitting(genre = Genre.HORROR)))
+        assertTrue(fav(Species.WYRM, sitting(minutes = 60)))
+        assertTrue(fav(Species.SPROUT, sitting().let { Mana.Sitting(30, true, 30, 0f, false, Genre.FANTASY, null, 300, 1, 0, false, "", morning = true) }))
+        // Listening without a page still feeds the tanuki's favourite.
+        assertTrue(fav(Species.TANUKI, Mana.Sitting(0, true, 40, 0f, false, Genre.FANTASY, null, 300, 1, 0, false, "", listened = true)))
+    }
+
+    @Test
+    fun findsAreStableAndLikeNewThings() {
+        val a = (1L..400L).map { Finds.roll(it, 30, Genre.FANTASY, Trait.SLEEPY, Season.NONE, emptySet()) }
+        assertEquals(a, (1L..400L).map { Finds.roll(it, 30, Genre.FANTASY, Trait.SLEEPY, Season.NONE, emptySet()) })
+        val share = a.count { it != null } / 400f
+        assertTrue("$share", share in 0.25f..0.45f)
+        // Nothing from a sitting too short, and no season find out of its season.
+        assertNull(Finds.roll(5, 2, Genre.FANTASY, Trait.CURIOUS, Season.NONE, emptySet()))
+        assertTrue(a.none { it?.season != null })
+        assertTrue(a.filterNotNull().all { it.common || it.genre == Genre.FANTASY })
+        val curious = (1L..400L).count { Finds.roll(it, 30, Genre.FANTASY, Trait.CURIOUS, Season.NONE, emptySet()) != null }
+        assertTrue(curious > a.count { it != null })
+        assertTrue((1L..200L).any { Finds.roll(it, 30, Genre.OTHER, Trait.BRAVE, Season.SAMHAIN, emptySet()) == Trinket.PUMPKIN })
+    }
+
+    @Test
+    fun seasonsByDate() {
+        assertEquals(Season.SAMHAIN, Season.of(LocalDate.of(2026, 10, 31)))
+        assertEquals(Season.NONE, Season.of(LocalDate.of(2026, 10, 20)))
+        assertEquals(Season.WINTER, Season.of(LocalDate.of(2026, 12, 31)))
+        assertEquals(Season.WINTER, Season.of(LocalDate.of(2027, 1, 3)))
+        assertEquals(Season.BOOKDAY, Season.of(LocalDate.of(2027, 4, 23)))
+        assertEquals(Season.NONE, Season.of(LocalDate.of(2027, 3, 1)))
+        Season.entries.filter { it != Season.NONE }.forEach { assertNotNull(it.trinket) }
+    }
+
+    @Test
+    fun guardianCandlesKeepTheStreak() {
+        val days = setOf(today.minusDays(3), today.minusDays(2))
+        // One quiet day (yesterday), one candle: it burns.
+        assertEquals(listOf(today.minusDays(1)), Guard.toBurn(days, emptySet(), 1, today))
+        // Two quiet days and one candle: nothing is wasted.
+        assertEquals(emptyList<LocalDate>(), Guard.toBurn(setOf(today.minusDays(3)), emptySet(), 1, today))
+        assertEquals(2, Guard.toBurn(setOf(today.minusDays(3)), emptySet(), 2, today).size)
+        assertEquals(emptyList<LocalDate>(), Guard.toBurn(setOf(today.minusDays(1)), emptySet(), 2, today))
+        // A burned day keeps the chain and the stone away.
+        val s = Stats(listOf(book(1)), listOf(read(3), read(2)), listOf(pet), now, zone, 20, setOf(today.minusDays(1)))
+        assertEquals(3, s.streak)
+        assertEquals(0f, s.stone, 0f)
+    }
+
+    @Test
+    fun visitingCardsTravel() {
+        val v = Visit(Species.GHOST, "Бу", 1500, true, Form.SHADOW, Trait.BRAVE, "Мира", "Пикник на обочине", "Стругацкие", Genre.SCIFI)
+        assertEquals(v, Visit.decode(v.encode()))
+        assertNull(Visit.decode("hello"))
+        assertNull(Visit.decode("FAMILIAR1:!!!"))
+    }
+
+    @Test
+    fun formsFollowTheMeals() {
+        assertEquals(Form.SHADOW, Form.choose(listOf(Genre.HORROR to 300, Genre.FANTASY to 100, Genre.MYSTERY to 50)))
+        assertEquals(Form.ASTRAL, Form.choose(listOf(Genre.SCIFI to 100, Genre.FANTASY to 100, Genre.ROMANCE to 150)))
+        assertEquals(Form.NONE, Form.choose(emptyList()))
+        Genre.entries.forEach { Form.of(it) }
+    }
+
+    @Test
+    fun nudgePicksTheNearestGoal() {
+        val s = stats(listOf(read(0, pages = 15)))
+        // Five pages to a full familiar today beats everything further away.
+        val n = Nudge.next(s, sparks = 0, cheapest = 1000, book = null)
+        assertEquals(Nudge.Goal.FED, n?.goal)
+        assertEquals(5, n?.left)
+        assertEquals(2, Nudge.next(s, 0, null, null, extra = 3)?.left)
+        val nearEnd = book(1, pages = 300).copy(page = 297)
+        assertEquals(Nudge.Goal.BOOK, Nudge.next(s, 0, null, nearEnd)?.goal)
+    }
+
+    @Test
+    fun dreamsInTheMorningAfterReading() {
+        val books = listOf(book(1, Genre.HORROR), book(2, Genre.POETRY))
+        val morning = today.atTime(8, 0).toInstant(zone).toEpochMilli()
+        val rs = listOf(read(1, pages = 40, book = 1), read(1, pages = 10, book = 2))
+        assertEquals(Genre.HORROR, Dreams.of(rs, books, morning, zone))
+        assertNull(Dreams.of(rs, books, today.atTime(14, 0).toInstant(zone).toEpochMilli(), zone))
+        assertNull(Dreams.of(listOf(read(3, book = 1)), books, morning, zone))
+    }
+
+    @Test
+    fun traitLinesFitAnyName() {
+        for (t in Trait.entries) for (l in listOf(Locale.ENGLISH, Locale.forLanguageTag("ru"))) {
+            val line = Lines.trait(l, t, "Zed", 1)
+            assertTrue(line.isNotBlank() && "{n}" !in line)
+        }
+        assertEquals(Trait.of("", 123_000L), Trait.of("", 123_000L))
     }
 
     @Test

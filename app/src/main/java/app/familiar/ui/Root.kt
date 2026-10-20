@@ -59,6 +59,13 @@ import app.familiar.BuildConfig
 import app.familiar.R
 import app.familiar.container
 import app.familiar.data.Book
+import app.familiar.data.Find
+import app.familiar.domain.Form
+import app.familiar.domain.Guard
+import app.familiar.domain.Season
+import app.familiar.domain.Trait
+import app.familiar.domain.Trinket
+import app.familiar.domain.Visit
 import app.familiar.data.Library
 import app.familiar.data.Pet
 import app.familiar.data.Reading
@@ -98,13 +105,28 @@ class FamiliarData(
     val pets: List<Pet>,
     val settings: Settings,
     val now: Long,
+    val finds: List<Find> = emptyList(),
 ) {
-    val stats = Stats(books, readings, pets, now, ZoneId.systemDefault(), settings.dailyGoal)
+    val stats = Stats(books, readings, pets, now, ZoneId.systemDefault(), settings.dailyGoal, settings.guardedDays)
     val pet: Pet? = stats.active
     val species: Species? = stats.activeSpecies
+    val trait: Trait? = pet?.let { Trait.of(it.trait, it.joined) }
+    // Demo builds (for screenshots) show the den dressed for Samhain.
+    val season: Season = if (BuildConfig.DEMO) Season.SAMHAIN else Season.of(stats.today)
     val reading: List<Book> = books.filter { it.shelfOf == app.familiar.data.Shelf.READING }.sortedByDescending { b -> readings.filter { it.bookId == b.id }.maxOfOrNull { it.end } ?: b.added }
     fun book(id: Long) = books.firstOrNull { it.id == id }
-    fun look(chew: Boolean = false, sleeping: Boolean = false) = species?.let { lookOf(it, pet?.mana ?: 0, stats, true, sleeping, chew, pet?.shiny == true) }
+    fun look(chew: Boolean = false, sleeping: Boolean = false) = species?.let {
+        lookOf(it, pet?.mana ?: 0, stats, true, sleeping, chew, pet?.shiny == true, Form.of(pet?.form ?: ""), season, trait)
+    }
+    fun lookOfPet(p: Pet) = lookOf(Species.of(p.species), p.mana, stats, p.active, shiny = p.shiny, form = Form.of(p.form), season = season, trait = Trait.of(p.trait, p.joined))
+
+    /** A friend's familiar staying in the den today, or null. */
+    val guest: Visit? = settings.guest.takeIf { settings.guestUntil > now }?.let { Visit.decode(it) }
+    val guestLook: app.familiar.ui.pix.Look? = guest?.let {
+        val st = Stage.of(it.mana)
+        app.familiar.ui.pix.Look(it.species, st, shiny = it.shiny && st != Stage.EGG, form = if (st >= Stage.ADULT) it.form else Form.NONE, season = season, hatch = 0.5f)
+    }
+    val owned: Set<Trinket> = finds.mapNotNull { Trinket.of(it.kind) }.toSet()
 }
 
 /** Everything a tab can open. */
@@ -119,6 +141,9 @@ class Go(private val nav: NavHostController) {
     fun furnish() = nav.navigate("furnish")
     fun series(name: String) = nav.navigate("series/" + android.net.Uri.encode(name))
     fun settings() = nav.navigate("settings")
+    fun casket() = nav.navigate("casket")
+    fun lottery() = nav.navigate("lottery")
+    fun visit() = nav.navigate("visit")
     fun back() = nav.popBackStack()
 }
 
@@ -138,11 +163,22 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
     val books by dao.observeBooks().collectAsStateWithLifecycle(initialValue = null)
     val readings by dao.observeReadings().collectAsStateWithLifecycle(initialValue = null)
     val pets by dao.observePets().collectAsStateWithLifecycle(initialValue = null)
+    val finds by dao.observeFinds().collectAsStateWithLifecycle(initialValue = null)
     // Nothing is drawn from the database until all of it has arrived, so an empty den never flashes by.
-    val loaded = books != null && readings != null && pets != null
+    val loaded = books != null && readings != null && pets != null && finds != null
     val minute = rememberNow(60_000)
-    val data = remember(books, readings, pets, settings, minute) {
-        FamiliarData(books.orEmpty(), readings.orEmpty(), pets.orEmpty(), settings, System.currentTimeMillis())
+    val data = remember(books, readings, pets, finds, settings, minute) {
+        FamiliarData(books.orEmpty(), readings.orEmpty(), pets.orEmpty(), settings, System.currentTimeMillis(), finds.orEmpty())
+    }
+    // Guardian candles burn by themselves for the quiet days since the last reading.
+    LaunchedEffect(loaded, data.stats.today, settings.candles, readings?.size) {
+        if (!loaded || !settings.onboarded) return@LaunchedEffect
+        val burn = Guard.toBurn(data.stats.readDays, settings.guardedDays, settings.candles, data.stats.today)
+        if (burn.isNotEmpty()) container.settings.update { s ->
+            val days = burn.map { it.toString() }.filter { it !in s.guarded }
+            if (days.isEmpty() || s.candles < days.size) s
+            else s.copy(candles = s.candles - days.size, guarded = s.guarded + days, burnedNews = s.burnedNews + days)
+        }
     }
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
@@ -200,6 +236,9 @@ fun FamiliarRoot(settings: Settings, dim: (Boolean) -> Unit) {
             app.familiar.ui.books.SeriesScreen(e.arguments?.getString("name").orEmpty(), data, go)
         }
         composable("settings") { SettingsScreen(data, onBack = { go.back() }) }
+        composable("casket") { app.familiar.ui.den.CasketScreen(data, go) }
+        composable("lottery") { app.familiar.ui.books.LotteryScreen(data, go) }
+        composable("visit") { app.familiar.ui.den.VisitScreen(data, go) }
     }
 
     if (settings.onboarded && loaded && route == "main") Celebrations(data)
@@ -215,6 +254,16 @@ private fun Celebrations(data: FamiliarData) {
     val stageKey = pet?.let { "${it.id}:${data.stats.stage.name}" }
     val found = data.stats.unlocked.filter { it.name !in s.seenUnlocks && data.pets.none { p -> p.species == it.name } }
     when {
+        pet != null && sp != null && data.stats.stage == Stage.ADULT && pet.form.isNotBlank() && stageKey !in s.seenStages -> {
+            val form = Form.of(pet.form)
+            CelebrateDialog(
+                color = Color(form.argb),
+                eyebrow = stringResource(R.string.cel_form),
+                title = stringResource(R.string.form_line, formName(form)),
+                text = stringResource(R.string.cel_form_text, pet.name, formName(form)),
+                onDismiss = { container.scope.launch { container.settings.update { it.copy(seenStages = it.seenStages + stageKey!!) } } },
+            ) { FamiliarArt(data.look()!!, Modifier.fillMaxSize()) }
+        }
         pet != null && sp != null && data.stats.stage != Stage.EGG && stageKey !in s.seenStages -> {
             val hatched = data.stats.stage == Stage.BABY
             CelebrateDialog(

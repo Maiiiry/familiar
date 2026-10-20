@@ -28,7 +28,8 @@ enum class Mood { NONE, SPARKLE, STARS, SUSPICIOUS, SCARED, HEARTS, GLASSES }
 /** The familiars of the den. The first three can hatch at the start; the rest are found by reading. */
 enum class Species(val starter: Boolean) {
     MIMIC(true), KITSUNE(true), SLIME(true),
-    DRAGON(false), PHOENIX(false), GRIFFIN(false), OWLBEAR(false), MOTH(false);
+    DRAGON(false), PHOENIX(false), GRIFFIN(false), OWLBEAR(false), MOTH(false),
+    TANUKI(false), SPROUT(false), GHOST(false), WYRM(false);
 
     companion object {
         fun of(name: String): Species = entries.firstOrNull { it.name == name } ?: MIMIC
@@ -50,5 +51,55 @@ enum class Stage(val from: Int) {
             val n = s.next ?: return 1f
             return ((mana - s.from).toFloat() / (n.from - s.from)).coerceIn(0f, 1f)
         }
+    }
+}
+
+/** A familiar's character, given when the egg is taken. It colours what it says and a habit or two. */
+enum class Trait {
+    /** Falls asleep an hour earlier and dozes on your lap sooner. */
+    SLEEPY,
+    /** Chews longer at the feast and always asks for more. */
+    GLUTTON,
+    /** Brings back a find more often. */
+    CURIOUS,
+    /** Wants a longer stroke before it purrs. */
+    GRUMPY,
+    /** Hops twice when tapped. */
+    PLAYFUL,
+    /** Never trembles after horror. */
+    BRAVE;
+
+    companion object {
+        /** The stored trait, or one picked by the day it joined for familiars from before traits. */
+        fun of(name: String, joined: Long): Trait = entries.firstOrNull { it.name == name } ?: entries[Math.floorMod((joined / 1000).toInt() * 31 + 7, entries.size)]
+    }
+}
+
+/**
+ * The form a familiar takes when it grows up, after the kind of books it was fed on. It is chosen
+ * when the familiar becomes grown and stays for good.
+ */
+enum class Form(val argb: Long, vararg val genres: Genre) {
+    /** Not chosen yet, or nothing was read. */
+    NONE(0xFF8C8577),
+    ASTRAL(0xFF5C6CE0, Genre.FANTASY, Genre.SCIFI),
+    SHADOW(0xFF5B3F86, Genre.MYSTERY, Genre.HORROR),
+    BLOOM(0xFFE47FA6, Genre.ROMANCE, Genre.POETRY),
+    SAGE(0xFFC9A04A, Genre.CLASSIC, Genre.HISTORY, Genre.NONFICTION),
+    WILD(0xFF5FA85A, Genre.ADVENTURE, Genre.OTHER);
+
+    companion object {
+        fun of(name: String): Form = entries.firstOrNull { it.name == name } ?: NONE
+        fun of(g: Genre): Form = entries.first { g in it.genres }
+
+        /** Share of each form in what a familiar ate: genre of each sitting's book, weighed by its mana. */
+        fun leaning(meals: List<Pair<Genre, Int>>): Map<Form, Float> {
+            val total = meals.sumOf { it.second }.takeIf { it > 0 } ?: return emptyMap()
+            return meals.groupBy { of(it.first) }.mapValues { (_, l) -> l.sumOf { it.second } / total.toFloat() }
+        }
+
+        /** The leading form; ties go to the one listed first. */
+        fun choose(meals: List<Pair<Genre, Int>>): Form =
+            leaning(meals).entries.sortedWith(compareByDescending<Map.Entry<Form, Float>> { it.value }.thenBy { it.key.ordinal }).firstOrNull()?.key ?: NONE
     }
 }

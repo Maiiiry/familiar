@@ -57,7 +57,24 @@ data class Settings(
     val pagesAtEnd: Boolean = false,
     /** The user's own shelves, in the order they were made. */
     val shelves: List<String> = emptyList(),
-)
+    /** Guardian candles waiting to keep the streak. */
+    val candles: Int = 0,
+    /** Quiet days a candle burned for, yyyy-mm-dd. */
+    val guarded: Set<String> = emptySet(),
+    /** Days burned for that the den hasn't told about yet. */
+    val burnedNews: Set<String> = emptySet(),
+    /** The morning a dream was last told, yyyy-mm-dd. */
+    val dreamDay: String = "",
+    /** Genres dreamt of at least once, for the album. */
+    val dreams: Set<String> = emptySet(),
+    /** A guest's visiting card and when it leaves. */
+    val guest: String = "",
+    val guestUntil: Long = 0,
+    /** "guest key|yyyy-mm-dd" of gifts already left, one a day per guest. */
+    val gifts: Set<String> = emptySet(),
+) {
+    val guardedDays: Set<java.time.LocalDate> get() = guarded.mapNotNull { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }.toSet()
+}
 
 class SettingsStore(context: Context) {
     private val store = context.applicationContext.dataStore
@@ -87,6 +104,14 @@ class SettingsStore(context: Context) {
         yearGoal = this[YEAR_GOAL] ?: 0,
         pagesAtEnd = this[PAGES_AT_END] ?: false,
         shelves = (this[SHELVES] ?: "").split('\n').filter { it.isNotBlank() },
+        candles = this[CANDLES] ?: 0,
+        guarded = this[GUARDED] ?: emptySet(),
+        burnedNews = this[BURNED_NEWS] ?: emptySet(),
+        dreamDay = this[DREAM_DAY] ?: "",
+        dreams = this[DREAMS] ?: emptySet(),
+        guest = this[GUEST] ?: "",
+        guestUntil = this[GUEST_UNTIL] ?: 0L,
+        gifts = this[GIFTS] ?: emptySet(),
     )
 
     suspend fun now(): Settings = settings.first()
@@ -120,6 +145,14 @@ class SettingsStore(context: Context) {
             it[YEAR_GOAL] = s.yearGoal
             it[PAGES_AT_END] = s.pagesAtEnd
             it[SHELVES] = s.shelves.joinToString("\n")
+            it[CANDLES] = s.candles
+            it[GUARDED] = s.guarded
+            it[BURNED_NEWS] = s.burnedNews
+            it[DREAM_DAY] = s.dreamDay
+            it[DREAMS] = s.dreams
+            it[GUEST] = s.guest
+            it[GUEST_UNTIL] = s.guestUntil
+            it[GIFTS] = s.gifts
         }
     }
 
@@ -149,5 +182,13 @@ class SettingsStore(context: Context) {
         val YEAR_GOAL = intPreferencesKey("year_goal")
         val PAGES_AT_END = booleanPreferencesKey("pages_at_end")
         val SHELVES = stringPreferencesKey("shelves")
+        val CANDLES = intPreferencesKey("candles")
+        val GUARDED = stringSetPreferencesKey("guarded")
+        val BURNED_NEWS = stringSetPreferencesKey("burned_news")
+        val DREAM_DAY = stringPreferencesKey("dream_day")
+        val DREAMS = stringSetPreferencesKey("dreams")
+        val GUEST = stringPreferencesKey("guest")
+        val GUEST_UNTIL = longPreferencesKey("guest_until")
+        val GIFTS = stringSetPreferencesKey("gifts")
     }
 }

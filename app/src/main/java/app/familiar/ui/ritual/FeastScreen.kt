@@ -39,6 +39,11 @@ import app.familiar.ui.components.Sparks
 import app.familiar.ui.components.UCard
 import app.familiar.ui.lastFeast
 import app.familiar.ui.partName
+import app.familiar.ui.trinketName
+import app.familiar.ui.trinketText
+import app.familiar.ui.components.TrinketArt
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import app.familiar.ui.theme.U
 import app.familiar.ui.theme.UType
 import kotlinx.coroutines.delay
@@ -53,7 +58,8 @@ fun FeastScreen(data: FamiliarData, go: Go) {
         return
     }
     var chewing by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) { delay(2400); chewing = false }
+    // A glutton takes its time.
+    LaunchedEffect(Unit) { delay(if (data.trait == app.familiar.domain.Trait.GLUTTON) 4200 else 2400); chewing = false }
     BackHandler { go.back() }
     val pet = data.pets.firstOrNull { it.id == r.petId }
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding()) {
@@ -79,6 +85,23 @@ fun FeastScreen(data: FamiliarData, go: Go) {
             if (r.feast.sniffed) {
                 Spacer(Modifier.height(10.dp))
                 Text(stringResource(R.string.sniff_text, pet?.name ?: ""), style = UType.Muted)
+            }
+            r.find?.let { t ->
+                Spacer(Modifier.height(12.dp))
+                // Only one in the casket means it was new.
+                val fresh = data.finds.count { it.kind == t.name } <= 1
+                UCard {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TrinketArt(t, Modifier.size(64.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(stringResource(R.string.find_title, pet?.name ?: "").uppercase(), style = UType.Eyebrow.copy(color = U.c.gold))
+                            Text(trinketName(t), style = UType.Strong)
+                            Text(trinketText(t), style = UType.Muted)
+                            Text(stringResource(if (fresh) R.string.find_new else R.string.find_again), style = UType.Small.copy(color = if (fresh) U.c.gold else U.c.muted), modifier = Modifier.padding(top = 4.dp))
+                        }
+                    }
+                }
             }
             if (r.reading.finishedBook) {
                 Spacer(Modifier.height(12.dp))

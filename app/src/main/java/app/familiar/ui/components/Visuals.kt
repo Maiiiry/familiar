@@ -169,6 +169,8 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.motes(t: Float, col
 fun BookCover(title: String, genre: Genre, modifier: Modifier = Modifier, small: Boolean = false, cover: String = "") {
     val context = androidx.compose.ui.platform.LocalContext.current
     val picture by produceState(app.familiar.data.Covers.cached(cover), cover) {
+        // The state outlives a change of cover: start from this cover's picture, not the last one's.
+        value = app.familiar.data.Covers.cached(cover)
         if (cover.isNotBlank() && value == null) value = app.familiar.data.Covers.load(context, cover)
     }
     picture?.let { img ->

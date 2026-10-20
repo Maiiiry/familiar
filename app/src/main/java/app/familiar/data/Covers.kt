@@ -5,6 +5,9 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
@@ -15,7 +18,9 @@ import java.security.MessageDigest
 
 /**
  * Finds books by title in open catalogues and keeps their covers on the phone. This is the only
- * thing in the app that uses the internet: Open Library first, Google Books when it finds nothing.
+ * thing in the app that uses the internet: Fantlab for books typed in Cyrillic (it knows Russian
+ * titles and translations), Open Library for the rest, each filling in for the other, and Google
+ * Books when neither finds anything.
  */
 object Covers {
     class Found(val title: String, val author: String, val pages: Int?, val year: Int?, val thumb: String, val cover: String)
@@ -37,13 +42,51 @@ object Covers {
 
     suspend fun search(query: String): List<Found>? = withContext(Dispatchers.IO) {
         if (query.isBlank()) return@withContext emptyList()
-        val open = openLibrary(query)
-        if (!open.isNullOrEmpty() && open.any { it.cover.isNotEmpty() }) return@withContext open
+        val cyrillic = query.any { it in 'Ѐ'..'ӿ' }
+        // Both catalogues at once; which one leads depends on the alphabet of the query.
+        val fan = async { fantlab(query) }
+        val open = async { openLibrary(query) }
+        val first = if (cyrillic) fan.await() else open.await()
+        val second = if (cyrillic) open.await() else fan.await()
+        val found = (first.orEmpty() + second.orEmpty().take(if (cyrillic) 4 else 6))
+            .distinctBy { it.title.lowercase().trim() to it.author.lowercase().trim() }
+        if (found.any { it.cover.isNotEmpty() }) return@withContext found
         val google = google(query)
         when {
-            !google.isNullOrEmpty() -> (open.orEmpty() + google).distinctBy { it.title.lowercase() to it.author.lowercase() }
-            else -> open
+            !google.isNullOrEmpty() -> (found + google).distinctBy { it.title.lowercase() to it.author.lowercase() }
+            first == null && second == null -> null
+            else -> found
         }
+    }
+
+    /** Kinds of Fantlab works that are books one reads, not poems, articles or reviews. */
+    private val BOOKS = setOf("novel", "story", "collection", "epic", "popular", "monography", "documental", "anthology", "graphicnovel", "comix", "tale", "reference")
+
+    /** Fantlab: Russian books and translations, with Russian titles. Pages come from a printed edition. */
+    private suspend fun fantlab(q: String): List<Found>? = coroutineScope {
+        val body = get("https://api.fantlab.ru/search-works?q=${enc(q)}&page=1&onlymatches=1") ?: return@coroutineScope null
+        val arr = runCatching { org.json.JSONArray(body.decodeToString()) }.getOrNull() ?: return@coroutineScope null
+        val works = (0 until arr.length()).map { arr.getJSONObject(it) }
+            .filter { it.optString("name_eng") in BOOKS }
+            .filter { (it.optString("rusname").ifBlank { it.optString("name") }).isNotBlank() }
+            // Popular works first; Fantlab's own order already puts exact matches high.
+            .sortedByDescending { if (it.optInt("markcount") > 0) 1 else 0 }
+            .take(10)
+        works.map { w ->
+            async {
+                val pic = w.optLong("pic_edition_id").takeIf { it > 0 } ?: w.optLong("pic_edition_id_auto")
+                val pages = if (pic > 0) get("https://api.fantlab.ru/edition/$pic")
+                    ?.let { b -> runCatching { JSONObject(b.decodeToString()).optInt("pages", 0) }.getOrNull() }?.takeIf { it > 0 } else null
+                Found(
+                    title = w.optString("rusname").ifBlank { w.optString("name") }.trim(),
+                    author = w.optString("all_autor_rusname").ifBlank { w.optString("all_autor_name") }.trim(),
+                    pages = pages,
+                    year = w.optInt("year", 0).takeIf { it > 0 },
+                    thumb = if (pic > 0) "https://fantlab.ru/images/editions/small/$pic" else "",
+                    cover = if (pic > 0) "https://fantlab.ru/images/editions/big/$pic" else "",
+                )
+            }
+        }.awaitAll()
     }
 
     private fun openLibrary(q: String): List<Found>? {

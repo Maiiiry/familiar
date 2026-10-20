@@ -32,6 +32,7 @@ import app.familiar.R
 import app.familiar.container
 import app.familiar.domain.Den
 import app.familiar.domain.Genre
+import app.familiar.domain.Guard
 import app.familiar.domain.Item
 import app.familiar.ui.FamiliarData
 import app.familiar.ui.Go
@@ -70,6 +71,31 @@ fun FurnishScreen(data: FamiliarData, go: Go) {
                 Column {
                     Text(stringResource(R.string.sparks_n, sparks), style = UType.Title.copy(color = U.c.gold))
                     Text(stringResource(R.string.furnish_text), style = UType.Sub)
+                    Spacer(Modifier.height(10.dp))
+                    UCard {
+                        Text(stringResource(R.string.guard_title), style = UType.Strong.copy(color = U.c.ember))
+                        Spacer(Modifier.height(4.dp))
+                        Text(stringResource(R.string.guard_text, Guard.MAX), style = UType.Muted)
+                        Spacer(Modifier.height(6.dp))
+                        Text(stringResource(R.string.guard_have, s.candles, Guard.MAX), style = UType.Small.copy(color = U.c.gold))
+                        Spacer(Modifier.height(8.dp))
+                        val can = s.candles < Guard.MAX && sparks >= Guard.PRICE
+                        SoftButton(
+                            if (s.candles >= Guard.MAX) stringResource(R.string.guard_full) else stringResource(R.string.guard_buy, Guard.PRICE),
+                            {
+                                if (can) container.scope.launch {
+                                    container.settings.update {
+                                        // Checked again inside the write so a double tap can't spend twice.
+                                        if (it.candles >= Guard.MAX || Den.sparks(data.pets, it.spent) < Guard.PRICE) it
+                                        else it.copy(spent = it.spent + Guard.PRICE, candles = it.candles + 1)
+                                    }
+                                }
+                            },
+                            Modifier.fillMaxWidth(),
+                            color = if (can) U.c.ember else U.c.faint,
+                            soft = if (can) U.c.emberSoft else U.c.surface2,
+                        )
+                    }
                     Spacer(Modifier.height(4.dp))
                 }
             }

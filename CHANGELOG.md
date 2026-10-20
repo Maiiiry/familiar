@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0] - 2026-10-20
+
+- **Four more familiars:** the tanuki (loves audiobooks, grows big headphones), the sprout (a flower for every morning of reading), the ghost (a wisp for every horror or mystery, a lantern, a top hat when ancient) and the bookworm (a segment in a finished book's colour at every stage). Twelve in all.
+- **Forms:** a grown familiar takes one of five forms for good, after the books it was fed on: astral, shadow, bloom, sage or wild, each with its own colours and crown. The bestiary shows which way it leans. Familiars already grown take theirs on the first start.
+- **Character:** every new egg hatches sleepy, gluttonous, curious, grumpy, playful or brave, and it shows in what it says and does.
+- **Finds and the casket:** after a sitting the familiar sometimes brings back a little thing from the story, one of 25, some only from one genre or one season.
+- **Dreams:** in the morning after an evening of reading, a bubble shows what the familiar dreamt; dreams fill an album.
+- **The familiar's draw:** a book drawn from Want to read, with a prophecy.
+- **Only N more pages:** the nearest goal under the den, and live in the ritual.
+- **Guardian candles:** bought with sparks, they burn by themselves on a quiet day and keep the streak (and the stone) away.
+- **Seasons:** Samhain, the winter holidays, Valentine's days, World Book Day and midsummer dress up the den and the familiar, each with its own find.
+- **Visits by QR:** a familiar visits a friend's den for a day, with a book to recommend and a gift. Scan with the camera or read the code from a picture.
+- **Postcard:** a picture of the familiar in its den with the book and the streak, to share.
+- **Search finds Russian books:** Fantlab first for anything typed in Cyrillic (Russian titles, translations, covers and page counts), Open Library for the rest. Google Books, often over its free quota, is the last resort.
+- The update keeps everything: books, sittings and familiars move to the new database as they are.
+
 ## [1.1.1] - 2026-10-19
 
 - **Fixed: 1.1.0 didn't start after updating from 1.0.0.** The database changed without a new version. Updating now starts with a fresh database and a new egg; the books, sittings and familiars from 1.0.0 are not carried over.

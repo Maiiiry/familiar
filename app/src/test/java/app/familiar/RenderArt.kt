@@ -56,7 +56,123 @@ class RenderArt {
         hoard = tails.take(when (st) { Stage.BABY -> 0; Stage.YOUNG -> 3; Stage.ADULT -> 8; else -> 10 }) + tails.take(if (st == Stage.ANCIENT) 4 else 0),
         stars = when (st) { Stage.BABY -> 3; Stage.YOUNG -> 10; Stage.ADULT -> 22; else -> 40 },
         items = listOf("меч", "кольцо", "письмо", "зелье", "ключ", "яблоко", "череп", "корона", "перо", "карта").take(when (st) { Stage.BABY -> 1; Stage.YOUNG -> 4; else -> 10 }),
+        blooms = when (st) { Stage.BABY -> 2; Stage.YOUNG -> 4; Stage.ADULT -> 7; else -> 12 },
+        wisps = when (st) { Stage.BABY -> 1; Stage.YOUNG -> 2; Stage.ADULT -> 4; else -> 6 },
     )
+
+    /**
+     * A poster of every familiar through every stage and every grown form, labelled, on the night
+     * ground of the icon: docs/evolutions.png (in Russian with `-Plang=ru`, else English).
+     */
+    @Test
+    fun evolutions() {
+        val ru = System.getProperty("render.lang") == "ru"
+        val forms = app.familiar.domain.Form.entries.drop(1)
+        val k = 3
+        val cell = Sprites.SIZE * k
+        val left = 400
+        val top = 260
+        val gap = 34
+        val cols = Stage.entries.size + forms.size
+        val w = left + cols * cell + gap + 40
+        val h = top + Species.entries.size * cell + 90
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = android.graphics.Canvas(bmp)
+        val bg = android.graphics.Paint().apply { shader = android.graphics.RadialGradient(w / 2f, h * 0.35f, h * 0.9f, 0xFF3A2A6E.toInt(), 0xFF120D22.toInt(), android.graphics.Shader.TileMode.CLAMP) }
+        c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), bg)
+        val res = System.getProperty("render.res")
+        fun font(name: String) = runCatching { android.graphics.Typeface.createFromFile(File(res, "font/$name")) }.getOrDefault(android.graphics.Typeface.DEFAULT_BOLD)
+        val serif = font("cormorant_bold.ttf")
+        val sans = font("nunito_bold.ttf")
+        val title = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { typeface = serif; textSize = 96f; color = 0xFFF6EBD6.toInt() }
+        val sub = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { typeface = sans; textSize = 34f; color = 0xFFB9A8E8.toInt() }
+        val head = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { typeface = sans; textSize = 30f; color = 0xFFE9DFC8.toInt(); textAlign = android.graphics.Paint.Align.CENTER }
+        val name = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { typeface = serif; textSize = 46f; color = 0xFFF6EBD6.toInt() }
+        c.drawText(if (ru) "Фамильяры и их эволюции" else "Familiars and how they grow", 60f, 120f, title)
+        c.drawText(if (ru) "12 фамильяров · 5 стадий · 5 форм взрослого, по прочитанным книгам" else "12 familiars · 5 stages · 5 grown forms, after the books they ate", 64f, 180f, sub)
+        val stages = if (ru) listOf("Яйцо", "Малыш", "Юный", "Взрослый", "Древний") else listOf("Egg", "Hatchling", "Young", "Grown", "Ancient")
+        val formNames = if (ru) listOf("Звёздная", "Туманная", "Цветущая", "Мудрая", "Лесная") else listOf("Astral", "Shadow", "Bloom", "Sage", "Wild")
+        val formColors = forms.map { app.familiar.ui.pix.mixc((it.argb and 0xFFFFFF).toInt() or (0xFF shl 24), 0xFFFFFFFF.toInt(), 0.35f) }
+        stages.forEachIndexed { i, s -> c.drawText(s, left + i * cell + cell / 2f, top - 24f, head) }
+        formNames.forEachIndexed { i, s -> c.drawText(s, left + (stages.size + i) * cell + gap + cell / 2f, top - 24f, android.graphics.Paint(head).apply { color = formColors[i] }) }
+        val divider = android.graphics.Paint().apply { color = 0x55B9A8E8; strokeWidth = 3f }
+        val dx = left + stages.size * cell + gap / 2f
+        c.drawLine(dx, top - 60f, dx, h - 60f, divider)
+        val names = if (ru) listOf("Мимик", "Кицунэ", "Слайм", "Дракончик", "Феникс", "Грифон", "Совомедведь", "Лунный мотылёк", "Тануки", "Росток", "Призрак", "Книжный червь")
+        else listOf("Mimic", "Kitsune", "Slime", "Dragon", "Phoenix", "Griffin", "Owlbear", "Moon moth", "Tanuki", "Sprout", "Ghost", "Bookworm")
+        fun put(px: Px, x0: Int, y0: Int) {
+            for (y in 0 until px.h) for (x in 0 until px.w) {
+                val p = px.c[y * px.w + x]
+                val a = (p ushr 24) and 0xFF
+                if (a == 0) continue
+                for (j in 0 until k) for (i in 0 until k) {
+                    val bx = x0 + x * k + i; val by = y0 + y * k + j
+                    bmp.setPixel(bx, by, blend(bmp.getPixel(bx, by), p, a / 255f))
+                }
+            }
+        }
+        Species.entries.forEachIndexed { r, sp ->
+            val y0 = top + r * cell
+            c.drawText(names[r], 50f, y0 + cell / 2f + 16f, name)
+            if (sp.ordinal >= Species.TANUKI.ordinal) c.drawText(if (ru) "новый!" else "new!", 52f, y0 + cell / 2f + 56f, android.graphics.Paint(sub).apply { textSize = 28f; color = 0xFFF2C14E.toInt() })
+            Stage.entries.forEachIndexed { i, st -> put(Sprites.frame(look(sp, st), 0), left + i * cell, y0) }
+            forms.forEachIndexed { i, f -> put(Sprites.frame(look(sp, Stage.ADULT).copy(form = f), 2), left + (stages.size + i) * cell + gap, y0) }
+        }
+        val docs = File(System.getProperty("render.docs") ?: out.path)
+        File(if (ru) out else docs, if (ru) "evolutions_ru.png" else "evolutions.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    private val newcomers = listOf(Species.TANUKI, Species.SPROUT, Species.GHOST, Species.WYRM)
+
+    @Test
+    fun newcomers() = sheet("newcomers", newcomers.map { sp -> Stage.entries.map { Sprites.frame(look(sp, it), 0) } + listOf(Sprites.frame(look(sp, Stage.ADULT).copy(shiny = true), 0)) }, scale = 4)
+
+    @Test
+    fun forms() = sheet("forms", Species.entries.map { sp -> app.familiar.domain.Form.entries.map { Sprites.frame(look(sp, Stage.ADULT).copy(form = it), 2) } }, scale = 2)
+
+    @Test
+    fun seasons() = sheet("seasons", listOf(Species.KITSUNE, Species.MIMIC, Species.TANUKI, Species.GHOST).map { sp ->
+        app.familiar.domain.Season.entries.map { Sprites.frame(look(sp, Stage.ADULT).copy(season = it), 1) }
+    }, scale = 3)
+
+    @Test
+    fun trinkets() {
+        val all = app.familiar.domain.Trinket.entries
+        val cells = all.chunked(5).map { row -> row.map { t -> app.familiar.ui.pix.Trinkets.draw(t).let { p -> Px(Sprites.SIZE, Sprites.SIZE).apply { for (y in 0 until p.h) for (x in 0 until p.w) { val c = p.c[y * p.w + x]; if ((c ushr 24) > 0) for (j in 0 until 6) for (i in 0 until 6) set(7 + x * 6 + i, 7 + y * 6 + j, c) } } } } }
+        sheet("trinkets", cells, scale = 2)
+    }
+
+    @Test
+    fun dreams() {
+        val g = Genre.entries
+        val w = app.familiar.ui.pix.Dreamscape.W * 4
+        val h = app.familiar.ui.pix.Dreamscape.H * 4
+        val bmp = Bitmap.createBitmap(w * 4, h * 3, Bitmap.Config.ARGB_8888)
+        bmp.eraseColor(0xFF2A2030.toInt())
+        g.forEachIndexed { i, genre ->
+            val px = app.familiar.ui.pix.Dreamscape.scene(genre, 1)
+            for (y in 0 until px.h) for (x in 0 until px.w) { val p = px.c[y * px.w + x]; if ((p ushr 24) == 0) continue; for (j in 0 until 4) for (k in 0 until 4) bmp.setPixel((i % 4) * w + x * 4 + k, (i / 4) * h + y * 4 + j, blend(0xFF2A2030.toInt(), p, ((p ushr 24) and 0xFF) / 255f)) }
+        }
+        File(out, "dreams.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    @Test
+    fun seasonRooms() {
+        val placed = setOf(app.familiar.domain.Item.WINDOW_MOON, app.familiar.domain.Item.BOOKSHELF, app.familiar.domain.Item.RUG_RED, app.familiar.domain.Item.CANDLES)
+        val seasons = app.familiar.domain.Season.entries.drop(1)
+        val cw = app.familiar.ui.pix.Room.W * 3
+        val ch = app.familiar.ui.pix.Room.H * 3
+        val bmp = Bitmap.createBitmap(cw * 3, ch * 2, Bitmap.Config.ARGB_8888)
+        seasons.forEachIndexed { i, s ->
+            val room = app.familiar.ui.pix.Room.scene(placed, tails, i % 2 == 0, 1, s)
+            val fox = Sprites.frame(look(Species.KITSUNE, Stage.ADULT).copy(season = s), 0)
+            room.blit(fox, (app.familiar.ui.pix.Room.W - fox.w) / 2, app.familiar.ui.pix.Room.FLOOR_Y - fox.h + 3)
+            val guest = Sprites.frame(look(Species.TANUKI, Stage.YOUNG), 3)
+            room.blit(guest, app.familiar.ui.pix.Room.W / 2 - 44 - guest.w / 2, app.familiar.ui.pix.Room.FLOOR_Y - guest.h + 1)
+            for (y in 0 until room.h) for (x in 0 until room.w) { val p = room.c[y * room.w + x]; if ((p ushr 24) == 0) continue; for (j in 0 until 3) for (k in 0 until 3) bmp.setPixel((i % 3) * cw + x * 3 + k, (i / 3) * ch + y * 3 + j, blend(0xFF000000.toInt(), p, ((p ushr 24) and 0xFF) / 255f)) }
+        }
+        File(out, "season_rooms.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
 
     @Test
     fun stages() = sheet("stages", Species.entries.map { sp -> Stage.entries.map { Sprites.frame(look(sp, it), 0) } }, scale = 3)

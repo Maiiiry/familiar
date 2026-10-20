@@ -76,6 +76,8 @@ object R {
     val sky = Ramp(rgb(16, 40, 80), rgb(30, 76, 130), rgb(54, 124, 182), rgb(100, 176, 226), rgb(168, 220, 250), rgb(228, 248, 255))
     val stone = Ramp(rgb(40, 38, 50), rgb(66, 64, 78), rgb(98, 96, 108), rgb(132, 130, 138), rgb(166, 164, 168), rgb(200, 198, 196), rgb(228, 226, 220))
     val ash = Ramp(rgb(22, 18, 22), rgb(40, 34, 38), rgb(62, 56, 58), rgb(86, 80, 80), rgb(112, 106, 104), rgb(140, 134, 130))
+    val tanuki = Ramp(rgb(44, 30, 34), rgb(80, 58, 52), rgb(118, 90, 70), rgb(154, 124, 94), rgb(188, 160, 124), rgb(216, 194, 158), rgb(238, 224, 196))
+    val root = Ramp(rgb(92, 50, 52), rgb(146, 92, 78), rgb(196, 140, 108), rgb(228, 180, 140), rgb(244, 212, 174), rgb(252, 236, 208))
     val leaf = Ramp(rgb(14, 36, 40), rgb(22, 66, 54), rgb(38, 102, 60), rgb(70, 140, 66), rgb(118, 178, 82), rgb(176, 210, 112), rgb(226, 236, 160))
 
     /** A seven-tone ramp around a base colour (a genre colour for a tail, a book, a fruit). */

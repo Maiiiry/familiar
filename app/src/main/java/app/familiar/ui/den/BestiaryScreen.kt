@@ -38,7 +38,15 @@ import app.familiar.R
 import app.familiar.container
 import app.familiar.data.Library
 import app.familiar.data.Pet
+import app.familiar.domain.Form
 import app.familiar.domain.Species
+import app.familiar.domain.Trait
+import app.familiar.ui.formGenres
+import app.familiar.ui.formColor
+import app.familiar.ui.formName
+import app.familiar.ui.traitName
+import app.familiar.ui.traitText
+import androidx.compose.ui.graphics.Color
 import app.familiar.domain.Stage
 import app.familiar.domain.Unlocks
 import app.familiar.ui.FamiliarData
@@ -84,7 +92,7 @@ fun BestiaryScreen(data: FamiliarData, go: Go) {
                 UCard(Modifier.padding(bottom = 10.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(96.dp).clip(U.RMd).background(U.c.surface2), contentAlignment = Alignment.Center) {
-                            if (open) FamiliarArt(lookOf(sp, pet?.mana ?: 0, s, pet?.active == true, shiny = pet?.shiny == true), Modifier.fillMaxSize().padding(4.dp), fps = 4f)
+                            if (open) FamiliarArt(pet?.let { data.lookOfPet(it) } ?: lookOf(sp, 0, s, false, season = data.season), Modifier.fillMaxSize().padding(4.dp), fps = 4f)
                             else {
                                 // A shadow of what's to come.
                                 FamiliarArt(lookOf(sp, Stage.ADULT.from, s, false), Modifier.fillMaxSize().padding(4.dp), fps = 0f, tint = ColorFilter.tint(U.c.line))
@@ -104,6 +112,22 @@ fun BestiaryScreen(data: FamiliarData, go: Go) {
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(if (open) speciesLore(sp) else speciesHow(sp), style = UType.Muted)
+                        }
+                    }
+                    if (pet != null) {
+                        val trait = Trait.of(pet.trait, pet.joined)
+                        Spacer(Modifier.height(8.dp))
+                        Text(stringResource(R.string.trait_line, traitName(trait), traitText(trait)), style = UType.Small.copy(color = U.c.muted))
+                        val form = Form.of(pet.form)
+                        if (Stage.of(pet.mana) >= Stage.ADULT && form != Form.NONE) {
+                            Text(stringResource(R.string.form_line, formName(form)), style = UType.Small.copy(color = formColor(form)), modifier = Modifier.padding(top = 2.dp))
+                        } else if (Stage.of(pet.mana) < Stage.ADULT) {
+                            // Which way it leans so far, from what it ate.
+                            val byId = remember(data.books) { data.books.associateBy { it.id } }
+                            val lean = remember(data.readings, pet.id) { Form.leaning(Library.meals(pet.id, data.readings, byId)) }
+                            lean.maxByOrNull { it.value }?.let { (f, share) ->
+                                Text(stringResource(R.string.form_leaning, formName(f), (share * 100).toInt()), style = UType.Small.copy(color = formColor(f)), modifier = Modifier.padding(top = 2.dp))
+                            }
                         }
                     }
                     Spacer(Modifier.height(8.dp))
@@ -129,6 +153,14 @@ fun BestiaryScreen(data: FamiliarData, go: Go) {
                             SoftButton(stringResource(R.string.take_egg), { container.scope.launch { Library.adopt(container.db.dao(), sp, name); container.changed() } }, Modifier.fillMaxWidth(), color = U.c.gold, soft = U.c.goldSoft)
                         }
                     }
+                }
+            }
+            UCard(Modifier.padding(bottom = 10.dp)) {
+                Text(stringResource(R.string.forms_title), style = UType.Strong)
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(R.string.forms_text), style = UType.Muted)
+                Form.entries.filter { it != Form.NONE }.forEach { f ->
+                    Text(stringResource(R.string.form_of, formName(f), formGenres(f)), style = UType.Small.copy(color = formColor(f)), modifier = Modifier.padding(top = 4.dp))
                 }
             }
             Text(stringResource(R.string.bestiary_note), style = UType.Small.copy(color = U.c.muted))

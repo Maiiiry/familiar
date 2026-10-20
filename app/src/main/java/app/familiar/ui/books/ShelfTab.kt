@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Casino
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -94,6 +95,10 @@ fun ShelfTab(data: FamiliarData, go: Go) {
                     }
                     if (view == CYCLES && cycles.isEmpty()) Text(stringResource(R.string.cycles_empty), style = UType.Sub, modifier = Modifier.padding(top = 24.dp))
                     if (own != null && list.isEmpty()) Text(stringResource(R.string.shelf_own_empty), style = UType.Sub, modifier = Modifier.padding(top = 16.dp))
+                    if (shelf == Shelf.WANT && list.size >= 2) app.familiar.ui.components.SoftButton(
+                        stringResource(R.string.lottery_short), { go.lottery() },
+                        Modifier.fillMaxWidth().padding(top = 12.dp), color = U.c.gold, soft = U.c.goldSoft, icon = androidx.compose.material.icons.Icons.Rounded.Casino,
+                    )
                     if (shelf != null && list.isEmpty()) Text(
                         stringResource(when (shelf) { Shelf.READING -> R.string.empty_reading; Shelf.WANT -> R.string.empty_want; else -> R.string.empty_done }),
                         style = UType.Sub, modifier = Modifier.padding(top = 24.dp),

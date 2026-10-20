@@ -7,7 +7,12 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import app.familiar.R
 import app.familiar.data.Shelf
+import app.familiar.domain.Form
 import app.familiar.domain.Genre
+import app.familiar.domain.Nudge
+import app.familiar.domain.Season
+import app.familiar.domain.Trait
+import app.familiar.domain.Trinket
 import app.familiar.domain.Part
 import app.familiar.domain.Quest
 import app.familiar.domain.Species
@@ -44,7 +49,9 @@ fun genreName(g: Genre): String = stringResource(
 )
 
 @Composable
-fun speciesName(sp: Species): String = stringResource(
+fun speciesName(sp: Species): String = stringResource(speciesRes(sp))
+
+fun speciesRes(sp: Species): Int = (
     when (sp) {
         Species.MIMIC -> R.string.sp_mimic
         Species.KITSUNE -> R.string.sp_kitsune
@@ -54,6 +61,10 @@ fun speciesName(sp: Species): String = stringResource(
         Species.GRIFFIN -> R.string.sp_griffin
         Species.OWLBEAR -> R.string.sp_owlbear
         Species.MOTH -> R.string.sp_moth
+        Species.TANUKI -> R.string.sp_tanuki
+        Species.SPROUT -> R.string.sp_sprout
+        Species.GHOST -> R.string.sp_ghost
+        Species.WYRM -> R.string.sp_wyrm
     }
 )
 
@@ -68,6 +79,10 @@ fun speciesLore(sp: Species): String = stringResource(
         Species.GRIFFIN -> R.string.lore_griffin
         Species.OWLBEAR -> R.string.lore_owlbear
         Species.MOTH -> R.string.lore_moth
+        Species.TANUKI -> R.string.lore_tanuki
+        Species.SPROUT -> R.string.lore_sprout
+        Species.GHOST -> R.string.lore_ghost
+        Species.WYRM -> R.string.lore_wyrm
     }
 )
 
@@ -83,6 +98,10 @@ fun speciesLoves(sp: Species): String = stringResource(
         Species.GRIFFIN -> R.string.loves_griffin
         Species.OWLBEAR -> R.string.loves_owlbear
         Species.MOTH -> R.string.loves_moth
+        Species.TANUKI -> R.string.loves_tanuki
+        Species.SPROUT -> R.string.loves_sprout
+        Species.GHOST -> R.string.loves_ghost
+        Species.WYRM -> R.string.loves_wyrm
     }
 )
 
@@ -94,6 +113,10 @@ fun speciesHow(sp: Species): String = when (sp) {
     Species.PHOENIX -> stringResource(R.string.how_phoenix)
     Species.GRIFFIN -> pluralStringResource(R.plurals.how_griffin, Unlocks.GRIFFIN_STREAK, Unlocks.GRIFFIN_STREAK)
     Species.OWLBEAR -> stringResource(R.string.how_owlbear)
+    Species.TANUKI -> pluralStringResource(R.plurals.how_tanuki, Unlocks.TANUKI_LISTENS, Unlocks.TANUKI_LISTENS)
+    Species.SPROUT -> pluralStringResource(R.plurals.how_sprout, Unlocks.SPROUT_MORNINGS, Unlocks.SPROUT_MORNINGS)
+    Species.GHOST -> stringResource(R.string.how_ghost)
+    Species.WYRM -> pluralStringResource(R.plurals.how_wyrm, Unlocks.WYRM_SITS, Unlocks.WYRM_SITS, Unlocks.WYRM_MINUTES)
     else -> pluralStringResource(R.plurals.how_starter, Unlocks.STARTERS_BOOKS, Unlocks.STARTERS_BOOKS)
 }
 
@@ -120,7 +143,139 @@ fun itemName(i: app.familiar.domain.Item): String = stringResource(
 )
 
 @Composable
-fun stageName(s: Stage): String = stringResource(
+fun traitName(t: Trait): String = stringResource(
+    when (t) {
+        Trait.SLEEPY -> R.string.tr_sleepy
+        Trait.GLUTTON -> R.string.tr_glutton
+        Trait.CURIOUS -> R.string.tr_curious
+        Trait.GRUMPY -> R.string.tr_grumpy
+        Trait.PLAYFUL -> R.string.tr_playful
+        Trait.BRAVE -> R.string.tr_brave
+    }
+)
+
+/** What the trait does, in a line. */
+@Composable
+fun traitText(t: Trait): String = stringResource(
+    when (t) {
+        Trait.SLEEPY -> R.string.trt_sleepy
+        Trait.GLUTTON -> R.string.trt_glutton
+        Trait.CURIOUS -> R.string.trt_curious
+        Trait.GRUMPY -> R.string.trt_grumpy
+        Trait.PLAYFUL -> R.string.trt_playful
+        Trait.BRAVE -> R.string.trt_brave
+    }
+)
+
+@Composable
+fun formName(f: Form): String = stringResource(formRes(f))
+
+fun formRes(f: Form): Int = (
+    when (f) {
+        Form.NONE -> R.string.form_none
+        Form.ASTRAL -> R.string.form_astral
+        Form.SHADOW -> R.string.form_shadow
+        Form.BLOOM -> R.string.form_bloom
+        Form.SAGE -> R.string.form_sage
+        Form.WILD -> R.string.form_wild
+    }
+)
+
+/** A form's colour, lightened so it reads on dark cards too. */
+fun formColor(f: Form): Color = androidx.compose.ui.graphics.lerp(Color(f.argb), Color.White, 0.3f)
+
+/** Which books lead to the form, by genre names. */
+@Composable
+fun formGenres(f: Form): String = f.genres.filter { it != Genre.OTHER }.map { genreName(it).lowercase(locale()) }.joinToString(", ")
+
+@Composable
+fun trinketName(t: Trinket): String = stringResource(
+    when (t) {
+        Trinket.BOOKMARK -> R.string.tk_bookmark
+        Trinket.ACORN -> R.string.tk_acorn
+        Trinket.BUTTON -> R.string.tk_button
+        Trinket.CANDLE_STUB -> R.string.tk_candle_stub
+        Trinket.TEACUP -> R.string.tk_teacup
+        Trinket.DICE -> R.string.tk_dice
+        Trinket.RIBBON -> R.string.tk_ribbon
+        Trinket.SEASHELL -> R.string.tk_seashell
+        Trinket.BELL -> R.string.tk_bell
+        Trinket.MOON_PEBBLE -> R.string.tk_moon_pebble
+        Trinket.DRAGON_SCALE -> R.string.tk_dragon_scale
+        Trinket.GEAR -> R.string.tk_gear
+        Trinket.MAGNIFIER -> R.string.tk_magnifier
+        Trinket.SPIDER -> R.string.tk_spider
+        Trinket.LOVE_LETTER -> R.string.tk_love_letter
+        Trinket.COMPASS -> R.string.tk_compass
+        Trinket.QUILL -> R.string.tk_quill
+        Trinket.OLD_COIN -> R.string.tk_old_coin
+        Trinket.SPECTACLES -> R.string.tk_spectacles
+        Trinket.PRESSED_FLOWER -> R.string.tk_pressed_flower
+        Trinket.PUMPKIN -> R.string.tk_pumpkin
+        Trinket.SNOW_GLOBE -> R.string.tk_snow_globe
+        Trinket.VALENTINE -> R.string.tk_valentine
+        Trinket.FIRST_EDITION -> R.string.tk_first_edition
+        Trinket.FIREFLY_JAR -> R.string.tk_firefly_jar
+    }
+)
+
+@Composable
+fun trinketText(t: Trinket): String = stringResource(
+    when (t) {
+        Trinket.BOOKMARK -> R.string.tkt_bookmark
+        Trinket.ACORN -> R.string.tkt_acorn
+        Trinket.BUTTON -> R.string.tkt_button
+        Trinket.CANDLE_STUB -> R.string.tkt_candle_stub
+        Trinket.TEACUP -> R.string.tkt_teacup
+        Trinket.DICE -> R.string.tkt_dice
+        Trinket.RIBBON -> R.string.tkt_ribbon
+        Trinket.SEASHELL -> R.string.tkt_seashell
+        Trinket.BELL -> R.string.tkt_bell
+        Trinket.MOON_PEBBLE -> R.string.tkt_moon_pebble
+        Trinket.DRAGON_SCALE -> R.string.tkt_dragon_scale
+        Trinket.GEAR -> R.string.tkt_gear
+        Trinket.MAGNIFIER -> R.string.tkt_magnifier
+        Trinket.SPIDER -> R.string.tkt_spider
+        Trinket.LOVE_LETTER -> R.string.tkt_love_letter
+        Trinket.COMPASS -> R.string.tkt_compass
+        Trinket.QUILL -> R.string.tkt_quill
+        Trinket.OLD_COIN -> R.string.tkt_old_coin
+        Trinket.SPECTACLES -> R.string.tkt_spectacles
+        Trinket.PRESSED_FLOWER -> R.string.tkt_pressed_flower
+        Trinket.PUMPKIN -> R.string.tkt_pumpkin
+        Trinket.SNOW_GLOBE -> R.string.tkt_snow_globe
+        Trinket.VALENTINE -> R.string.tkt_valentine
+        Trinket.FIRST_EDITION -> R.string.tkt_first_edition
+        Trinket.FIREFLY_JAR -> R.string.tkt_firefly_jar
+    }
+)
+
+@Composable
+fun seasonName(s: Season): String = stringResource(
+    when (s) {
+        Season.SAMHAIN -> R.string.season_samhain
+        Season.WINTER -> R.string.season_winter
+        Season.VALENTINE -> R.string.season_valentine
+        Season.BOOKDAY -> R.string.season_bookday
+        Season.MIDSUMMER -> R.string.season_midsummer
+        Season.NONE -> R.string.season_none
+    }
+)
+
+/** "Only 6 more pages and …" */
+@Composable
+fun nudgeText(n: Nudge, name: String): String = when (n.goal) {
+    Nudge.Goal.FED -> pluralStringResource(R.plurals.nudge_fed, n.left, n.left, name)
+    Nudge.Goal.HATCH -> pluralStringResource(R.plurals.nudge_hatch, n.left, n.left)
+    Nudge.Goal.STAGE -> pluralStringResource(R.plurals.nudge_stage, n.left, n.left, name)
+    Nudge.Goal.BOOK -> pluralStringResource(R.plurals.nudge_book, n.left, n.left)
+    Nudge.Goal.ITEM -> pluralStringResource(R.plurals.nudge_item, n.left, n.left)
+}
+
+@Composable
+fun stageName(s: Stage): String = stringResource(stageRes(s))
+
+fun stageRes(s: Stage): Int = (
     when (s) {
         Stage.EGG -> R.string.st_egg
         Stage.BABY -> R.string.st_baby
@@ -214,13 +369,17 @@ fun dateShort(t: Long): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.M
 fun timeShort(t: Long): String = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale()).format(Instant.ofEpochMilli(t).atZone(ZoneId.systemDefault()))
 
 /** The look of a familiar from what's been read so far. */
-fun lookOf(sp: Species, mana: Int, s: Stats, activeOne: Boolean, sleeping: Boolean = false, chew: Boolean = false, shiny: Boolean = false): Look {
+fun lookOf(
+    sp: Species, mana: Int, s: Stats, activeOne: Boolean, sleeping: Boolean = false, chew: Boolean = false, shiny: Boolean = false,
+    form: Form = Form.NONE, season: Season = Season.NONE, trait: Trait? = null,
+): Look {
     val stage = Stage.of(mana)
     return Look(
         species = sp,
         stage = stage,
         stone = if (activeOne) s.stone else 0f,
-        mood = if (activeOne) s.mood else app.familiar.domain.Mood.NONE,
+        // A brave one is never scared, only thrilled.
+        mood = if (!activeOne) app.familiar.domain.Mood.NONE else if (trait == Trait.BRAVE && s.mood == app.familiar.domain.Mood.SCARED) app.familiar.domain.Mood.SPARKLE else s.mood,
         tails = Genre.tails.filter { it in s.genresFinished }.map { it.argb.toInt() },
         hoard = s.finished.takeLast(16).map { Genre.of(it.genre).argb.toInt() },
         stars = s.nights,
@@ -229,5 +388,9 @@ fun lookOf(sp: Species, mana: Int, s: Stats, activeOne: Boolean, sleeping: Boole
         chew = chew,
         hatch = if (stage == Stage.EGG) (mana / Stage.BABY.from.toFloat()).coerceIn(0f, 1f) else 0f,
         shiny = shiny && stage != Stage.EGG,
+        blooms = s.mornings,
+        wisps = s.spooky,
+        form = if (stage >= Stage.ADULT) form else Form.NONE,
+        season = season,
     ).let { if ((it.stone * 10).toInt() != 0) it.copy(stone = (it.stone * 10).toInt() / 10f) else it.copy(stone = 0f) }
 }

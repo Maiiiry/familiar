@@ -1,6 +1,7 @@
 package app.familiar.ui.pix
 
 import app.familiar.domain.Item
+import app.familiar.domain.Season
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
@@ -25,7 +26,7 @@ object Room {
     private val sea = Ramp(rgb(14, 36, 70), rgb(24, 64, 112), rgb(40, 98, 152), rgb(74, 140, 190), rgb(130, 190, 226))
 
     /** One frame of the den. [books] colour the bookshelf; [night] shows the moon in the window. */
-    fun scene(placed: Set<Item>, books: List<Int>, night: Boolean, f: Int): Px {
+    fun scene(placed: Set<Item>, books: List<Int>, night: Boolean, f: Int, season: Season = Season.NONE): Px {
         val px = Px(W, H)
         wall(px, night)
         if (Item.WINDOW_MOON in placed) windowMoon(px, night, f)
@@ -45,6 +46,7 @@ object Room {
         if (Item.GLOBE in placed) globe(px)
         if (Item.CANDLES in placed) candles(px, f)
         if (Item.GARLAND in placed) garland(px, f)
+        dress(px, season, placed, night, f)
         // Warm light around where the familiar sits, stronger with candles and lanterns.
         val warmth = 34 + (if (Item.CANDLES in placed) 18 else 0) + (if (Item.LANTERN in placed) 18 else 0)
         px.glow(72f, 74f, 70f, rgb(255, 190, 110), warmth, 5, onlyDrawn = true)
@@ -298,6 +300,106 @@ object Room {
             val y = (74 + sin(a * PI / 180) * 13).toInt()
             if (y < 86) px.set(x, y, R.gold[3])
         }
+    }
+
+    /** The den dressed for the days of a season. */
+    private fun dress(px: Px, season: Season, placed: Set<Item>, night: Boolean, f: Int) {
+        when (season) {
+            Season.SAMHAIN -> {
+                // Cobwebs in the corners, bats on the wall, two carved pumpkins by the familiar.
+                for (k in 0 until 4) px.line(0, k * 4, k * 4, 0, R.snow[2])
+                px.line(0, 0, 14, 14, R.snow[2])
+                for (k in listOf(6, 11)) { px.line(0, k, k, k, R.snow[2]); px.line(k, 0, k, k, R.snow[2]) }
+                for (i in 0 until 2) {
+                    val bx = 56 + i * 26 + (f % 2) * 2; val by = 30 + i * 6 - (f % 2)
+                    px.hline(bx - 1, bx + 1, by, EYE); px.set(bx, by + 1, EYE)
+                    val up = (f + i) % 2 == 0
+                    px.line(bx - 1, by, bx - 5, by + if (up) -2 else 1, EYE); px.line(bx + 1, by, bx + 5, by + if (up) -2 else 1, EYE)
+                }
+                for ((cx, r) in listOf(114f to 6f, 131f to 7.5f)) pumpkin(px, cx, 103f - r * 0.8f, r, f)
+            }
+            Season.WINTER -> {
+                // A little fir by the familiar, and snow in the window.
+                val tx = 128f
+                px.shade(rect(tx - 4f, 97f, 8f, 6f), { x, _ -> V3((x - tx) / 5f, 0f, 1f) }, R.red, lo = 1, hi = 3)
+                for ((k, w) in listOf(0 to 10f, 1 to 8f, 2 to 6f)) {
+                    val base = 97f - k * 8f
+                    px.shade(poly(tx - w, base, tx, base - 12f, tx + w, base), { x, _ -> V3((x - tx) / (w + 2f), -0.2f, 1f) }, R.leaf, lo = 0, hi = 4)
+                }
+                px.shade(poly(tx, 66f, tx + 2f, 70f, tx - 2f, 70f), facing(), R.gold, lo = 3)
+                for (i in 0 until 6) {
+                    val bx = (tx - 7 + (noise(i, 1, 93) + 0.5f) * 14).toInt(); val by = (76 + (noise(i, 2, 93) + 0.5f) * 18).toInt()
+                    val c = listOf(R.red[4], R.gold[5], R.sky[5])[i % 3]
+                    if ((i + f) % 4 != 0) px.set(bx, by, c) else px.set(bx, by, R.leaf[2])
+                }
+                if (Item.WINDOW_MOON in placed || Item.WINDOW_STAINED in placed) for (i in 0 until 10) {
+                    val sx = 11 + ((noise(i, 3, 94) + 0.5f) * 24).toInt()
+                    val sy = 12 + ((noise(i, 4, 94) + 0.5f) * 30 + f * 3).toInt() % 34
+                    px.set(sx, sy, WHITE, 220)
+                } else {
+                    // A wreath on the wall instead.
+                    px.shade(minus(ellipse(23f, 26f, 8f, 8f), ellipse(23f, 26f, 4.5f, 4.5f)), dome(22f, 25f, 8f, 8f), R.leaf, lo = 1, hi = 4)
+                    px.shade(poly(20f, 32f, 26f, 32f, 23f, 35f), facing(), R.red, lo = 2)
+                }
+            }
+            Season.VALENTINE -> {
+                var k = 0
+                for (x in 0 until W) {
+                    val y = 5 + (4 * abs(sin((x / (W / 3f)) * PI))).toInt()
+                    px.set(x, y, R.pink[1])
+                    if (x % 12 == 6) {
+                        val c = if ((k + f) % 2 == 0) R.red[3] else R.pink[3]
+                        listOf(".x.x.", "xxxxx", ".xxx.", "..x..").forEachIndexed { j, row -> row.forEachIndexed { i, ch -> if (ch == 'x') px.set(x - 2 + i, y + 1 + j, c) } }
+                        k++
+                    }
+                }
+            }
+            Season.BOOKDAY -> {
+                // Bunting of tiny books, and a stack of them by the familiar.
+                for (x in 0 until W) {
+                    val y = 4 + (3 * abs(sin((x / (W / 4f)) * PI))).toInt()
+                    px.set(x, y, R.paper[1])
+                    if (x % 8 == 4) {
+                        val c = R.around(listOf(0xFF8E6BD8, 0xFFB8394A, 0xFF3FB0C9, 0xFFE08A3C, 0xFF4E9A69)[(x / 8) % 5].toInt())
+                        px.rect(x - 1, y + 1, 3, 4, c[3]); px.vline(x - 1, y + 1, y + 4, c[1]); px.set(x + 1, y + 2, R.paper[4])
+                    }
+                }
+                for (i in 0 until 4) {
+                    val c = R.around(listOf(0xFFC9A04A, 0xFF8E6BD8, 0xFFB8394A, 0xFF3FB0C9)[i].toInt())
+                    val y = 100f - i * 3.4f
+                    px.shade(rect(94f + (i % 2) * 2, y, 14f, 3.4f), facing(0f, -0.2f, 1f), c, lo = 1, hi = 5)
+                }
+                if (f % 2 == 0) px.set(102, 86, R.gold[5])
+            }
+            Season.MIDSUMMER -> {
+                for (i in 0 until 7) {
+                    val a = (f / 4f + i / 7f) * 2 * PI
+                    val x = (72 + kotlin.math.cos(a + i).toFloat() * 60).toInt()
+                    val y = (44 + sin(a * 2 + i).toFloat() * 26).toInt()
+                    if ((f + i) % 3 != 0) px.glow(x + 0.5f, y + 0.5f, 3f, rgb(220, 250, 140), 170, 2)
+                }
+                // Daisies in a jar.
+                px.shade(rect(96f, 92f, 8f, 11f), column(100f, 4f), R.glass, lo = 1, hi = 3)
+                for ((dx, dy) in listOf(-3 to 86, 0 to 83, 3 to 87)) {
+                    px.line(100, 92, 100 + dx, dy, R.leaf[2])
+                    for ((ox, oy) in listOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)) px.set(100 + dx + ox, dy + oy, WHITE)
+                    px.set(100 + dx, dy, R.gold[4])
+                }
+            }
+            Season.NONE -> {}
+        }
+    }
+
+    private fun pumpkin(px: Px, cx: Float, cy: Float, r: Float, f: Int) {
+        val orange = Ramp(rgb(96, 30, 20), rgb(160, 60, 22), rgb(214, 104, 30), rgb(240, 148, 50), rgb(252, 196, 100))
+        px.shade(ellipse(cx, cy, r * 1.25f, r), dome(cx - 1, cy - 2, r * 1.25f, r), orange, texture = { x, _ -> if (Math.floorMod(x - cx.toInt(), 4) == 0) -0.3f else 0f }, lo = 0)
+        px.shade(rect(cx - 1f, cy - r - 2.5f, 2.5f, 3f), facing(), R.leaf, lo = 1, hi = 3)
+        val glow = if (f % 2 == 0) R.gold[5] else R.gold[4]
+        val ex = r * 0.45f
+        for (s in listOf(-1, 1)) { val x = (cx + s * ex).toInt(); val y = (cy - r * 0.2f).toInt(); px.set(x, y, glow); px.set(x - s, y + 1, glow); px.set(x, y + 1, glow) }
+        val my = (cy + r * 0.35f).toInt()
+        for (x in (cx - ex).toInt()..(cx + ex).toInt()) px.set(x, my + if ((x - cx.toInt()) % 2 == 0) 0 else 1, glow)
+        px.glow(cx, cy, r * 1.8f, R.gold[5], 40, 3)
     }
 
     private fun candles(px: Px, f: Int) {

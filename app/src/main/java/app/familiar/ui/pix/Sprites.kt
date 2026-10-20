@@ -1,6 +1,8 @@
 package app.familiar.ui.pix
 
+import app.familiar.domain.Form
 import app.familiar.domain.Mood
+import app.familiar.domain.Season
 import app.familiar.domain.Species
 import app.familiar.domain.Stage
 import kotlin.math.PI
@@ -33,6 +35,14 @@ data class Look(
     val shiny: Boolean = false,
     /** Being stroked: eyes squeezed shut with pleasure. */
     val happy: Boolean = false,
+    /** Sprout: a flower for every morning of reading. */
+    val blooms: Int = 0,
+    /** Ghost: a wisp for every horror or mystery book finished. */
+    val wisps: Int = 0,
+    /** The form taken when grown. */
+    val form: Form = Form.NONE,
+    /** Days of the year when it dresses up. */
+    val season: Season = Season.NONE,
 )
 
 enum class EyeState { OPEN, BLINK, CLOSED, SCARED, SQUINT, HAPPY }
@@ -71,7 +81,8 @@ object Sprites {
             egg(body, ctx)
             null
         } else {
-            val pen = Pen(body, stageScale(look.stage), dy = if (look.species == Species.MOTH) sin(ph * 2 * PI.toFloat()) * 1.5f - 2f else breath)
+            val floats = look.species == Species.MOTH || look.species == Species.GHOST
+            val pen = Pen(body, stageScale(look.stage), dy = if (floats) sin(ph * 2 * PI.toFloat()) * 1.5f - 2f else breath)
             when (look.species) {
                 Species.MIMIC -> mimic(pen, ctx)
                 Species.KITSUNE -> kitsune(pen, ctx)
@@ -81,8 +92,14 @@ object Sprites {
                 Species.GRIFFIN -> griffin(pen, ctx)
                 Species.OWLBEAR -> owlbear(pen, ctx)
                 Species.MOTH -> moth(pen, ctx)
+                Species.TANUKI -> Newcomers.tanuki(pen, ctx)
+                Species.SPROUT -> Newcomers.sprout(pen, ctx)
+                Species.GHOST -> Newcomers.ghost(pen, ctx)
+                Species.WYRM -> Newcomers.wyrm(pen, ctx)
             }
         }
+        // What it wears: the colours and crown of its form, or a hat for the season.
+        if (face != null) Wardrobe.dress(body, face, look, f)
         // One dark line around the whole sprite so it reads on any background.
         val solid = BooleanArray(SIZE * SIZE) { body.c[it].al() >= 160 }
         body.ring(solid, OUT)
@@ -91,7 +108,9 @@ object Sprites {
         val out = Px(SIZE, SIZE)
         shadow(out, look)
         if (look.stage == Stage.ANCIENT && stone < 0.5f) aura(out, ph)
+        if (face != null && stone < 0.5f) Wardrobe.behind(out, look, f)
         out.blit(body, 0, 0)
+        if (face != null && stone < 0.5f) Wardrobe.around(out, face, look, f)
         if (face != null && stone < 0.6f && !look.sleeping && !look.happy) marks(out, face, look, f)
         if (face != null && look.happy) stamp(out, HEART, face.headX + face.headR, face.headY - face.headR - (f % 6), R.pink[2], WHITE)
         if (face != null && look.sleeping && stone < 0.85f) snore(out, face, f)
@@ -111,7 +130,7 @@ object Sprites {
 
     private fun shadow(out: Px, look: Look) {
         val k = stageScale(look.stage)
-        val rx = (if (look.species == Species.MOTH) 16f else 24f) * k
+        val rx = (if (look.species == Species.MOTH || look.species == Species.GHOST) 16f else 24f) * k
         val cy = SIZE - 3.5f
         for (y in (cy - 3).toInt()..(cy + 2).toInt()) for (x in (SIZE / 2 - rx - 1).toInt()..(SIZE / 2 + rx + 1).toInt()) {
             val d = ((x + 0.5f - SIZE / 2f) / rx).let { it * it } + ((y + 0.5f - cy) / 2.2f).let { it * it }
@@ -247,18 +266,18 @@ object Sprites {
         }
     }
 
-    private fun face(px: Px, pen: Pen, ctx: Ctx, eyes: List<Pair<Float, Float>>, r: Float, iris: Int, skin: Int, head: Pair<Float, Float>, headR: Float): Face {
+    internal fun face(px: Px, pen: Pen, ctx: Ctx, eyes: List<Pair<Float, Float>>, r: Float, iris: Int, skin: Int, head: Pair<Float, Float>, headR: Float): Face {
         val pts = eyes.map { (x, y) -> eye(px, pen.x(x), pen.y(y), pen.r(r), iris, ctx.eyes, skin) }
         val w = max(3, (pen.r(r) * 2f).roundToInt())
         if (ctx.eyes != EyeState.CLOSED) blush(px, pts, w, ctx.look.mood == Mood.HEARTS)
         return Face(pts, w, pen.x(head.first).toInt(), pen.y(head.second).toInt(), pen.r(headR).toInt())
     }
 
-    private val HEART = arrayOf(".x.x.", "xxxxx", "xxxxx", ".xxx.", "..x..")
-    private val SPARK = arrayOf("..x..", "..x..", "xxxxx", "..x..", "..x..")
+    internal val HEART = arrayOf(".x.x.", "xxxxx", "xxxxx", ".xxx.", "..x..")
+    internal val SPARK = arrayOf("..x..", "..x..", "xxxxx", "..x..", "..x..")
     private val DROP = arrayOf(".x.", "xxx", "xxx", ".x.")
 
-    private fun stamp(px: Px, pat: Array<String>, x0: Int, y0: Int, c: Int, hi: Int, a: Int = 255) {
+    internal fun stamp(px: Px, pat: Array<String>, x0: Int, y0: Int, c: Int, hi: Int, a: Int = 255) {
         pat.forEachIndexed { y, row -> row.forEachIndexed { x, ch -> if (ch == 'x') px.set(x0 + x, y0 + y, if (x == 1 && y == 1) hi else c, a) } }
     }
 
@@ -289,6 +308,8 @@ object Sprites {
             Mood.SUSPICIOUS, Mood.NONE -> {}
         }
         if (look.species == Species.OWLBEAR && look.stage >= Stage.ADULT && look.mood != Mood.GLASSES) glasses(px, f)
+        // The bookworm can't read without its spectacles.
+        if (look.species == Species.WYRM && look.stage >= Stage.YOUNG && look.mood != Mood.GLASSES) glasses(px, f)
     }
 
     private val ZED = arrayOf("xxx", "..x", ".x.", "xxx")
@@ -313,6 +334,10 @@ object Sprites {
             Species.GRIFFIN -> 0f to 0.05f
             Species.OWLBEAR -> 0f to 0.08f
             Species.MOTH -> 110f to 1f
+            Species.TANUKI -> 200f to 0.7f
+            Species.SPROUT -> 250f to 1f
+            Species.GHOST -> 0f to 1f
+            Species.WYRM -> 130f to 1f
         }
         val hsv = FloatArray(3)
         for (i in px.c.indices) {
@@ -362,6 +387,10 @@ object Sprites {
         Species.GRIFFIN -> R.tan
         Species.OWLBEAR -> R.owl
         Species.MOTH -> R.night
+        Species.TANUKI -> R.tanuki
+        Species.SPROUT -> R.leaf
+        Species.GHOST -> R.fluff
+        Species.WYRM -> R.paper
     }
 
     private fun egg(px: Px, ctx: Ctx) {
@@ -396,6 +425,23 @@ object Sprites {
             Species.SLIME -> for (i in 0 until 6) {
                 val x = pen.x(36f + (noise(i, 1, 4) + 0.5f) * 28f).toInt(); val y = pen.y(40f + (noise(i, 3, 4) + 0.5f) * 40f).toInt()
                 if (inShell(x, y)) { px.set(x, y, R.slime[6]); px.set(x + 1, y, R.slime[5]) }
+            }
+            Species.TANUKI -> for (yy in listOf(56f, 70f)) {
+                val y = pen.y(yy).toInt()
+                for (x in 0 until px.w) for (j in 0..2) if (inShell(x, y + j)) px.set(x, y + j, R.brown[1 + j / 2])
+            }
+            Species.SPROUT -> for (i in 0 until 7) {
+                val x = pen.x(34f + (noise(i, 1, 12) + 0.5f) * 32f).toInt(); val y = pen.y(40f + (noise(i, 3, 12) + 0.5f) * 42f).toInt()
+                if (inShell(x, y)) { px.set(x, y, R.gold[4]); for ((dx, dy) in listOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)) if (inShell(x + dx, y + dy)) px.set(x + dx, y + dy, R.pink[3]) }
+            }
+            Species.GHOST -> if (ctx.f % 12 != 7) for (ex in listOf(44f, 56f)) {
+                // Two eyes peek through the shell.
+                val x = pen.x(ex).toInt(); val y = pen.y(58f).toInt()
+                px.rect(x - 1, y - 1, 2, 3, EYE)
+            }
+            Species.WYRM -> for (k in 0 until 6) {
+                val y = pen.y(44f + k * 6.5f).toInt()
+                for (x in pen.x(36f).toInt()..pen.x(64f).toInt()) if (inShell(x, y) && (x + k) % 9 != 0) px.set(x, y, R.paper[1])
             }
             Species.OWLBEAR -> for (i in 0 until 16) {
                 val x = pen.x(32f + (noise(i, 1, 6) + 0.5f) * 36f).toInt(); val y = pen.y(36f + (noise(i, 3, 6) + 0.5f) * 48f).toInt()

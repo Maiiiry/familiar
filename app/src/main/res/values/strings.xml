@@ -116,7 +116,7 @@
     <string name="bestiary">Bestiary</string>
     <string name="bestiary_count">%1$d of %2$d familiars found</string>
     <string name="bestiary_eggs">Eggs waiting for you: %d</string>
-    <string name="bestiary_text">Eight familiars live in these pages. Read and they come to you one by one, as eggs. You read with one at a time; the others rest in the den with all they\'ve eaten.</string>
+    <string name="bestiary_text">Twelve familiars live in these pages. Read and they come to you one by one, as eggs. You read with one at a time; the others rest in the den with all they\'ve eaten.</string>
     <string name="bestiary_note">Mana goes to the familiar you read with. Switch any time.</string>
     <string name="with_you">with you</string>
     <string name="egg_waiting">An egg is waiting</string>
@@ -132,7 +132,7 @@
     <string name="search_title">Find the book</string>
     <string name="search_hint">Title or author</string>
     <string name="search">Search</string>
-    <string name="search_note">From Open Library: the title, the author, the pages and the cover. Or fill in by hand below.</string>
+    <string name="search_note">From Fantlab and Open Library: the title, the author, the pages and the cover. Or fill in by hand below.</string>
     <string name="search_failed">Couldn\'t reach the book catalogue. Check the internet, or fill in by hand.</string>
     <string name="search_nothing">Nothing found. Try another spelling, or fill in by hand.</string>
     <string name="cover_found">The cover is kept on the phone.</string>
@@ -297,8 +297,8 @@
     <string name="ob_intro">You are a reading mage, and every mage needs a familiar. Yours lives on mana, and mana comes from pages: each page you read is a spark it eats.</string>
     <string name="ob_intro2">Read and it hatches, grows and learns. Forget about books and it slowly turns to stone, until a few pages break the spell.</string>
     <string name="ob_choose">Choose an egg</string>
-    <string name="ob_choose_text">Each familiar loves its own kind of reading. Five more are found along the way.</string>
-    <string name="ob_others">The dragon, the phoenix, the griffin, the owlbear and the moon moth come to those who read.</string>
+    <string name="ob_choose_text">Each familiar loves its own kind of reading. Nine more are found along the way.</string>
+    <string name="ob_others">The dragon, the phoenix, the griffin, the owlbear, the moon moth, the tanuki, the sprout, the ghost and the bookworm come to those who read.</string>
     <string name="ob_names">What will you call it?</string>
     <string name="ob_pet_name">Familiar\'s name</string>
     <string name="ob_your_name">Your name</string>
@@ -344,7 +344,7 @@
     <string name="backup_restored">Restored</string>
     <string name="backup_failed">Couldn\'t read or write the file</string>
     <string name="about">About</string>
-    <string name="about_text">Familiar is free, has no ads and no account. It goes online only to find a book and its cover. Part of Stillcraft.</string>
+    <string name="about_text">Familiar is free, has no ads and no account. It goes online only to find a book and its cover; visits go from phone to phone as a QR code. Part of Stillcraft.</string>
     <string name="about_version">Version %s</string>
 
     <!-- Notifications and widget -->
@@ -462,4 +462,236 @@
     <string name="listen_done_title">The record has stopped</string>
     <string name="listen_done_minutes">%d minutes listened.</string>
     <string name="listen_continue">Listen a little more</string>
+
+    <!-- 1.2.0: four more familiars -->
+    <string name="sp_tanuki">Tanuki</string>
+    <string name="sp_sprout">Sprout</string>
+    <string name="sp_ghost">Ghost</string>
+    <string name="sp_wyrm">Bookworm</string>
+    <string name="lore_tanuki">A round raccoon dog with a leaf on its head. Loves stories read aloud, and grows big headphones to hear them better.</string>
+    <string name="lore_sprout">A little root that woke up in a pot. Every morning of reading opens a new flower on its leaves.</string>
+    <string name="lore_ghost">A friendly sheet that haunts libraries. Every horror or mystery you finish lights one more wisp around it.</string>
+    <string name="lore_wyrm">Lives inside books and grows a new segment as it grows up, each in the colour of a book you finished. Can\'t read without its spectacles.</string>
+    <string name="loves_tanuki" formatted="false">listening to audiobooks (+50%)</string>
+    <string name="loves_sprout" formatted="false">reading before ten in the morning (+50%)</string>
+    <string name="loves_ghost" formatted="false">horror and mysteries (+50%)</string>
+    <string name="loves_wyrm" formatted="false">long sittings, 45 minutes and more (+50%)</string>
+    <string name="how_ghost">Finish a horror book or a mystery.</string>
+    <plurals name="how_tanuki">
+        <item quantity="one">Listen to an audiobook %d time.</item>
+        <item quantity="other">Listen to audiobooks %d times.</item>
+    </plurals>
+    <plurals name="how_sprout">
+        <item quantity="one">Read before ten in the morning %d time.</item>
+        <item quantity="other">Read before ten in the morning %d times.</item>
+    </plurals>
+    <plurals name="how_wyrm">
+        <item quantity="one">Read for %2$d minutes in one sitting %1$d time.</item>
+        <item quantity="other">Read for %2$d minutes in one sitting %1$d times.</item>
+    </plurals>
+
+    <!-- Character -->
+    <string name="tr_sleepy">Sleepy</string>
+    <string name="tr_glutton">Glutton</string>
+    <string name="tr_curious">Curious</string>
+    <string name="tr_grumpy">Grumpy</string>
+    <string name="tr_playful">Playful</string>
+    <string name="tr_brave">Brave</string>
+    <string name="trt_sleepy">Goes to bed an hour early.</string>
+    <string name="trt_glutton">Chews long and always wants more.</string>
+    <string name="trt_curious">Brings back finds more often.</string>
+    <string name="trt_grumpy">Takes a long stroke before it purrs.</string>
+    <string name="trt_playful">Hops twice when you tap it.</string>
+    <string name="trt_brave">Never trembles after horror.</string>
+    <string name="trait_line">Character: %1$s. %2$s</string>
+
+    <!-- Forms -->
+    <string name="form_none">Classic</string>
+    <string name="form_astral">Astral</string>
+    <string name="form_shadow">Shadow</string>
+    <string name="form_bloom">Bloom</string>
+    <string name="form_sage">Sage</string>
+    <string name="form_wild">Wild</string>
+    <string name="form_line">%s form</string>
+    <string name="form_leaning">Leaning to the %1$s form, %2$d%%. Chosen for good when it grows up.</string>
+    <string name="forms_title">Forms</string>
+    <string name="forms_text">A grown familiar takes a form after the books it was fed on, with colours and a crown of its own:</string>
+    <string name="form_of">%1$s: %2$s</string>
+    <string name="cel_form">A form is chosen</string>
+    <string name="cel_form_text">%1$s grew up on your books and takes the %2$s form for good.</string>
+
+    <!-- Finds and the casket -->
+    <string name="casket">Casket</string>
+    <string name="casket_short">Casket · %1$d/%2$d</string>
+    <string name="casket_text">Things your familiars brought back from stories. Each genre hides its own, and some turn up only on special days of the year.</string>
+    <string name="casket_count">%1$d of %2$d found</string>
+    <string name="find_title">%s brought something back!</string>
+    <string name="find_new">New in the casket</string>
+    <string name="find_again">One more for the casket</string>
+    <string name="find_from_genre">Turns up after %s</string>
+    <string name="find_from_season">Only in %s</string>
+    <string name="find_from_any">Turns up after any book</string>
+    <string name="find_times">×%d</string>
+    <string name="find_unknown">Not found yet</string>
+    <string name="tk_bookmark">Silk bookmark</string>
+    <string name="tk_acorn">Acorn</string>
+    <string name="tk_button">Lost button</string>
+    <string name="tk_candle_stub">Candle stub</string>
+    <string name="tk_teacup">Teacup</string>
+    <string name="tk_dice">Die</string>
+    <string name="tk_ribbon">Ribbon bow</string>
+    <string name="tk_seashell">Seashell</string>
+    <string name="tk_bell">Little bell</string>
+    <string name="tk_moon_pebble">Moon pebble</string>
+    <string name="tk_dragon_scale">Dragon scale</string>
+    <string name="tk_gear">Robot gear</string>
+    <string name="tk_magnifier">Magnifying glass</string>
+    <string name="tk_spider">Tiny spider</string>
+    <string name="tk_love_letter">Love letter</string>
+    <string name="tk_compass">Compass</string>
+    <string name="tk_quill">Quill</string>
+    <string name="tk_old_coin">Ancient coin</string>
+    <string name="tk_spectacles">Spectacles</string>
+    <string name="tk_pressed_flower">Pressed flower</string>
+    <string name="tk_pumpkin">Carved pumpkin</string>
+    <string name="tk_snow_globe">Snow globe</string>
+    <string name="tk_valentine">Valentine</string>
+    <string name="tk_first_edition">First edition</string>
+    <string name="tk_firefly_jar">Firefly in a jar</string>
+    <string name="tkt_bookmark">Someone left it on page 213. What happened there?</string>
+    <string name="tkt_acorn">Squirrels in books hide them too.</string>
+    <string name="tkt_button">From a coat of a character who left in a hurry.</string>
+    <string name="tkt_candle_stub">It burned all night through the last chapter.</string>
+    <string name="tkt_teacup">Still warm. Someone was reading over tea.</string>
+    <string name="tkt_dice">Fate rolled a six this time.</string>
+    <string name="tkt_ribbon">Tied around a present in chapter two.</string>
+    <string name="tkt_seashell">Hold it to your ear: you can hear the next chapter.</string>
+    <string name="tkt_bell">Rings softly when a story is about to turn.</string>
+    <string name="tkt_moon_pebble">Glows faintly on the nights you read.</string>
+    <string name="tkt_dragon_scale">Warm to the touch. The dragon didn\'t notice it was gone.</string>
+    <string name="tkt_gear">Fell off a robot from the far future. It still ticks.</string>
+    <string name="tkt_magnifier">For clues, footprints and very small print.</string>
+    <string name="tkt_spider">Harmless and very proud of its web.</string>
+    <string name="tkt_love_letter">Sealed with a heart. Not for us, but so sweet.</string>
+    <string name="tkt_compass">Points not north but to the next adventure.</string>
+    <string name="tkt_quill">Smells of ink and old paper.</string>
+    <string name="tkt_old_coin">Minted by a king nobody remembers.</string>
+    <string name="tkt_spectacles">Everything looks more interesting through them.</string>
+    <string name="tkt_pressed_flower">Kept between the pages of a poem.</string>
+    <string name="tkt_pumpkin">Grins in the dark. Only in the days of Samhain.</string>
+    <string name="tkt_snow_globe">Shake it and it snows inside. Only in winter.</string>
+    <string name="tkt_valentine">A heart from a secret admirer. Only around Valentine\'s day.</string>
+    <string name="tkt_first_edition">Tiny, golden and very rare. Only on World Book Day.</string>
+    <string name="tkt_firefly_jar">Caught on the shortest night. Only at midsummer.</string>
+
+    <!-- Seasons -->
+    <string name="season_none">Every day</string>
+    <string name="season_samhain">Samhain</string>
+    <string name="season_winter">Winter holidays</string>
+    <string name="season_valentine">Valentine\'s days</string>
+    <string name="season_bookday">World Book Day</string>
+    <string name="season_midsummer">Midsummer</string>
+    <string name="season_title">%s in the den</string>
+    <string name="season_text">The den is dressed up and familiars bring back finds more often, among them one you can only get these days: %s.</string>
+
+    <!-- Dreams -->
+    <string name="dream">A dream</string>
+    <string name="dream_title">What %s dreamt of</string>
+    <string name="dreams">Dream album</string>
+    <string name="dreams_text">Read in the evening, and in the morning your familiar tells what it dreamt: a dream for every genre.</string>
+    <string name="dream_unknown">Not dreamt yet</string>
+    <string name="dream_fantasy">%s dreamt of a castle on a hill, with a flag on the tallest tower and someone waving from the window.</string>
+    <string name="dream_scifi">%s flew a little rocket around a ringed planet and waved at the stars.</string>
+    <string name="dream_mystery">%s followed footprints through the fog with a magnifying glass. The culprit was very close…</string>
+    <string name="dream_horror">%s dreamt of a graveyard and a ghost who turned out to be quite friendly.</string>
+    <string name="dream_romance">%s dreamt of a rose and hearts drifting up into the sky.</string>
+    <string name="dream_adventure">%s sailed a little ship across the waves towards the sun.</string>
+    <string name="dream_classic">%s danced at a ball under a chandelier of a hundred candles.</string>
+    <string name="dream_history">%s crossed the desert on a camel, past the pyramids.</string>
+    <string name="dream_nonfiction">%s had a dream that turned into an idea, bright as a light bulb.</string>
+    <string name="dream_poetry">%s sat by a lake where the moon wrote poems on the water.</string>
+    <string name="dream_other">%s counted sheep jumping over a fence, and lost count.</string>
+
+    <!-- The draw -->
+    <string name="lottery">The familiar\'s draw</string>
+    <string name="lottery_short">Let the familiar choose</string>
+    <string name="lottery_text">Can\'t decide what to read next? %s will draw a book from your Want to read shelf.</string>
+    <string name="lottery_empty">The Want to read shelf is empty. Put a few books there first.</string>
+    <string name="lottery_drawing">Shuffling…</string>
+    <string name="lottery_again">Draw again</string>
+    <string name="lottery_take">Start reading</string>
+    <string name="prophecy_fantasy">The cards whisper of dragons and a road far from home.</string>
+    <string name="prophecy_scifi">The stars line up: a journey beyond the sky awaits.</string>
+    <string name="prophecy_mystery">A secret is hidden here, and only you can solve it.</string>
+    <string name="prophecy_horror">Light a candle. Better two.</string>
+    <string name="prophecy_romance">The heart says yes before the head does.</string>
+    <string name="prophecy_adventure">Pack your bag: the map is already drawn.</string>
+    <string name="prophecy_classic">An old friend of every reader waits to meet you.</string>
+    <string name="prophecy_history">The past has a story to tell you tonight.</string>
+    <string name="prophecy_nonfiction">You will close this book a little wiser.</string>
+    <string name="prophecy_poetry">Read it slowly, out loud, by candlelight.</string>
+    <string name="prophecy_other">Nobody knows what\'s inside. That\'s the fun.</string>
+
+    <!-- Getting closer -->
+    <plurals name="nudge_fed">
+        <item quantity="one">Only %1$d more page and %2$s is full today</item>
+        <item quantity="other">Only %1$d more pages and %2$s is full today</item>
+    </plurals>
+    <plurals name="nudge_hatch">
+        <item quantity="one">Only %d more page until the egg hatches</item>
+        <item quantity="other">Only %d more pages until the egg hatches</item>
+    </plurals>
+    <plurals name="nudge_stage">
+        <item quantity="one">Only %1$d more page until %2$s grows</item>
+        <item quantity="other">Only %1$d more pages until %2$s grows</item>
+    </plurals>
+    <plurals name="nudge_book">
+        <item quantity="one">Only %d page to the end of the book</item>
+        <item quantity="other">Only %d pages to the end of the book</item>
+    </plurals>
+    <plurals name="nudge_item">
+        <item quantity="one">Only %d more page and a new piece for the den is yours</item>
+        <item quantity="other">Only %d more pages and a new piece for the den is yours</item>
+    </plurals>
+
+    <!-- Guardian candles -->
+    <string name="guard_title">Guardian candle</string>
+    <string name="guard_text">Burns by itself on a day you didn\'t read, so the streak lives on and the familiar doesn\'t turn to stone. You can keep %d.</string>
+    <string name="guard_have">Waiting: %1$d of %2$d</string>
+    <string name="guard_buy">Buy for ✦ %d</string>
+    <string name="guard_full">You have all you can keep</string>
+    <string name="guard_n">🕯 %d</string>
+    <string name="guard_burned_title">A guardian candle burned for you</string>
+    <string name="guard_burned_text">It kept the streak through %s.</string>
+
+    <!-- Visits -->
+    <string name="visit">Visits</string>
+    <string name="visit_text">Show this code to a friend with Familiar, or send it as a picture. Your familiar visits their den for a day, recommends a book and never comes empty-handed.</string>
+    <string name="visit_recommend">Book to recommend</string>
+    <string name="visit_no_book">No recommendation</string>
+    <string name="visit_share">Send the card</string>
+    <string name="visit_guest">Welcome a guest</string>
+    <string name="visit_scan">Scan a friend\'s code</string>
+    <string name="visit_pick">From a picture</string>
+    <string name="visit_bad">Couldn\'t find a Familiar card there.</string>
+    <string name="visit_own">That\'s your own familiar!</string>
+    <string name="visit_welcome">%s came to visit!</string>
+    <string name="visit_welcome_text">It stays in your den for a day.</string>
+    <string name="visit_gift">It brought a gift: %s. It\'s in the casket.</string>
+    <string name="guest_title">%s is visiting</string>
+    <string name="guest_from">A guest from %s</string>
+    <string name="guest_recommends">Recommends “%1$s”</string>
+    <string name="guest_add">Put on Want to read</string>
+    <string name="guest_added">On your shelf</string>
+    <string name="guest_bye">See the guest off</string>
+    <string name="guest_hours">Leaves in %d h</string>
+    <string name="guest_reader">a friend</string>
+
+    <!-- Postcard -->
+    <string name="postcard">Postcard</string>
+    <string name="postcard_reading">Reading “%s”</string>
+    <string name="postcard_streak">%s in a row</string>
+    <string name="postcard_year">%1$s in %2$d</string>
+    <string name="postcard_footer">Familiar · a familiar that feeds on stories</string>
+    <string name="postcard_failed">Couldn\'t make the postcard</string>
 </resources>

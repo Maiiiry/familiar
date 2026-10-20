@@ -1,6 +1,7 @@
 package app.familiar.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
@@ -96,9 +97,25 @@ data class Pet(
     val active: Boolean = false,
     /** Hatched in a rare colouring. */
     val shiny: Boolean = false,
+    /** [app.familiar.domain.Trait] name; empty for familiars from before traits. */
+    @ColumnInfo(defaultValue = "") val trait: String = "",
+    /** [app.familiar.domain.Form] name, chosen once it is grown; empty before. */
+    @ColumnInfo(defaultValue = "") val form: String = "",
 )
 
-class Snapshot(val books: List<Book>, val readings: List<Reading>, val pets: List<Pet>)
+/** Something a familiar brought back from a sitting (or a guest left), kept in the casket. */
+@Entity(tableName = "finds")
+data class Find(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    /** [app.familiar.domain.Trinket] name. */
+    val kind: String,
+    val at: Long,
+    val petId: Long,
+    /** The sitting it came from; 0 for a guest's gift. */
+    val readingId: Long = 0,
+)
+
+class Snapshot(val books: List<Book>, val readings: List<Reading>, val pets: List<Pet>, val finds: List<Find> = emptyList())
 
 @Dao
 abstract class FamiliarDao {
@@ -146,6 +163,14 @@ abstract class FamiliarDao {
     @Query("UPDATE pets SET active = (id = :id)")
     abstract suspend fun activate(id: Long)
 
+    @Query("SELECT * FROM finds ORDER BY at")
+    abstract fun observeFinds(): Flow<List<Find>>
+
+    @Query("SELECT * FROM finds ORDER BY at")
+    abstract suspend fun finds(): List<Find>
+
+    @Insert abstract suspend fun insertFind(f: Find): Long
+
     /** Removes a book with its sittings. */
     @Transaction
     open suspend fun removeBook(b: Book) {
@@ -154,30 +179,38 @@ abstract class FamiliarDao {
     }
 
     @Transaction
-    open suspend fun snapshot() = Snapshot(books(), readings(), pets())
+    open suspend fun snapshot() = Snapshot(books(), readings(), pets(), finds())
 
     @Query("DELETE FROM books") protected abstract suspend fun clearBooks()
     @Query("DELETE FROM readings") protected abstract suspend fun clearReadings()
     @Query("DELETE FROM pets") protected abstract suspend fun clearPets()
+    @Query("DELETE FROM finds") protected abstract suspend fun clearFinds()
+    @Insert protected abstract suspend fun insertFinds(l: List<Find>)
     @Insert protected abstract suspend fun insertBooks(l: List<Book>)
     @Insert protected abstract suspend fun insertReadings(l: List<Reading>)
     @Insert protected abstract suspend fun insertPets(l: List<Pet>)
 
     @Transaction
     open suspend fun replaceAll(s: Snapshot) {
-        clearBooks(); clearReadings(); clearPets()
-        insertBooks(s.books); insertReadings(s.readings); insertPets(s.pets)
+        clearBooks(); clearReadings(); clearPets(); clearFinds()
+        insertBooks(s.books); insertReadings(s.readings); insertPets(s.pets); insertFinds(s.finds)
     }
 }
 
-@Database(entities = [Book::class, Reading::class, Pet::class], version = 2, exportSchema = true)
+// Every schema change gets a new version and a migration that keeps what's there (1.1.0 lost data without one).
+@Database(
+    entities = [Book::class, Reading::class, Pet::class, Find::class],
+    version = 3,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 2, to = 3)],
+)
 abstract class FamiliarDatabase : RoomDatabase() {
     abstract fun dao(): FamiliarDao
 
     companion object {
         fun create(context: Context): FamiliarDatabase =
             Room.databaseBuilder(context.applicationContext, FamiliarDatabase::class.java, "familiar.db")
-                // No migrations: a changed schema starts a fresh database (and onboarding again, see FamiliarApp).
+                // Only a database older than the migrations (1.0.0) starts fresh (and onboarding again, see FamiliarApp).
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
     }

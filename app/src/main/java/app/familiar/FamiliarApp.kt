@@ -47,6 +47,8 @@ class FamiliarApp : Application() {
             if (BuildConfig.DEMO) DemoSeed.seedIfEmpty(container.db, container.settings)
             // The database was started fresh (a changed schema): meet a new familiar instead of an empty den.
             val s = container.settings.now()
+            // Familiars grown before forms existed take theirs now.
+            app.familiar.data.Library.settleForms(container.db.dao())
             if (s.onboarded && container.db.dao().pets().isEmpty()) {
                 container.settings.update { app.familiar.data.Settings(theme = it.theme, name = it.name, remindAt = it.remindAt, dailyGoal = it.dailyGoal) }
             }

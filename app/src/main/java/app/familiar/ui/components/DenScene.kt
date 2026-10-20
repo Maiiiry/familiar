@@ -20,6 +20,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import app.familiar.domain.Item
+import app.familiar.domain.Season
 import app.familiar.ui.pix.Look
 import app.familiar.ui.pix.Room
 import app.familiar.ui.pix.Sprites
@@ -28,7 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private data class RoomKey(val placed: Set<Item>, val books: List<Int>, val night: Boolean)
+private data class RoomKey(val placed: Set<Item>, val books: List<Int>, val night: Boolean, val season: Season)
 
 private object RoomCache {
     private var key: RoomKey? = null
@@ -39,8 +40,8 @@ private object RoomCache {
 }
 
 /**
- * The den with the familiar in it, both in the same pixels. Tap to make it hop, stroke it to make
- * it purr.
+ * The den with the familiar in it, both in the same pixels. Tap to make it hop ([hops] times),
+ * stroke it ([stroke] pixels' worth) to make it purr. A [guest] sits beside it for a day.
  */
 @Composable
 fun DenScene(
@@ -49,16 +50,21 @@ fun DenScene(
     books: List<Int>,
     night: Boolean,
     modifier: Modifier = Modifier,
+    season: Season = Season.NONE,
+    guest: Look? = null,
+    hops: Int = 1,
+    stroke: Float = 260f,
     onTap: () -> Unit = {},
     onStroke: () -> Unit = {},
 ) {
-    val key = RoomKey(placed, books, night)
+    val key = RoomKey(placed, books, night, season)
     val room by produceState(RoomCache.get(key), key) {
         value = RoomCache.get(key) ?: withContext(Dispatchers.Default) {
-            List(Room.FRAMES) { Room.scene(placed, books, night, it).bitmap() }
+            List(Room.FRAMES) { Room.scene(placed, books, night, it, season).bitmap() }
         }.also { RoomCache.put(key, it) }
     }
     val pet by produceState(null as List<ImageBitmap>?, look) { value = withContext(Dispatchers.Default) { framesOf(look) } }
+    val visitor by produceState(null as List<ImageBitmap>?, guest) { value = guest?.let { withContext(Dispatchers.Default) { framesOf(it) } } }
     val t = rememberTime()
     val hop = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
@@ -70,8 +76,10 @@ fun DenScene(
                 detectTapGestures {
                     onTap()
                     scope.launch {
-                        hop.animateTo(1f, tween(140))
-                        hop.animateTo(0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                        repeat(hops) {
+                            hop.animateTo(1f, tween(140))
+                            hop.animateTo(0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                        }
                     }
                 }
             }
@@ -80,7 +88,7 @@ fun DenScene(
                 detectHorizontalDragGestures(onDragStart = { stroked = 0f }) { change, amount ->
                     change.consume()
                     stroked += kotlin.math.abs(amount)
-                    if (stroked > 260f) { stroked = 0f; onStroke() }
+                    if (stroked > stroke) { stroked = 0f; onStroke() }
                 }
             }
     ) {
@@ -92,6 +100,13 @@ fun DenScene(
         val f = frames[(t * 3).toInt() % frames.size]
         drawRect(androidx.compose.ui.graphics.Color(0xFF2A2030), size = size)
         drawImage(f, dstOffset = IntOffset(ox, oy), dstSize = IntSize(Room.W * k, Room.H * k), filterQuality = FilterQuality.None)
+        visitor?.let { v ->
+            // The guest sits to the left, a little out of step with the host.
+            val img = v[((t * 5).toInt() + 3) % v.size]
+            val gx = ox + (Room.W / 2 - 44 - img.width / 2) * k
+            val gy = oy + (Room.FLOOR_Y - img.height + 1) * k
+            drawImage(img, dstOffset = IntOffset(gx, gy), dstSize = IntSize(img.width * k, img.height * k), filterQuality = FilterQuality.None)
+        }
         pet?.let { p ->
             val img = p[(t * 6).toInt() % p.size]
             val px = ox + (Room.W - img.width) / 2 * k

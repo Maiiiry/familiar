@@ -107,6 +107,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
+    // QR visiting cards: drawing and reading them (from the camera or a picture), all on the phone.
+    implementation(libs.zxing.core)
+    implementation(libs.zxing.embedded) { isTransitive = false }
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
@@ -119,4 +122,5 @@ tasks.withType<Test>().configureEach {
     systemProperty("render.out", layout.buildDirectory.dir("art").get().asFile.absolutePath)
     systemProperty("render.res", file("src/main/res").absolutePath)
     systemProperty("render.docs", rootProject.file("docs").absolutePath)
+    systemProperty("render.lang", (project.findProperty("lang") ?: "en").toString())
 }
