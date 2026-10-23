@@ -29,7 +29,7 @@ You are a reading mage, and every mage needs a familiar. Yours lives on mana, an
 
 ## The familiars
 
-<img src="docs/familiars.png" alt="The twelve familiars: mimic, kitsune, slime, dragon, phoenix, griffin, owlbear, moon moth, tanuki, sprout, ghost and bookworm" width="100%" />
+<img src="docs/familiars.png" alt="The fourteen familiars: mimic, kitsune, slime, dragon, phoenix, griffin, owlbear, moon moth, tanuki, sprout, ghost, bookworm, chimera and magpie" width="100%" />
 
 All the art is pixel art painted by the app itself (shaded shapes, hue-shifted ramps, dither, rim light), so every familiar shows what *you* read:
 
@@ -47,8 +47,10 @@ All the art is pixel art painted by the app itself (shaded shapes, hue-shifted r
 | 🌱 | **Sprout** | reading before ten in the morning | a flower on its leaves for every morning of reading |
 | 👻 | **Ghost** | horror and mysteries | a lantern, a wisp for every horror or mystery read, a top hat when ancient |
 | 🐛 | **Bookworm** | long sittings, 45 minutes and more | a new segment in a finished book's colour at every stage, and spectacles |
+| 🦁 | **Chimera** | books in your own genres and subgenres | a patch on its coat for every genre of your own, goat horns, then wings |
+| 🐦 | **Magpie** | staying in the genre of the book before | a shiny thing in its nest for every subgenre, and a longer tail |
 
-Three can hatch at the start; the other nine are found by reading (a 400-page book, five late nights, seven days in a row, a non-fiction or history book, a comeback after a pause, five audiobooks, five mornings, a horror or mystery, three long sittings).
+Three can hatch at the start; the other eleven are found by reading (a 400-page book, five late nights, seven days in a row, a non-fiction or history book, a comeback after a pause, five audiobooks, five mornings, a horror or mystery, three long sittings, books in three genres of your own, two subgenres of one genre).
 
 **Forms.** A grown familiar takes one of five forms for good, after the books it was fed on, with its own colours and crown: astral (fantasy, sci-fi), shadow (mystery, horror), bloom (romance, poetry), sage (classic, history, non-fiction) or wild (adventure and the rest). The bestiary shows which way it leans.
 
@@ -85,6 +87,8 @@ Stroke the familiar sideways and it squeezes its eyes shut and purrs. After midn
 | 💌 | **Postcard** | A picture of the familiar in its den with your book and streak, to share. |
 | 🔎 | **Find a book** | Search Fantlab (Russian books and translations) and Open Library (Google Books as a fallback) by title or author: the title, author, pages and the real cover fill in. Covers are kept on the phone. Or pick your own picture from the gallery, or get a cover drawn in the genre's colour. The length is optional. |
 | 📚 | **Shelves and cycles** | Make your own shelves and put books on several. Give books a cycle and a volume number; the volumes gather together, and reading the whole cycle earns a reward. |
+| 🏷️ | **Your own genres** | Add subgenres to any genre (Fantasy · Dark fantasy) or genres of your own (Manga). They colour the cover and sort the shelf; the built-in genre still sets the mood and the magic. |
+| 🔍 | **Search, filter, sort** | Search the whole library by title, author, cycle or genre; filter by genre, subgenre, paper or audio and stars; sort by recent, title, author, rating, progress or length; covers or a list. |
 | 🌳 | **Tree of stories** | Every finished book grows a glowing fruit in its genre's colour. Tap one to open the book. |
 | 🎯 | **Goal for the year** | How many books this year, with how far ahead of or behind the pace you are. |
 | ⚔️ | **The guild** | Three monthly errands, the same for every reader, none of them a must. |
@@ -125,7 +129,7 @@ No account, no ads, no analytics. The app goes online only when you search for a
 ./gradlew testDebugUnitTest -Prender --tests '*RenderArt*'   # sprite sheets to app/build/art, launcher icons
 ```
 
-The sprites live in `app/src/main/java/app/familiar/ui/pix`: `Pix.kt` is the shading toolkit, `Sprites.kt` and `Newcomers.kt` hold the twelve familiars and their eggs, `Wardrobe.kt` their forms and seasonal hats, `Room.kt` the den and its furniture, `Scenes.kt` the candle, the gramophone and the tree.
+The sprites live in `app/src/main/java/app/familiar/ui/pix`: `Pix.kt` is the shading toolkit, `Sprites.kt`, `Newcomers.kt` and `Patchwork.kt` hold the fourteen familiars and their eggs, `Wardrobe.kt` their forms and seasonal hats, `Room.kt` the den and its furniture, `Scenes.kt` the candle, the gramophone and the tree.
 
 ## License
 

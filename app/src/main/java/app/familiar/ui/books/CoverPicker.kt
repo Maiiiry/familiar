@@ -31,14 +31,14 @@ import kotlinx.coroutines.launch
 
 /** The cover as it will look, with a picture from the gallery or back to a drawn one. */
 @Composable
-fun CoverPicker(title: String, genre: Genre, cover: String, onCover: (String) -> Unit) {
+fun CoverPicker(title: String, genre: Genre, cover: String, argb: Long? = null, onCover: (String) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) scope.launch { Covers.importPicked(context, uri)?.let(onCover) }
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        BookCover(title.ifBlank { "?" }, genre, Modifier.width(70.dp).height(102.dp), small = true, cover = cover)
+        BookCover(title.ifBlank { "?" }, genre, Modifier.width(70.dp).height(102.dp), small = true, cover = cover, argb = argb)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(if (cover.isNotBlank()) R.string.cover_found else R.string.cover_drawn), style = UType.Muted)

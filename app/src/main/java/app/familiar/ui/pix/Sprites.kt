@@ -39,6 +39,8 @@ data class Look(
     val blooms: Int = 0,
     /** Ghost: a wisp for every horror or mystery book finished. */
     val wisps: Int = 0,
+    /** Chimera and magpie: one colour (ARGB) for every own genre or subgenre with a book finished. */
+    val patches: List<Int> = emptyList(),
     /** The form taken when grown. */
     val form: Form = Form.NONE,
     /** Days of the year when it dresses up. */
@@ -96,6 +98,8 @@ object Sprites {
                 Species.SPROUT -> Newcomers.sprout(pen, ctx)
                 Species.GHOST -> Newcomers.ghost(pen, ctx)
                 Species.WYRM -> Newcomers.wyrm(pen, ctx)
+                Species.CHIMERA -> Patchwork.chimera(pen, ctx)
+                Species.MAGPIE -> Patchwork.magpie(pen, ctx)
             }
         }
         // What it wears: the colours and crown of its form, or a hat for the season.
@@ -338,6 +342,8 @@ object Sprites {
             Species.SPROUT -> 250f to 1f
             Species.GHOST -> 0f to 1f
             Species.WYRM -> 130f to 1f
+            Species.CHIMERA -> 160f to 0.8f
+            Species.MAGPIE -> 200f to 1.4f
         }
         val hsv = FloatArray(3)
         for (i in px.c.indices) {
@@ -391,6 +397,8 @@ object Sprites {
         Species.SPROUT -> R.leaf
         Species.GHOST -> R.fluff
         Species.WYRM -> R.paper
+        Species.CHIMERA -> R.tan
+        Species.MAGPIE -> R.snow
     }
 
     private fun egg(px: Px, ctx: Ctx) {
@@ -443,6 +451,15 @@ object Sprites {
                 val y = pen.y(44f + k * 6.5f).toInt()
                 for (x in pen.x(36f).toInt()..pen.x(64f).toInt()) if (inShell(x, y) && (x + k) % 9 != 0) px.set(x, y, R.paper[1])
             }
+            Species.CHIMERA -> listOf(R.violet, R.teal, R.red, R.leaf).forEachIndexed { i, ramp ->
+                // Patches of other shells, sewn on.
+                val cx = pen.x(listOf(41f, 58f, 47f, 60f)[i]); val cy = pen.y(listOf(48f, 58f, 72f, 77f)[i])
+                for (y in (cy - 3).toInt()..(cy + 3).toInt()) for (x in (cx - 4).toInt()..(cx + 4).toInt()) {
+                    val d = (x - cx) * (x - cx) / 16f + (y - cy) * (y - cy) / 9f
+                    if (d <= 1f && inShell(x, y)) px.set(x, y, if (d > 0.7f && (x + y) % 2 == 0) R.brown[1] else ramp[3])
+                }
+            }
+            Species.MAGPIE -> for (y in pen.y(36f).toInt() until pen.y(60f).toInt()) for (x in 0 until px.w) if (inShell(x, y)) px.set(x, y, Patchwork.ink[if (x < px.w / 2) 3 else 2])
             Species.OWLBEAR -> for (i in 0 until 16) {
                 val x = pen.x(32f + (noise(i, 1, 6) + 0.5f) * 36f).toInt(); val y = pen.y(36f + (noise(i, 3, 6) + 0.5f) * 48f).toInt()
                 if (inShell(x, y)) { px.set(x, y, R.owl[1]); if (i % 2 == 0) px.set(x + 1, y, R.owl[2]) }

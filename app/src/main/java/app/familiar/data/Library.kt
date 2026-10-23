@@ -59,7 +59,7 @@ object Library {
                 stillFraction = if (end > start) stillSec * 1000f / (end - start) else 0f,
                 night = isNight(start, zone), genre = Genre.of(book.genre), previousGenre = previousGenre,
                 bookPages = book.pages, streak = streak, gapDays = gapDays, finishedBook = done && book.shelfOf != Shelf.DONE,
-                item = item, listened = listened, morning = isMorning(start, zone),
+                item = item, listened = listened, morning = isMorning(start, zone), own = book.sub.isNotBlank(),
             ),
         )
         val reading = Reading(

@@ -10,6 +10,7 @@ import app.familiar.data.Shelf
 import app.familiar.domain.Form
 import app.familiar.domain.Genre
 import app.familiar.domain.Nudge
+import app.familiar.domain.OwnGenre
 import app.familiar.domain.Season
 import app.familiar.domain.Trait
 import app.familiar.domain.Trinket
@@ -30,6 +31,16 @@ import java.util.Locale
 fun locale(): Locale = LocalConfiguration.current.locales[0]
 
 fun genreColor(g: Genre): Color = Color(g.argb)
+
+/** The colour a book's genre shows in: its own genre's, or the built-in one's. */
+fun bookColor(b: app.familiar.data.Book): Color = Color(OwnGenre.of(b)?.argb ?: Genre.of(b.genre).argb)
+
+/** "Fantasy · Dark fantasy" for a subgenre, "Manga" for an own genre standing by itself, "Fantasy" otherwise. */
+@Composable
+fun bookGenre(b: app.familiar.data.Book): String {
+    val own = OwnGenre.of(b) ?: return genreName(Genre.of(b.genre))
+    return if (own.standalone) own.name else genreName(own.parent) + " · " + own.name
+}
 
 @Composable
 fun genreName(g: Genre): String = stringResource(
@@ -65,6 +76,8 @@ fun speciesRes(sp: Species): Int = (
         Species.SPROUT -> R.string.sp_sprout
         Species.GHOST -> R.string.sp_ghost
         Species.WYRM -> R.string.sp_wyrm
+        Species.CHIMERA -> R.string.sp_chimera
+        Species.MAGPIE -> R.string.sp_magpie
     }
 )
 
@@ -83,6 +96,8 @@ fun speciesLore(sp: Species): String = stringResource(
         Species.SPROUT -> R.string.lore_sprout
         Species.GHOST -> R.string.lore_ghost
         Species.WYRM -> R.string.lore_wyrm
+        Species.CHIMERA -> R.string.lore_chimera
+        Species.MAGPIE -> R.string.lore_magpie
     }
 )
 
@@ -102,6 +117,8 @@ fun speciesLoves(sp: Species): String = stringResource(
         Species.SPROUT -> R.string.loves_sprout
         Species.GHOST -> R.string.loves_ghost
         Species.WYRM -> R.string.loves_wyrm
+        Species.CHIMERA -> R.string.loves_chimera
+        Species.MAGPIE -> R.string.loves_magpie
     }
 )
 
@@ -117,6 +134,8 @@ fun speciesHow(sp: Species): String = when (sp) {
     Species.SPROUT -> pluralStringResource(R.plurals.how_sprout, Unlocks.SPROUT_MORNINGS, Unlocks.SPROUT_MORNINGS)
     Species.GHOST -> stringResource(R.string.how_ghost)
     Species.WYRM -> pluralStringResource(R.plurals.how_wyrm, Unlocks.WYRM_SITS, Unlocks.WYRM_SITS, Unlocks.WYRM_MINUTES)
+    Species.CHIMERA -> pluralStringResource(R.plurals.how_chimera, Unlocks.CHIMERA_GENRES, Unlocks.CHIMERA_GENRES)
+    Species.MAGPIE -> pluralStringResource(R.plurals.how_magpie, Unlocks.MAGPIE_SUBS, Unlocks.MAGPIE_SUBS)
     else -> pluralStringResource(R.plurals.how_starter, Unlocks.STARTERS_BOOKS, Unlocks.STARTERS_BOOKS)
 }
 
@@ -390,6 +409,7 @@ fun lookOf(
         shiny = shiny && stage != Stage.EGG,
         blooms = s.mornings,
         wisps = s.spooky,
+        patches = s.ownFinished.map { it.argb.toInt() },
         form = if (stage >= Stage.ADULT) form else Form.NONE,
         season = season,
     ).let { if ((it.stone * 10).toInt() != 0) it.copy(stone = (it.stone * 10).toInt() / 10f) else it.copy(stone = 0f) }

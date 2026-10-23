@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0] - 2026-10-23
+
+- **Your own genres and subgenres:** add a subgenre to any genre (Fantasy · Dark fantasy) or a genre of your own (Manga) right in the book editor. The built-in genre still sets the mood, tails, forms and finds; your own colours the cover and sorts the shelf. Rename, move or delete them from the shelf filter.
+- **Two more familiars:** the chimera, a patch on its coat for every genre of your own you finish a book in, and the magpie, a shiny thing in its nest for every subgenre, who loves staying in one genre. Fourteen in all.
+- **The shelf:** an All view, search by title, author, cycle, genre or shelf, a filter by genre, subgenre, paper or audio and stars, sorting by recent, date added, title, author (by surname), rating, progress or length (tap again to reverse), and a list view with author, genre and progress. The order and the view are remembered.
+- Shelves and genres that only books remember (after restoring a backup) show up again.
+- The update keeps everything: books, sittings and familiars move to the new database as they are.
+
 ## [1.2.0] - 2026-10-20
 
 - **Four more familiars:** the tanuki (loves audiobooks, grows big headphones), the sprout (a flower for every morning of reading), the ghost (a wisp for every horror or mystery, a lantern, a top hat when ancient) and the bookworm (a segment in a finished book's colour at every stage). Twelve in all.

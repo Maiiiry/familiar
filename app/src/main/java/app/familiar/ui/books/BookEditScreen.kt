@@ -42,8 +42,6 @@ import app.familiar.ui.components.PrimaryButton
 import app.familiar.ui.components.SectionTitle
 import app.familiar.ui.components.TopBar
 import app.familiar.ui.components.UTextField
-import app.familiar.ui.genreColor
-import app.familiar.ui.genreName
 import app.familiar.ui.shelfName
 import app.familiar.ui.theme.U
 import app.familiar.ui.theme.UType
@@ -58,6 +56,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
     var pages by remember { mutableStateOf(old?.pages?.takeIf { it > 0 }?.toString() ?: "") }
     var page by remember { mutableStateOf(old?.page?.takeIf { it > 0 }?.toString() ?: "") }
     var genre by remember { mutableStateOf(old?.let { Genre.of(it.genre) } ?: Genre.FANTASY) }
+    var sub by remember { mutableStateOf(old?.sub ?: "") }
     var shelf by remember { mutableStateOf(old?.shelfOf ?: Shelf.READING) }
     var cover by remember { mutableStateOf(old?.cover ?: "") }
     var audio by remember { mutableStateOf(old?.audio ?: false) }
@@ -81,7 +80,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
                 cover = f.cover
             }
             SectionTitle(stringResource(R.string.f_cover))
-            CoverPicker(title, genre, cover) { cover = it }
+            CoverPicker(title, genre, cover, app.familiar.domain.OwnGenre.key(sub).let { k -> data.genres.firstOrNull { it.key == k }?.argb }) { cover = it }
             SectionTitle(stringResource(R.string.f_title))
             UTextField(title, { title = it.take(120) }, placeholder = stringResource(R.string.f_title_hint))
             SectionTitle(stringResource(R.string.f_author))
@@ -113,12 +112,10 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
                 known.take(6).forEach { n -> Chip(n.take(28), false, { series = n }) }
             }
             SectionTitle(stringResource(R.string.f_genre))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Genre.entries.forEach { g -> Chip(genreName(g), genre == g, { genre = g }, genreColor(g)) }
-            }
+            GenrePicker(genre, sub, data.genres) { g, s -> genre = g; sub = s }
             Text(stringResource(R.string.f_genre_note), style = UType.Small.copy(color = U.c.muted), modifier = Modifier.padding(top = 6.dp))
             SectionTitle(stringResource(R.string.f_shelves))
-            ShelfChips(data.settings.shelves, tags) { tags = it }
+            ShelfChips(data.shelves, tags) { tags = it }
             if (old == null) {
                 SectionTitle(stringResource(R.string.f_shelf))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -133,7 +130,7 @@ fun BookEditScreen(id: Long, data: FamiliarData, go: Go, newSeries: String = "")
                 val now = System.currentTimeMillis()
                 val p = (page.toIntOrNull() ?: 0).coerceIn(0, if (total > 0) total else 99_999)
                 val b = (old ?: Book(title = "", pages = total, genre = genre.name, added = now)).copy(
-                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, page = p, cover = cover, audio = audio, tags = tags.joinToString("\n"), series = series.trim(), volume = volume.toIntOrNull()?.takeIf { series.isNotBlank() },
+                    title = title.trim(), author = author.trim(), pages = total, genre = genre.name, sub = sub.trim(), page = p, cover = cover, audio = audio, tags = tags.joinToString("\n"), series = series.trim(), volume = volume.toIntOrNull()?.takeIf { series.isNotBlank() },
                     shelf = if (old == null) shelf.name else old.shelf,
                     started = old?.started ?: if (shelf == Shelf.READING) now else null,
                 )

@@ -29,7 +29,8 @@ enum class Mood { NONE, SPARKLE, STARS, SUSPICIOUS, SCARED, HEARTS, GLASSES }
 enum class Species(val starter: Boolean) {
     MIMIC(true), KITSUNE(true), SLIME(true),
     DRAGON(false), PHOENIX(false), GRIFFIN(false), OWLBEAR(false), MOTH(false),
-    TANUKI(false), SPROUT(false), GHOST(false), WYRM(false);
+    TANUKI(false), SPROUT(false), GHOST(false), WYRM(false),
+    CHIMERA(false), MAGPIE(false);
 
     companion object {
         fun of(name: String): Species = entries.firstOrNull { it.name == name } ?: MIMIC

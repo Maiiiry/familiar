@@ -164,9 +164,14 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.motes(t: Float, col
     }
 }
 
-/** A cover drawn from the genre colour, with the title on it. */
+/** A book's cover, drawn in the colour of its own genre if it has one. */
 @Composable
-fun BookCover(title: String, genre: Genre, modifier: Modifier = Modifier, small: Boolean = false, cover: String = "") {
+fun BookCover(b: app.familiar.data.Book, modifier: Modifier = Modifier, small: Boolean = false) =
+    BookCover(b.title, Genre.of(b.genre), modifier, small, b.cover, app.familiar.domain.OwnGenre.of(b)?.argb)
+
+/** A cover drawn from the genre colour (or [argb]), with the title on it. */
+@Composable
+fun BookCover(title: String, genre: Genre, modifier: Modifier = Modifier, small: Boolean = false, cover: String = "", argb: Long? = null) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val picture by produceState(app.familiar.data.Covers.cached(cover), cover) {
         // The state outlives a change of cover: start from this cover's picture, not the last one's.
@@ -181,7 +186,7 @@ fun BookCover(title: String, genre: Genre, modifier: Modifier = Modifier, small:
         )
         return
     }
-    val c = Color(genre.argb)
+    val c = Color(argb ?: genre.argb)
     Box(
         modifier
             .clip(RoundedCornerShape(topStart = 3.dp, bottomStart = 3.dp, topEnd = 8.dp, bottomEnd = 8.dp))

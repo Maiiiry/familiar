@@ -70,6 +70,10 @@ class Stats(
     val longSits: Int = readings.count { it.timed && it.minutes >= Unlocks.WYRM_MINUTES }
     /** Horror and mystery books finished: the ghost's lanterns. */
     val spooky: Int = finished.count { it.genre == Genre.HORROR.name || it.genre == Genre.MYSTERY.name }
+    /** Own genres and subgenres with a book finished in them: the chimera's patches. */
+    val ownFinished: List<OwnGenre> = finished.mapNotNull { OwnGenre.of(it) }.distinct()
+    /** The most subgenres finished inside one built-in genre: the magpie's nest. */
+    val deepest: Int = ownFinished.filter { !it.standalone }.groupBy { it.parent }.maxOfOrNull { it.value.size } ?: 0
     val totalPages: Int = readings.sumOf { it.pages }
     val totalMinutes: Int = readings.filter { it.timed }.sumOf { it.minutes }
     val items: List<String> = readings.filter { it.item.isNotBlank() }.sortedByDescending { it.end }.map { it.item }
@@ -110,6 +114,8 @@ object Unlocks {
     const val SPROUT_MORNINGS = 5
     const val WYRM_SITS = 3
     const val WYRM_MINUTES = 45
+    const val CHIMERA_GENRES = 3
+    const val MAGPIE_SUBS = 2
 
     fun unlocked(s: Stats): Set<Species> {
         val out = s.pets.map { Species.of(it.species) }.toMutableSet()
@@ -123,6 +129,8 @@ object Unlocks {
         if (s.mornings >= SPROUT_MORNINGS) out += Species.SPROUT
         if (s.spooky >= 1) out += Species.GHOST
         if (s.longSits >= WYRM_SITS) out += Species.WYRM
+        if (s.ownFinished.size >= CHIMERA_GENRES) out += Species.CHIMERA
+        if (s.deepest >= MAGPIE_SUBS) out += Species.MAGPIE
         return out
     }
 
@@ -137,6 +145,8 @@ object Unlocks {
         Species.SPROUT -> s.mornings.coerceAtMost(SPROUT_MORNINGS) to SPROUT_MORNINGS
         Species.GHOST -> s.spooky.coerceAtMost(1) to 1
         Species.WYRM -> s.longSits.coerceAtMost(WYRM_SITS) to WYRM_SITS
+        Species.CHIMERA -> s.ownFinished.size.coerceAtMost(CHIMERA_GENRES) to CHIMERA_GENRES
+        Species.MAGPIE -> s.deepest.coerceAtMost(MAGPIE_SUBS) to MAGPIE_SUBS
         else -> s.finished.size.coerceAtMost(STARTERS_BOOKS) to STARTERS_BOOKS
     }
 }
@@ -180,6 +190,8 @@ object Mana {
         val listened: Boolean = false,
         /** Started before ten in the morning. */
         val morning: Boolean = false,
+        /** The book is in one of the reader's own genres or subgenres. */
+        val own: Boolean = false,
     )
 
     private fun loves(sp: Species, s: Sitting): Boolean = when (sp) {
@@ -193,6 +205,8 @@ object Mana {
         Species.SPROUT -> s.morning
         Species.GHOST -> s.genre == Genre.HORROR || s.genre == Genre.MYSTERY
         Species.WYRM -> s.timed && s.minutes >= Unlocks.WYRM_MINUTES
+        Species.CHIMERA -> s.own
+        Species.MAGPIE -> s.previousGenre != null && s.previousGenre == s.genre
         Species.MIMIC, Species.SLIME -> false
     }
 

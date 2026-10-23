@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import app.familiar.R
 import app.familiar.container
 import app.familiar.data.Shelf
-import app.familiar.domain.Genre
 import app.familiar.ui.FamiliarData
 import app.familiar.ui.Go
 import app.familiar.ui.components.Bar
@@ -55,10 +54,10 @@ import app.familiar.ui.components.SoftButton
 import app.familiar.ui.components.TopBar
 import app.familiar.ui.components.UCard
 import app.familiar.ui.dateShort
-import app.familiar.ui.genreColor
-import app.familiar.ui.genreName
 import app.familiar.ui.mana
 import app.familiar.ui.pages
+import app.familiar.ui.bookColor
+import app.familiar.ui.bookGenre
 import app.familiar.ui.shelfName
 import app.familiar.ui.theme.U
 import app.familiar.ui.theme.UType
@@ -73,7 +72,6 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
         LaunchedEffect(Unit) { go.back() }
         return
     }
-    val genre = Genre.of(book.genre)
     val sittings = data.readings.filter { it.bookId == id }.sortedByDescending { it.end }
     Column(Modifier.fillMaxSize().background(U.c.bg).statusBarsPadding()) {
         TopBar("", { go.back() }) {
@@ -82,13 +80,13 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
         }
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).navigationBarsPadding().padding(bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                BookCover(book.title, genre, Modifier.width(104.dp).height(150.dp), cover = book.cover)
+                BookCover(book, Modifier.width(104.dp).height(150.dp))
                 Spacer(Modifier.width(16.dp))
                 Column(Modifier.weight(1f)) {
                     Text(book.title, style = UType.Title)
                     if (book.author.isNotBlank()) Text(book.author, style = UType.Sub)
                     Spacer(Modifier.height(6.dp))
-                    Text("${genreName(genre)} · ${shelfName(book.shelfOf)}", style = UType.Small.copy(color = genreColor(genre)))
+                    Text("${bookGenre(book)} · ${shelfName(book.shelfOf)}", style = UType.Small.copy(color = bookColor(book)))
                     if (book.series.isNotBlank()) Text(
                         (book.volume?.let { stringResource(R.string.volume_n, it) + " · " } ?: "") + book.series,
                         style = UType.Small.copy(color = U.c.gold),
@@ -136,7 +134,7 @@ fun BookScreen(id: Long, data: FamiliarData, go: Go) {
             }
 
             SectionTitle(stringResource(R.string.f_shelves))
-            ShelfChips(data.settings.shelves, book.tagList.toSet()) { t -> container.write { dao().updateBook(book.copy(tags = t.joinToString(NL))) } }
+            ShelfChips(data.shelves, book.tagList.toSet()) { t -> container.write { dao().updateBook(book.copy(tags = t.joinToString(NL))) } }
 
             SectionTitle(stringResource(R.string.chronicle))
             if (sittings.isEmpty()) Text(stringResource(R.string.no_sittings), style = UType.Muted)

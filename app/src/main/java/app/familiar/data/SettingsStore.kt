@@ -72,6 +72,11 @@ data class Settings(
     val guestUntil: Long = 0,
     /** "guest key|yyyy-mm-dd" of gifts already left, one a day per guest. */
     val gifts: Set<String> = emptySet(),
+    /** The reader's own genres and subgenres, in the order they were made. */
+    val genres: List<app.familiar.domain.OwnGenre> = emptyList(),
+    /** How the shelf is sorted ([app.familiar.ui.books.Sort] name), and shown as a list rather than covers. */
+    val shelfSort: String = "",
+    val shelfList: Boolean = false,
 ) {
     val guardedDays: Set<java.time.LocalDate> get() = guarded.mapNotNull { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }.toSet()
 }
@@ -112,6 +117,9 @@ class SettingsStore(context: Context) {
         guest = this[GUEST] ?: "",
         guestUntil = this[GUEST_UNTIL] ?: 0L,
         gifts = this[GIFTS] ?: emptySet(),
+        genres = (this[GENRES] ?: "").split('\n').mapNotNull { app.familiar.domain.OwnGenre.decode(it) },
+        shelfSort = this[SHELF_SORT] ?: "",
+        shelfList = this[SHELF_LIST] ?: false,
     )
 
     suspend fun now(): Settings = settings.first()
@@ -153,6 +161,9 @@ class SettingsStore(context: Context) {
             it[GUEST] = s.guest
             it[GUEST_UNTIL] = s.guestUntil
             it[GIFTS] = s.gifts
+            it[GENRES] = s.genres.joinToString("\n") { g -> g.encode() }
+            it[SHELF_SORT] = s.shelfSort
+            it[SHELF_LIST] = s.shelfList
         }
     }
 
@@ -190,5 +201,8 @@ class SettingsStore(context: Context) {
         val GUEST = stringPreferencesKey("guest")
         val GUEST_UNTIL = longPreferencesKey("guest_until")
         val GIFTS = stringSetPreferencesKey("gifts")
+        val GENRES = stringPreferencesKey("genres")
+        val SHELF_SORT = stringPreferencesKey("shelf_sort")
+        val SHELF_LIST = booleanPreferencesKey("shelf_list")
     }
 }

@@ -131,6 +131,14 @@ object Lines {
             State.HUNGRY to listOf("{n} nibbles the corner of a page. Just a little.", "{n} pushes its spectacles up its nose and waits."),
             State.FED to listOf("{n} curls up between two chapters, very pleased.", "{n} has read every footnote and wants more."),
         ),
+        Species.CHIMERA to mapOf(
+            State.HUNGRY to listOf("{n} roars, bleats and hisses at once: a book, please.", "{n} counts its patches and finds room for one more."),
+            State.FED to listOf("{n} purrs with the lion, dozes with the goat; the snake keeps watch.", "{n} admires a new stitch. It suits it."),
+        ),
+        Species.MAGPIE to mapOf(
+            State.HUNGRY to listOf("{n} rummages in the nest: nothing new to look at.", "{n} eyes your bookmark. It's very shiny."),
+            State.FED to listOf("{n} sorts its treasures by shade, very carefully.", "{n} chatters about the book like it's gossip."),
+        ),
     )
 
     private val RU: Map<Species, Map<State, List<String>>> = mapOf(
@@ -182,6 +190,14 @@ object Lines {
         Species.WYRM to mapOf(
             State.HUNGRY to listOf("{n} покусывает уголок страницы. Совсем чуть-чуть.", "{n} поправляет очки и ждёт."),
             State.FED to listOf("{n} сворачивается между двумя главами, очень довольный.", "{n} прочитывает все сноски и хочет ещё."),
+        ),
+        Species.CHIMERA to mapOf(
+            State.HUNGRY to listOf("{n} рычит, блеет и шипит разом: книгу, пожалуйста.", "{n} пересчитывает заплатки: найдётся место ещё для одной."),
+            State.FED to listOf("{n} мурлычет львом, дремлет козой, а змейка сторожит.", "{n} любуется новым стежком. Ему идёт."),
+        ),
+        Species.MAGPIE to mapOf(
+            State.HUNGRY to listOf("{n} роется в гнезде: ничего нового.", "{n} косится на твою закладку. Она такая блестящая."),
+            State.FED to listOf("{n} раскладывает сокровища по оттенкам, очень тщательно.", "{n} стрекочет о книге, как о свежей сплетне."),
         ),
     )
 }

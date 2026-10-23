@@ -119,7 +119,7 @@
     <string name="bestiary">Бестиарий</string>
     <string name="bestiary_count">Найдено фамильяров: %1$d из %2$d</string>
     <string name="bestiary_eggs">Тебя ждут яйца: %d</string>
-    <string name="bestiary_text">На этих страницах живут двенадцать фамильяров. Читай, и они придут к тебе один за другим, яйцами. Читаешь всегда с одним; остальные отдыхают в логове со всем, что успели съесть.</string>
+    <string name="bestiary_text">На этих страницах живут четырнадцать фамильяров. Читай, и они придут к тебе один за другим, яйцами. Читаешь всегда с одним; остальные отдыхают в логове со всем, что успели съесть.</string>
     <string name="bestiary_note">Мана достаётся тому, с кем ты читаешь. Сменить можно когда угодно.</string>
     <string name="with_you">с тобой</string>
     <string name="egg_waiting">Яйцо ждёт тебя</string>
@@ -147,7 +147,7 @@
     <string name="f_pages">Страниц</string>
     <string name="f_page_now">Сейчас на странице</string>
     <string name="f_genre">Жанр</string>
-    <string name="f_genre_note">Жанр задаёт настроение фамильяра после чтения и цвет нового хвоста кицунэ.</string>
+    <string name="f_genre_note">Жанр задаёт настроение фамильяра после чтения и цвет нового хвоста кицунэ. Можно завести свои жанры и поджанры: их любят химера и сорока.</string>
     <string name="f_shelf">Полка</string>
     <string name="start_reading">Начать читать</string>
     <string name="pause">Пауза</string>
@@ -313,7 +313,7 @@
     <string name="ob_intro2">Читай, и он вылупится, вырастет и научится новому. Забудешь о книгах, и он медленно окаменеет, пока несколько страниц не снимут чары.</string>
     <string name="ob_choose">Выбери яйцо</string>
     <string name="ob_choose_text">Каждый фамильяр любит своё чтение. Ещё девятерых найдёшь по пути.</string>
-    <string name="ob_others">Дракончик, феникс, грифон, совомедведь, лунный мотылёк, тануки, росток, призрак и книжный червь приходят к тем, кто читает.</string>
+    <string name="ob_others">Дракончик, феникс, грифон, совомедведь, лунный мотылёк, тануки, росток, призрак, книжный червь, химера и сорока приходят к тем, кто читает.</string>
     <string name="ob_names">Как назовём фамильяра?</string>
     <string name="ob_pet_name">Имя фамильяра</string>
     <string name="ob_your_name">Твоё имя</string>
@@ -725,4 +725,64 @@
     <string name="postcard_year">%1$s за %2$d</string>
     <string name="postcard_footer">Фамильяр · фамильяр, который питается историями</string>
     <string name="postcard_failed">Не получилось сделать открытку</string>
+
+    <!-- 1.3.0: свои жанры, ещё два фамильяра, поиск, фильтры и сортировка -->
+    <string name="sp_chimera">Химера</string>
+    <string name="sp_magpie">Сорока</string>
+    <string name="lore_chimera">Лев, коза и змея, которые договорились быть одним зверем. Каждый твой жанр с дочитанной книгой пришивает к её шкуре новую заплатку.</string>
+    <string name="lore_magpie">С одного взгляда отличает тёмное фэнтези от городского. Из каждого дочитанного поджанра уносит в гнездо блестяшку и отращивает хвост подлиннее.</string>
+    <string name="loves_chimera" formatted="false">книги твоих жанров и поджанров (+50%)</string>
+    <string name="loves_magpie" formatted="false">остаться в жанре прошлой книги (+50%)</string>
+    <plurals name="how_chimera">
+        <item quantity="one">Дочитай книги в %d своём жанре или поджанре.</item>
+        <item quantity="few">Дочитай книги в %d своих жанрах или поджанрах.</item>
+        <item quantity="many">Дочитай книги в %d своих жанрах или поджанрах.</item>
+        <item quantity="other">Дочитай книги в %d своих жанрах или поджанрах.</item>
+    </plurals>
+    <plurals name="how_magpie">
+        <item quantity="one">Дочитай книги в %d поджанре одного жанра.</item>
+        <item quantity="few">Дочитай книги в %d поджанрах одного жанра.</item>
+        <item quantity="many">Дочитай книги в %d поджанрах одного жанра.</item>
+        <item quantity="other">Дочитай книги в %d поджанрах одного жанра.</item>
+    </plurals>
+    <string name="genre_own">Свой жанр</string>
+    <string name="subgenre">Поджанр</string>
+    <string name="subgenre_of">Поджанры: %s</string>
+    <string name="genre_new_title">Новый жанр</string>
+    <string name="subgenre_new_title">Новый поджанр</string>
+    <string name="genre_change">Изменить жанр</string>
+    <string name="genre_change_short">Изменить</string>
+    <string name="genre_name_hint">Например, Манга</string>
+    <string name="subgenre_name_hint">Например, Тёмное фэнтези</string>
+    <string name="genre_taken">Жанр с таким названием уже есть.</string>
+    <string name="genre_under">Входит в</string>
+    <string name="genre_standalone">Сам по себе</string>
+    <string name="genre_under_note">Настроение, хвосты кицунэ, формы и находки берутся из жанра, в который он входит. Сам по себе он считается как «Другое».</string>
+    <string name="genre_line">Жанр: %s</string>
+    <string name="genre_delete_title">Удалить жанр «%s»?</string>
+    <string name="genre_delete_text">Книги останутся — в жанре, в который он входил.</string>
+    <string name="genres_own">Твои жанры и поджанры</string>
+    <string name="genres_own_empty">Здесь пока нет. Создай сейчас или при добавлении книги.</string>
+    <string name="lib_all">Все</string>
+    <string name="lib_search">Поиск</string>
+    <string name="lib_search_hint">Название, автор, цикл, жанр…</string>
+    <string name="lib_as_list">Показать списком</string>
+    <string name="lib_as_covers">Показать обложками</string>
+    <string name="lib_filter">Фильтр</string>
+    <string name="lib_of">%1$d из %2$d</string>
+    <string name="lib_reset">Сбросить</string>
+    <string name="lib_nothing">Ничего не нашлось. Попробуй другое слово или сбрось фильтр.</string>
+    <string name="lib_format">Формат</string>
+    <string name="lib_any">Любой</string>
+    <string name="lib_paper">Текст</string>
+    <string name="lib_audio">Аудио</string>
+    <string name="lib_show">Показать: %s</string>
+    <string name="empty_all">Библиотека пуста. Добавь первую книгу кнопкой +.</string>
+    <string name="sort_recent">Недавние</string>
+    <string name="sort_added">По добавлению</string>
+    <string name="sort_title">По названию</string>
+    <string name="sort_author">По автору</string>
+    <string name="sort_rating">По оценке</string>
+    <string name="sort_progress">По прогрессу</string>
+    <string name="sort_length">По объёму</string>
 </resources>

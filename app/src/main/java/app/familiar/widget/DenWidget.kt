@@ -57,6 +57,7 @@ class DenWidget : AppWidgetProvider() {
                     sp, Stage.of(pet.mana), stone = st.stone, mood = st.mood,
                     tails = Genre.tails.filter { it in st.genresFinished }.map { it.argb.toInt() },
                     hoard = st.finished.takeLast(16).map { Genre.of(it.genre).argb.toInt() },
+                    patches = st.ownFinished.map { it.argb.toInt() },
                     stars = st.nights, items = st.items.take(7),
                     hatch = (pet.mana / Stage.BABY.from.toFloat()).coerceIn(0f, 1f),
                 )

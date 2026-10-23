@@ -11,13 +11,13 @@ import kotlin.random.Random
 object DemoSeed {
     private class B(
         val en: String, val ru: String, val authorEn: String, val authorRu: String, val pages: Int, val genre: Genre, val coverId: Long = 0,
-        val seriesEn: String = "", val seriesRu: String = "", val volume: Int? = null,
+        val seriesEn: String = "", val seriesRu: String = "", val volume: Int? = null, val subEn: String = "", val subRu: String = "",
     )
 
     private val done = listOf(
-        B("The Hobbit", "Хоббит", "J. R. R. Tolkien", "Дж. Р. Р. Толкин", 310, Genre.FANTASY, 14627509),
-        B("A Study in Scarlet", "Этюд в багровых тонах", "Arthur Conan Doyle", "Артур Конан Дойл", 162, Genre.MYSTERY, 13405534, "Sherlock Holmes", "Шерлок Холмс", 1),
-        B("Murder on the Orient Express", "Убийство в «Восточном экспрессе»", "Agatha Christie", "Агата Кристи", 256, Genre.MYSTERY, 11100465),
+        B("The Hobbit", "Хоббит", "J. R. R. Tolkien", "Дж. Р. Р. Толкин", 310, Genre.FANTASY, 14627509, subEn = "Fairy-tale fantasy", subRu = "Сказочное фэнтези"),
+        B("A Study in Scarlet", "Этюд в багровых тонах", "Arthur Conan Doyle", "Артур Конан Дойл", 162, Genre.MYSTERY, 13405534, "Sherlock Holmes", "Шерлок Холмс", 1, "Classic detective", "Классический детектив"),
+        B("Murder on the Orient Express", "Убийство в «Восточном экспрессе»", "Agatha Christie", "Агата Кристи", 256, Genre.MYSTERY, 11100465, subEn = "Cosy crime", subRu = "Уютный детектив"),
         B("Dracula", "Дракула", "Bram Stoker", "Брэм Стокер", 418, Genre.HORROR, 12216503),
         B("Pride and Prejudice", "Гордость и предубеждение", "Jane Austen", "Джейн Остин", 432, Genre.ROMANCE, 14348537),
         B("Dune", "Дюна", "Frank Herbert", "Фрэнк Герберт", 612, Genre.SCIFI, 11481354),
@@ -26,11 +26,11 @@ object DemoSeed {
     )
     private val reading = listOf(
         B("The Adventures of Sherlock Holmes", "Приключения Шерлока Холмса", "Arthur Conan Doyle", "Артур Конан Дойл", 307, Genre.MYSTERY, 6717853, "Sherlock Holmes", "Шерлок Холмс", 2),
-        B("The Name of the Wind", "Имя ветра", "Patrick Rothfuss", "Патрик Ротфусс", 662, Genre.FANTASY, 11480483, "The Kingkiller Chronicle", "Хроника убийцы короля", 1),
+        B("The Name of the Wind", "Имя ветра", "Patrick Rothfuss", "Патрик Ротфусс", 662, Genre.FANTASY, 11480483, "The Kingkiller Chronicle", "Хроника убийцы короля", 1, "Epic fantasy", "Эпическое фэнтези"),
     )
     private val want = listOf(
         B("The Three Musketeers", "Три мушкетёра", "Alexandre Dumas", "Александр Дюма", 704, Genre.ADVENTURE, 11929973),
-        B("The Wise Man's Fear", "Страхи мудреца", "Patrick Rothfuss", "Патрик Ротфусс", 1008, Genre.FANTASY, 12518396, "The Kingkiller Chronicle", "Хроника убийцы короля", 2),
+        B("The Wise Man's Fear", "Страхи мудреца", "Patrick Rothfuss", "Патрик Ротфусс", 1008, Genre.FANTASY, 12518396, "The Kingkiller Chronicle", "Хроника убийцы короля", 2, "Epic fantasy", "Эпическое фэнтези"),
         B("A Wizard of Earthsea", "Волшебник Земноморья", "Ursula K. Le Guin", "Урсула Ле Гуин", 264, Genre.FANTASY, 13617691),
         B("SPQR", "SPQR", "Mary Beard", "Мэри Бирд", 608, Genre.HISTORY, 7418788),
     )
@@ -49,7 +49,7 @@ object DemoSeed {
         suspend fun insert(b: B, shelf: Shelf, added: LocalDate) = dao.insertBook(
             Book(title = if (ru) b.ru else b.en, author = if (ru) b.authorRu else b.authorEn, pages = b.pages, genre = b.genre.name, shelf = shelf.name, added = at(added, 19, 0),
                 cover = if (b.coverId > 0) "https://covers.openlibrary.org/b/id/${b.coverId}-L.jpg" else "",
-                series = if (ru) b.seriesRu else b.seriesEn, volume = b.volume),
+                series = if (ru) b.seriesRu else b.seriesEn, volume = b.volume, sub = if (ru) b.subRu else b.subEn),
         )
         want.forEachIndexed { i, b -> insert(b, Shelf.WANT, start.plusDays(i * 9L)) }
 

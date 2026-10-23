@@ -276,7 +276,7 @@ fun DenTab(data: FamiliarData, go: Go, onTab: (Tab) -> Unit) {
         if (book != null) {
             UCard(onClick = { go.book(book.id) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    BookCover(book.title, Genre.of(book.genre), Modifier.width(54.dp).height(78.dp), small = true, cover = book.cover)
+                    BookCover(book, Modifier.width(54.dp).height(78.dp), small = true)
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text(stringResource(R.string.now_reading).uppercase(), style = UType.Eyebrow)

@@ -58,6 +58,7 @@ class RenderArt {
         items = listOf("меч", "кольцо", "письмо", "зелье", "ключ", "яблоко", "череп", "корона", "перо", "карта").take(when (st) { Stage.BABY -> 1; Stage.YOUNG -> 4; else -> 10 }),
         blooms = when (st) { Stage.BABY -> 2; Stage.YOUNG -> 4; Stage.ADULT -> 7; else -> 12 },
         wisps = when (st) { Stage.BABY -> 1; Stage.YOUNG -> 2; Stage.ADULT -> 4; else -> 6 },
+        patches = tails.take(when (st) { Stage.BABY -> 1; Stage.YOUNG -> 3; Stage.ADULT -> 5; else -> 8 }),
     )
 
     /**
@@ -89,7 +90,7 @@ class RenderArt {
         val head = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { typeface = sans; textSize = 30f; color = 0xFFE9DFC8.toInt(); textAlign = android.graphics.Paint.Align.CENTER }
         val name = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { typeface = serif; textSize = 46f; color = 0xFFF6EBD6.toInt() }
         c.drawText(if (ru) "Фамильяры и их эволюции" else "Familiars and how they grow", 60f, 120f, title)
-        c.drawText(if (ru) "12 фамильяров · 5 стадий · 5 форм взрослого, по прочитанным книгам" else "12 familiars · 5 stages · 5 grown forms, after the books they ate", 64f, 180f, sub)
+        c.drawText(if (ru) "14 фамильяров · 5 стадий · 5 форм взрослого, по прочитанным книгам" else "14 familiars · 5 stages · 5 grown forms, after the books they ate", 64f, 180f, sub)
         val stages = if (ru) listOf("Яйцо", "Малыш", "Юный", "Взрослый", "Древний") else listOf("Egg", "Hatchling", "Young", "Grown", "Ancient")
         val formNames = if (ru) listOf("Звёздная", "Туманная", "Цветущая", "Мудрая", "Лесная") else listOf("Astral", "Shadow", "Bloom", "Sage", "Wild")
         val formColors = forms.map { app.familiar.ui.pix.mixc((it.argb and 0xFFFFFF).toInt() or (0xFF shl 24), 0xFFFFFFFF.toInt(), 0.35f) }
@@ -98,8 +99,8 @@ class RenderArt {
         val divider = android.graphics.Paint().apply { color = 0x55B9A8E8; strokeWidth = 3f }
         val dx = left + stages.size * cell + gap / 2f
         c.drawLine(dx, top - 60f, dx, h - 60f, divider)
-        val names = if (ru) listOf("Мимик", "Кицунэ", "Слайм", "Дракончик", "Феникс", "Грифон", "Совомедведь", "Лунный мотылёк", "Тануки", "Росток", "Призрак", "Книжный червь")
-        else listOf("Mimic", "Kitsune", "Slime", "Dragon", "Phoenix", "Griffin", "Owlbear", "Moon moth", "Tanuki", "Sprout", "Ghost", "Bookworm")
+        val names = if (ru) listOf("Мимик", "Кицунэ", "Слайм", "Дракончик", "Феникс", "Грифон", "Совомедведь", "Лунный мотылёк", "Тануки", "Росток", "Призрак", "Книжный червь", "Химера", "Сорока")
+        else listOf("Mimic", "Kitsune", "Slime", "Dragon", "Phoenix", "Griffin", "Owlbear", "Moon moth", "Tanuki", "Sprout", "Ghost", "Bookworm", "Chimera", "Magpie")
         fun put(px: Px, x0: Int, y0: Int) {
             for (y in 0 until px.h) for (x in 0 until px.w) {
                 val p = px.c[y * px.w + x]
@@ -114,7 +115,7 @@ class RenderArt {
         Species.entries.forEachIndexed { r, sp ->
             val y0 = top + r * cell
             c.drawText(names[r], 50f, y0 + cell / 2f + 16f, name)
-            if (sp.ordinal >= Species.TANUKI.ordinal) c.drawText(if (ru) "новый!" else "new!", 52f, y0 + cell / 2f + 56f, android.graphics.Paint(sub).apply { textSize = 28f; color = 0xFFF2C14E.toInt() })
+            if (sp.ordinal >= Species.CHIMERA.ordinal) c.drawText(if (ru) "новый!" else "new!", 52f, y0 + cell / 2f + 56f, android.graphics.Paint(sub).apply { textSize = 28f; color = 0xFFF2C14E.toInt() })
             Stage.entries.forEachIndexed { i, st -> put(Sprites.frame(look(sp, st), 0), left + i * cell, y0) }
             forms.forEachIndexed { i, f -> put(Sprites.frame(look(sp, Stage.ADULT).copy(form = f), 2), left + (stages.size + i) * cell + gap, y0) }
         }
@@ -122,7 +123,7 @@ class RenderArt {
         File(if (ru) out else docs, if (ru) "evolutions_ru.png" else "evolutions.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
 
-    private val newcomers = listOf(Species.TANUKI, Species.SPROUT, Species.GHOST, Species.WYRM)
+    private val newcomers = listOf(Species.TANUKI, Species.SPROUT, Species.GHOST, Species.WYRM, Species.CHIMERA, Species.MAGPIE)
 
     @Test
     fun newcomers() = sheet("newcomers", newcomers.map { sp -> Stage.entries.map { Sprites.frame(look(sp, it), 0) } + listOf(Sprites.frame(look(sp, Stage.ADULT).copy(shiny = true), 0)) }, scale = 4)
@@ -183,7 +184,7 @@ class RenderArt {
     }, scale = 2)
 
     @Test
-    fun hero() = sheet("hero", Species.entries.chunked(4).map { row -> row.map { Sprites.frame(look(it, Stage.ADULT), 0) } }, scale = 6)
+    fun hero() = sheet("hero", Species.entries.chunked(7).map { row -> row.map { Sprites.frame(look(it, Stage.ADULT), 0) } }, scale = 5)
 
     @Test
     fun anim() = sheet("anim", listOf(Species.KITSUNE, Species.MIMIC, Species.MOTH).map { sp -> List(Sprites.FRAMES) { Sprites.frame(look(sp, Stage.ADULT), it) } }, scale = 2)

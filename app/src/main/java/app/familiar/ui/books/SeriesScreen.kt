@@ -29,7 +29,6 @@ import app.familiar.R
 import app.familiar.container
 import app.familiar.data.Library
 import app.familiar.data.Shelf
-import app.familiar.domain.Genre
 import app.familiar.domain.Series
 import app.familiar.ui.FamiliarData
 import app.familiar.ui.Go
@@ -88,7 +87,7 @@ fun SeriesScreen(name: String, data: FamiliarData, go: Go) {
             c.books.forEach { b ->
                 UCard(Modifier.padding(bottom = 10.dp), onClick = { go.book(b.id) }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        BookCover(b.title, Genre.of(b.genre), Modifier.width(50.dp).height(72.dp), small = true, cover = b.cover)
+                        BookCover(b, Modifier.width(50.dp).height(72.dp), small = true)
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             b.volume?.let { Text(stringResource(R.string.volume_n, it).uppercase(), style = UType.Eyebrow) }

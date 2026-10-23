@@ -309,4 +309,50 @@ class FamiliarTest {
         assertEquals(3, s.streak)
         assertEquals(25, s.todayPages)
     }
+
+    @Test
+    fun ownGenresFindTheChimeraAndTheMagpie() {
+        fun own(id: Long, genre: Genre, sub: String) = book(id, genre, done = 1).copy(sub = sub)
+        val books = listOf(own(1, Genre.FANTASY, "Dark fantasy"), own(2, Genre.FANTASY, "dark fantasy "), own(3, Genre.OTHER, "Manga"))
+        val s = stats(emptyList(), books)
+        assertEquals(2, s.ownFinished.size)
+        assertFalse(Species.CHIMERA in s.unlocked || Species.MAGPIE in s.unlocked)
+        val more = stats(emptyList(), books + own(4, Genre.FANTASY, "Urban fantasy"))
+        assertTrue(Species.CHIMERA in more.unlocked && Species.MAGPIE in more.unlocked)
+        fun fav(sp: Species, s: Mana.Sitting) = Mana.feast(sp, s).parts.any { it.first == Part.FAVOURITE }
+        assertTrue(fav(Species.CHIMERA, Mana.Sitting(30, true, 30, 0f, false, Genre.FANTASY, null, 300, 1, 0, false, "", own = true)))
+        assertFalse(fav(Species.CHIMERA, sitting()))
+        assertTrue(fav(Species.MAGPIE, sitting(genre = Genre.HORROR, prev = Genre.HORROR)))
+        assertFalse(fav(Species.MAGPIE, sitting(genre = Genre.HORROR, prev = Genre.FANTASY)))
+    }
+
+    @Test
+    fun ownGenresKeepTheirParentAndShowUpFromBooks() {
+        val g = app.familiar.domain.OwnGenre.decode("FANTASY|Dark fantasy")!!
+        assertEquals(Genre.FANTASY, g.parent)
+        assertEquals(g.encode(), "FANTASY|Dark fantasy")
+        assertNull(app.familiar.domain.OwnGenre.decode("FANTASY|  "))
+        val all = app.familiar.domain.OwnGenre.all(listOf(g), listOf(book(1, Genre.OTHER).copy(sub = "Manga"), book(2).copy(sub = "DARK FANTASY")))
+        assertEquals(listOf("Dark fantasy", "Manga"), all.map { it.name })
+        assertTrue(all[1].standalone)
+    }
+
+    @Test
+    fun theShelfSearchesFiltersAndSorts() {
+        val b = listOf(
+            book(1).copy(title = "Dune", author = "Frank Herbert", rating = 5),
+            book(2, Genre.HORROR).copy(title = "Dracula", author = "Bram Stoker", audio = true, rating = 3),
+            book(3).copy(title = "Hobbit", author = "J. R. R. Tolkien", sub = "Fairy-tale"),
+        )
+        fun titles(br: app.familiar.ui.books.Browse) = br.apply(b, emptyList(), locale = Locale.ENGLISH).map { it.title }
+        val by = app.familiar.ui.books.Browse(sort = app.familiar.ui.books.Sort.AUTHOR)
+        assertEquals(listOf("Dune", "Dracula", "Hobbit"), titles(by))
+        assertEquals(listOf("Hobbit", "Dracula", "Dune"), titles(by.copy(reverse = true)))
+        assertEquals(listOf("Dracula"), titles(by.copy(format = app.familiar.ui.books.Format.AUDIO)))
+        assertEquals(listOf("Dune", "Hobbit"), titles(by.copy(genres = setOf("g:FANTASY"))))
+        assertEquals(listOf("Hobbit"), titles(by.copy(genres = setOf("o:fairy-tale"))))
+        assertEquals(listOf("Dune"), titles(by.copy(stars = 4)))
+        assertEquals(listOf("Hobbit"), titles(by.copy(query = "tolk")))
+        assertEquals(by.copy(reverse = true), app.familiar.ui.books.Browse.sorted("AUTHOR:r"))
+    }
 }

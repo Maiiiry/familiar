@@ -115,6 +115,10 @@ class FamiliarData(
     val season: Season = if (BuildConfig.DEMO) Season.SAMHAIN else Season.of(stats.today)
     val reading: List<Book> = books.filter { it.shelfOf == app.familiar.data.Shelf.READING }.sortedByDescending { b -> readings.filter { it.bookId == b.id }.maxOfOrNull { it.end } ?: b.added }
     fun book(id: Long) = books.firstOrNull { it.id == id }
+    /** Your own genres and subgenres, with any that only books remember (after a restore). */
+    val genres: List<app.familiar.domain.OwnGenre> = app.familiar.domain.OwnGenre.all(settings.genres, books)
+    /** Your own shelves, with any that only books remember. */
+    val shelves: List<String> = (settings.shelves + books.flatMap { it.tagList }).distinct()
     fun look(chew: Boolean = false, sleeping: Boolean = false) = species?.let {
         lookOf(it, pet?.mana ?: 0, stats, true, sleeping, chew, pet?.shiny == true, Form.of(pet?.form ?: ""), season, trait)
     }

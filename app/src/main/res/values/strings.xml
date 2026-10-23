@@ -116,7 +116,7 @@
     <string name="bestiary">Bestiary</string>
     <string name="bestiary_count">%1$d of %2$d familiars found</string>
     <string name="bestiary_eggs">Eggs waiting for you: %d</string>
-    <string name="bestiary_text">Twelve familiars live in these pages. Read and they come to you one by one, as eggs. You read with one at a time; the others rest in the den with all they\'ve eaten.</string>
+    <string name="bestiary_text">Fourteen familiars live in these pages. Read and they come to you one by one, as eggs. You read with one at a time; the others rest in the den with all they\'ve eaten.</string>
     <string name="bestiary_note">Mana goes to the familiar you read with. Switch any time.</string>
     <string name="with_you">with you</string>
     <string name="egg_waiting">An egg is waiting</string>
@@ -145,7 +145,7 @@
     <string name="f_pages">Pages</string>
     <string name="f_page_now">Now on page</string>
     <string name="f_genre">Genre</string>
-    <string name="f_genre_note">The genre sets the familiar\'s mood after reading and the colour of the kitsune\'s new tail.</string>
+    <string name="f_genre_note">The genre sets the familiar\'s mood after reading and the colour of the kitsune\'s new tail. Make your own genres and subgenres too: the chimera and the magpie love them.</string>
     <string name="f_shelf">Shelf</string>
     <string name="start_reading">Start reading</string>
     <string name="pause">Pause</string>
@@ -298,7 +298,7 @@
     <string name="ob_intro2">Read and it hatches, grows and learns. Forget about books and it slowly turns to stone, until a few pages break the spell.</string>
     <string name="ob_choose">Choose an egg</string>
     <string name="ob_choose_text">Each familiar loves its own kind of reading. Nine more are found along the way.</string>
-    <string name="ob_others">The dragon, the phoenix, the griffin, the owlbear, the moon moth, the tanuki, the sprout, the ghost and the bookworm come to those who read.</string>
+    <string name="ob_others">The dragon, the phoenix, the griffin, the owlbear, the moon moth, the tanuki, the sprout, the ghost, the bookworm, the chimera and the magpie come to those who read.</string>
     <string name="ob_names">What will you call it?</string>
     <string name="ob_pet_name">Familiar\'s name</string>
     <string name="ob_your_name">Your name</string>
@@ -694,4 +694,60 @@
     <string name="postcard_year">%1$s in %2$d</string>
     <string name="postcard_footer">Familiar · a familiar that feeds on stories</string>
     <string name="postcard_failed">Couldn\'t make the postcard</string>
+
+    <!-- 1.3.0: own genres, two more familiars, a library to search, filter and sort -->
+    <string name="sp_chimera">Chimera</string>
+    <string name="sp_magpie">Magpie</string>
+    <string name="lore_chimera">A lion, a goat and a snake who agreed to be one beast. Every genre of your own with a book finished sews a new patch onto its coat.</string>
+    <string name="lore_magpie">Can tell dark fantasy from urban fantasy at a glance. Keeps a shiny thing from every subgenre you finish in its nest, and grows a longer tail.</string>
+    <string name="loves_chimera" formatted="false">books in your own genres and subgenres (+50%)</string>
+    <string name="loves_magpie" formatted="false">staying in the genre of the book before (+50%)</string>
+    <plurals name="how_chimera">
+        <item quantity="one">Finish a book in %d genre or subgenre of your own.</item>
+        <item quantity="other">Finish books in %d genres or subgenres of your own.</item>
+    </plurals>
+    <plurals name="how_magpie">
+        <item quantity="one">Finish a book in %d subgenre of one genre.</item>
+        <item quantity="other">Finish books in %d subgenres of one genre.</item>
+    </plurals>
+    <string name="genre_own">Own genre</string>
+    <string name="subgenre">Subgenre</string>
+    <string name="subgenre_of">Subgenres of %s</string>
+    <string name="genre_new_title">New genre</string>
+    <string name="subgenre_new_title">New subgenre</string>
+    <string name="genre_change">Change the genre</string>
+    <string name="genre_change_short">Change</string>
+    <string name="genre_name_hint">For example, Manga</string>
+    <string name="subgenre_name_hint">For example, Dark fantasy</string>
+    <string name="genre_taken">There is already a genre with this name.</string>
+    <string name="genre_under">Part of</string>
+    <string name="genre_standalone">On its own</string>
+    <string name="genre_under_note">The mood, the kitsune\'s tails, forms and finds come from the genre it\'s part of. On its own it counts as Other.</string>
+    <string name="genre_line">Genre: %s</string>
+    <string name="genre_delete_title">Delete the genre “%s”?</string>
+    <string name="genre_delete_text">The books stay, in the genre it was part of.</string>
+    <string name="genres_own">Your genres and subgenres</string>
+    <string name="genres_own_empty">None here yet. Make one now or when you add a book.</string>
+    <string name="lib_all">All</string>
+    <string name="lib_search">Search</string>
+    <string name="lib_search_hint">Title, author, cycle, genre…</string>
+    <string name="lib_as_list">Show as a list</string>
+    <string name="lib_as_covers">Show as covers</string>
+    <string name="lib_filter">Filter</string>
+    <string name="lib_of">%1$d of %2$d</string>
+    <string name="lib_reset">Reset</string>
+    <string name="lib_nothing">Nothing matches. Try another word or reset the filter.</string>
+    <string name="lib_format">Format</string>
+    <string name="lib_any">Any</string>
+    <string name="lib_paper">Paper</string>
+    <string name="lib_audio">Audio</string>
+    <string name="lib_show">Show %s</string>
+    <string name="empty_all">Your library is empty. Add the first book with +.</string>
+    <string name="sort_recent">Recent</string>
+    <string name="sort_added">Date added</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_author">Author</string>
+    <string name="sort_rating">Rating</string>
+    <string name="sort_progress">Progress</string>
+    <string name="sort_length">Length</string>
 </resources>
