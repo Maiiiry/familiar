@@ -186,6 +186,18 @@ class RenderArt {
     @Test
     fun hero() = sheet("hero", Species.entries.chunked(7).map { row -> row.map { Sprites.frame(look(it, Stage.ADULT), 0) } }, scale = 5)
 
+    /** Each familiar alone on a clear ground, ancient and grown, for posts and promo pictures: art/solo/<species>_<stage>.png. */
+    @Test
+    fun solo() {
+        val dir = File(out, "solo").apply { mkdirs() }
+        for (sp in Species.entries) for (st in listOf(Stage.ADULT, Stage.ANCIENT)) {
+            val px = Sprites.frame(look(sp, st), 0)
+            val bmp = Bitmap.createBitmap(px.w, px.h, Bitmap.Config.ARGB_8888)
+            bmp.setPixels(px.c, 0, px.w, 0, 0, px.w, px.h)
+            File(dir, "${sp.name.lowercase()}_${st.name.lowercase()}.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        }
+    }
+
     @Test
     fun anim() = sheet("anim", listOf(Species.KITSUNE, Species.MIMIC, Species.MOTH).map { sp -> List(Sprites.FRAMES) { Sprites.frame(look(sp, Stage.ADULT), it) } }, scale = 2)
 

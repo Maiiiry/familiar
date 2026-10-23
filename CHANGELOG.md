@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.1] - 2026-10-23
+
+- **Search finds genres:** typing a genre (“mystery”, “детектив”) in the shelf search finds its books, not only your own genres and subgenres.
+
 ## [1.3.0] - 2026-10-23
 
 - **Your own genres and subgenres:** add a subgenre to any genre (Fantasy · Dark fantasy) or a genre of your own (Manga) right in the book editor. The built-in genre still sets the mood, tails, forms and finds; your own colours the cover and sorts the shelf. Rename, move or delete them from the shelf filter.

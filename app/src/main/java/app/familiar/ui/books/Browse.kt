@@ -27,9 +27,11 @@ data class Browse(
     /** How many filters are on (the search and the order aside). */
     val filters: Int get() = genres.size + (if (format != Format.ANY) 1 else 0) + (if (stars > 0) 1 else 0)
 
-    fun matches(b: Book): Boolean {
+    /** [genreNames]: what each built-in genre is called on screen, so typing "mystery" finds mysteries. */
+    fun matches(b: Book, genreNames: Map<Genre, String> = emptyMap()): Boolean {
         val q = query.trim().lowercase()
-        if (q.isNotEmpty() && listOf(b.title, b.author, b.series, b.sub, b.tags).none { q in it.lowercase() }) return false
+        val genre = genreNames[Genre.of(b.genre)].orEmpty()
+        if (q.isNotEmpty() && listOf(b.title, b.author, b.series, b.sub, b.tags, genre).none { q in it.lowercase() }) return false
         if (genres.isNotEmpty() && genreKey(Genre.of(b.genre)) !in genres && OwnGenre.of(b)?.let { genreKey(it) } !in genres) return false
         if (format == Format.PAPER && b.audio || format == Format.AUDIO && !b.audio) return false
         if (stars > 0 && (b.rating ?: 0) < stars) return false
@@ -37,7 +39,7 @@ data class Browse(
     }
 
     /** The matching [books] in order, paused ones last if [pausedLast] (on the reading shelf). */
-    fun apply(books: List<Book>, readings: List<Reading>, pausedLast: Boolean = false, locale: Locale = Locale.getDefault()): List<Book> {
+    fun apply(books: List<Book>, readings: List<Reading>, pausedLast: Boolean = false, locale: Locale = Locale.getDefault(), genreNames: Map<Genre, String> = emptyMap()): List<Book> {
         val last = readings.groupBy { it.bookId }.mapValues { (_, l) -> l.maxOf { it.end } }
         val words = Collator.getInstance(locale).apply { strength = Collator.PRIMARY }
         val order: Comparator<Book> = when (sort) {
@@ -50,7 +52,7 @@ data class Browse(
             Sort.PROGRESS -> compareByDescending<Book> { if (it.shelfOf == Shelf.DONE) 1f else it.fraction }.thenByDescending { it.page }
             Sort.LENGTH -> compareByDescending { it.pages }
         }
-        val sorted = books.filter { matches(it) }.sortedWith(if (reverse) order.reversed() else order)
+        val sorted = books.filter { matches(it, genreNames) }.sortedWith(if (reverse) order.reversed() else order)
         return if (pausedLast) sorted.sortedBy { it.shelfOf == Shelf.PAUSED } else sorted
     }
 

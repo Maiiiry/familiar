@@ -210,8 +210,8 @@ abstract class FamiliarDatabase : RoomDatabase() {
     abstract fun dao(): FamiliarDao
 
     companion object {
-        fun create(context: Context): FamiliarDatabase =
-            Room.databaseBuilder(context.applicationContext, FamiliarDatabase::class.java, "familiar.db")
+        fun create(context: Context, name: String = "familiar.db"): FamiliarDatabase =
+            Room.databaseBuilder(context.applicationContext, FamiliarDatabase::class.java, name)
                 // Only a database older than the migrations (1.0.0) starts fresh (and onboarding again, see FamiliarApp).
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()

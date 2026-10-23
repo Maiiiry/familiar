@@ -353,6 +353,7 @@ class FamiliarTest {
         assertEquals(listOf("Hobbit"), titles(by.copy(genres = setOf("o:fairy-tale"))))
         assertEquals(listOf("Dune"), titles(by.copy(stars = 4)))
         assertEquals(listOf("Hobbit"), titles(by.copy(query = "tolk")))
+        assertEquals(listOf("Dracula"), by.copy(query = "ужас").apply(b, emptyList(), genreNames = mapOf(Genre.HORROR to "Ужасы")).map { it.title })
         assertEquals(by.copy(reverse = true), app.familiar.ui.books.Browse.sorted("AUTHOR:r"))
     }
 }

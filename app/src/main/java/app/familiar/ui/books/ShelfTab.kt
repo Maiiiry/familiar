@@ -106,7 +106,8 @@ fun ShelfTab(data: FamiliarData, go: Go) {
         else -> emptyList()
     }
     val loc = locale()
-    val list = remember(all, data.readings, browse, loc) { browse.apply(all, data.readings, pausedLast = shelf == Shelf.READING, locale = loc) }
+    val genreNames = Genre.entries.associateWith { genreName(it) }
+    val list = remember(all, data.readings, browse, loc) { browse.apply(all, data.readings, pausedLast = shelf == Shelf.READING, locale = loc, genreNames = genreNames) }
     val cycles = remember(data.books, query) {
         Series.all(data.books).filter { c -> query.isBlank() || query.trim().lowercase().let { q -> q in c.name.lowercase() || c.books.any { q in it.title.lowercase() } } }
     }
@@ -321,6 +322,7 @@ private fun FilterSheet(data: FamiliarData, shown: List<Book>, browse: Browse, o
     // The sheet animates shut on the screen's own scope: the app's background one has no frame clock.
     val ui = androidx.compose.runtime.rememberCoroutineScope()
     var adding by remember { mutableStateOf(false) }
+    val names = Genre.entries.associateWith { genreName(it) }
     fun toggle(k: String) = onChange(browse.copy(genres = if (k in browse.genres) browse.genres - k else browse.genres + k))
     // Only the genres there are books in, so the sheet stays short; anything picked stays too.
     val present = shown.map { Genre.of(it.genre) }.toSet()
@@ -359,7 +361,7 @@ private fun FilterSheet(data: FamiliarData, shown: List<Book>, browse: Browse, o
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TextButton(onClick = { onChange(browse.copy(genres = emptySet(), format = Format.ANY, stars = 0)) }) { Text(stringResource(R.string.lib_reset), color = U.c.muted, style = UType.Button) }
                 Spacer(Modifier.weight(1f))
-                PrimaryButton(stringResource(R.string.lib_show, books(shown.count { browse.matches(it) })), {
+                PrimaryButton(stringResource(R.string.lib_show, books(shown.count { b -> browse.matches(b, names) })), {
                     ui.launch { sheet.hide() }.invokeOnCompletion { onDismiss() }
                 })
             }

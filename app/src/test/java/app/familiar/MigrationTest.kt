@@ -18,7 +18,7 @@ class MigrationTest {
     @Test
     fun aVersion3DatabaseKeepsItsBooks() = runBlocking {
         val context = org.robolectric.RuntimeEnvironment.getApplication()
-        val file = context.getDatabasePath("familiar.db").apply { parentFile?.mkdirs(); delete() }
+        val file = context.getDatabasePath(NAME).apply { parentFile?.mkdirs(); delete() }
         // Build the 1.2.0 database exactly as its exported schema describes it.
         val schema = JSONObject(File("schemas/app.familiar.data.FamiliarDatabase/3.json").readText()).getJSONObject("database")
         SQLiteDatabase.openOrCreateDatabase(file, null).use { db ->
@@ -33,11 +33,14 @@ class MigrationTest {
             db.execSQL("INSERT INTO pets (id, species, name, joined, mana, active, shiny, trait, form) VALUES (1, 'KITSUNE', 'Yuzu', 0, 900, 1, 0, '', '')")
             db.version = 3
         }
-        val db = FamiliarDatabase.create(context)
+        val db = FamiliarDatabase.create(context, NAME)
         val books = db.dao().books()
         assertEquals(listOf("Dune"), books.map { it.title })
         assertEquals("", books.single().sub)
         assertEquals(900, db.dao().pets().single().mana)
         db.close()
     }
+
+    // Not the app's own file: the test app opens that one at start.
+    private companion object { const val NAME = "migration-test.db" }
 }
