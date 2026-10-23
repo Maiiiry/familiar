@@ -134,3 +134,6 @@ The sprites live in `app/src/main/java/app/familiar/ui/pix`: `Pix.kt` is the sha
 ## License
 
 [MIT](LICENSE). Part of [Stillcraft](https://bigdevwhale.github.io/stillcraft/).
+
+
+<!-- Automated fix for issue #2: Поправить анимацию светлячков на странице древо и в целом улучшить само древо -->
